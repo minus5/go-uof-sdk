@@ -12,16 +12,21 @@ import (
 )
 
 const (
-	stagingServer = "stgmq.betradar.com:5671"
-	server        = "mq.betradar.com:5671"
+	replayServer     = "replaymq.betradar.com:5671"
+	stagingServer    = "stgmq.betradar.com:5671"
+	productionServer = "mq.betradar.com:5671"
 )
 
 func Dial(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, server, bookmakerID, token)
+	return dial(ctx, productionServer, bookmakerID, token)
 }
 
 func DialStaging(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, stagingServer, bookmakerID, token)
+}
+
+func DialReplay(ctx context.Context, bookmakerID, token string) (*Connection, error) {
+	return dial(ctx, replayServer, bookmakerID, token)
 }
 
 type Connection struct {
@@ -29,15 +34,19 @@ type Connection struct {
 	errs <-chan *amqp.Error
 }
 
-func (c *Connection) Listen(out chan<- uof.QueueMsg) {
-	for m := range c.msgs {
-		out <- uof.QueueMsg{
-			RoutingKey: m.RoutingKey,
-			Body:       m.Body,
-			Timestamp:  m.Timestamp,
+func (c *Connection) Listen() <-chan uof.QueueMsg {
+	out := make(chan uof.QueueMsg)
+	go func() {
+		defer close(out)
+		for m := range c.msgs {
+			out <- uof.QueueMsg{
+				RoutingKey: m.RoutingKey,
+				Body:       m.Body,
+				Timestamp:  m.Timestamp,
+			}
 		}
-	}
-	close(out)
+	}()
+	return out
 }
 
 func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, error) {
