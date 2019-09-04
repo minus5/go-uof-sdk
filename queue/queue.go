@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"time"
 
 	"github.com/minus5/uof"
 	"github.com/pkg/errors"
@@ -17,14 +18,17 @@ const (
 	productionServer = "mq.betradar.com:5671"
 )
 
+// Dial connects to the production queue
 func Dial(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, productionServer, bookmakerID, token)
 }
 
+// DialStaging connects to the staging queue
 func DialStaging(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, stagingServer, bookmakerID, token)
 }
 
+// DialReplay connects to the replay server
 func DialReplay(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, replayServer, bookmakerID, token)
 }
@@ -35,6 +39,16 @@ type Connection struct {
 }
 
 func (c *Connection) Listen() <-chan uof.QueueMsg {
+	lastTs := CurrentTimestamp()
+	uniqTimestamp := func() int64 {
+		ts := CurrentTimestamp()
+		if ts <= lastTs {
+			ts += 1
+		}
+		lastTs = ts
+		return ts
+	}
+
 	out := make(chan uof.QueueMsg)
 	go func() {
 		defer close(out)
@@ -42,11 +56,19 @@ func (c *Connection) Listen() <-chan uof.QueueMsg {
 			out <- uof.QueueMsg{
 				RoutingKey: m.RoutingKey,
 				Body:       m.Body,
-				Timestamp:  m.Timestamp,
+				Timestamp:  uniqTimestamp(),
 			}
 		}
 	}()
 	return out
+}
+
+// CurrentTimestamp in milliseconds
+func CurrentTimestamp() int64 {
+	return timeToTimestamp(time.Now())
+}
+func timeToTimestamp(t time.Time) int64 {
+	return t.UnixNano() / 1e6
 }
 
 func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, error) {
