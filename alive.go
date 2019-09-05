@@ -6,7 +6,7 @@ package uof
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Alive
 type Alive struct {
 	//	The producer that sent this alive message.
-	Product Producer `xml:"product,attr" json:"product"`
+	Producer Producer `xml:"product,attr" json:"producer"`
 	// Timestamp in milliseconds since epoch when this message was generated
 	// according to generating system's clock.
 	Timestamp int64 `xml:"timestamp,attr" json:"timestamp"`

@@ -21,9 +21,11 @@ func TestOddsChange(t *testing.T) {
 		name string
 		f    func(t *testing.T, oc *OddsChange)
 	}{
+		{"unmarshal", testOddsChangeUnmarshal},
+		{"status", testOddsChangeStatus},
 		{"urn", testOddsChangeURN},
 		{"specifier", testOddsChangeSpecifiers},
-		{"status", testOddsChangeStatus},
+		{"marketStatus", testOddsChangeMarketStatus},
 	}
 	for _, s := range tests {
 		t.Run(s.name, func(t *testing.T) { s.f(t, oc) })
@@ -32,12 +34,50 @@ func TestOddsChange(t *testing.T) {
 	//testu.PP(oc)
 }
 
+func testOddsChangeUnmarshal(t *testing.T, oc *OddsChange) {
+	assert.Len(t, oc.Markets, 7)
+	assert.Equal(t, 123, oc.EventID)
+	assert.Equal(t, 2, int(oc.Producer))
+	assert.Equal(t, 1234, int(oc.Timestamp))
+	assert.Equal(t, 1, *oc.BettingStatus)
+	assert.Equal(t, 2, *oc.BetstopReason)
+
+	assert.Equal(t, int64(12345), *oc.Markets[0].NextBetstop)
+
+	// market line calcualtion in unmarshal
+	assert.Equal(t, 0, oc.Markets[4].LineID)
+	assert.Equal(t, 2701050930, oc.Markets[0].LineID)
+
+	// outcome with 'normal' id
+	assert.Equal(t, 1, oc.Markets[3].Outcomes[0].ID)
+	assert.Equal(t, 0, oc.Markets[3].Outcomes[0].PlayerID)
+	assert.Equal(t, 2, oc.Markets[3].Outcomes[1].ID)
+	assert.Equal(t, 0, oc.Markets[3].Outcomes[1].PlayerID)
+
+	// oucome with player id
+	assert.Equal(t, 1234, oc.Markets[4].Outcomes[0].ID)
+	assert.Equal(t, 1234, oc.Markets[4].Outcomes[0].PlayerID)
+	assert.Equal(t, 4322, oc.Markets[4].Outcomes[1].ID)
+	assert.Equal(t, 4322, oc.Markets[4].Outcomes[1].PlayerID)
+}
+
 func testOddsChangeStatus(t *testing.T, oc *OddsChange) {
-	m0 := oc.Odds.Markets[0]
-	m1 := oc.Odds.Markets[1]
-	m2 := oc.Odds.Markets[2]
-	m3 := oc.Odds.Markets[3]
-	m6 := oc.Odds.Markets[6]
+	assert.Equal(t, EventStatusLive, oc.EventStatus.Status)
+	assert.Equal(t, 7, *oc.EventStatus.MatchStatus)
+	assert.Equal(t, 2, *oc.EventStatus.HomeScore)
+
+	mt := *oc.EventStatus.Clock.MatchTime
+	assert.Equal(t, ClockTime("75:02"), mt)
+	assert.Equal(t, "75:02", mt.String())
+	assert.Equal(t, "75", mt.Minute())
+}
+
+func testOddsChangeMarketStatus(t *testing.T, oc *OddsChange) {
+	m0 := oc.Markets[0]
+	m1 := oc.Markets[1]
+	m2 := oc.Markets[2]
+	m3 := oc.Markets[3]
+	m6 := oc.Markets[6]
 
 	assert.Equal(t, MarketStatusActive, m0.Status)
 	assert.Equal(t, MarketStatusActive, m1.Status)
@@ -47,16 +87,16 @@ func testOddsChangeStatus(t *testing.T, oc *OddsChange) {
 }
 
 func testOddsChangeURN(t *testing.T, oc *OddsChange) {
-	assert.Equal(t, 1234, oc.EventID())
+	assert.Equal(t, 123, oc.EventURN.ID())
 	assert.Equal(t, URNTypeMatch, oc.EventURN.Type())
 }
 
 func testOddsChangeSpecifiers(t *testing.T, oc *OddsChange) {
-	s := oc.Odds.Markets[0].Specifiers
+	s := oc.Markets[0].Specifiers
 	assert.Equal(t, 1, len(s))
 	assert.Equal(t, "41.5", s["score"])
 
-	s = oc.Odds.Markets[3].Specifiers
+	s = oc.Markets[3].Specifiers
 	assert.Equal(t, 4, len(s))
 	assert.Equal(t, "2", s["pero"])
 }

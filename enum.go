@@ -186,3 +186,44 @@ const (
 	TeamHome Team = 1
 	TeamAway Team = 2
 )
+
+type EventStatus int8
+
+const (
+	EventStatusNotStarted EventStatus = 0
+	EventStatusLive       EventStatus = 1
+	EventStatusSuspended  EventStatus = 2 // Used by the Premium Cricket odds producer
+	EventStatusEnded      EventStatus = 3
+	EventStatusClosed     EventStatus = 4
+	// Only one of the above statuses are possible in the odds_change message in
+	// the feed. However please note that other states are available in the API,
+	// but will not appear in the odds_change message. These are as following:
+	EventStatusCancelled   EventStatus = 5
+	EventStatusDelayed     EventStatus = 6
+	EventStatusInterrupted EventStatus = 7
+	EventStatusPostponed   EventStatus = 8
+	EventStatusAbandoned   EventStatus = 9
+)
+
+type EventReporting int8
+
+const (
+	EventReportingNotAvailable EventReporting = 0
+	EventReportingActive       EventReporting = 1
+	EventReportingSuspended    EventReporting = -1
+)
+
+// Values must match the pattern [0-9]+:[0-9]+|[0-9]+
+type ClockTime string
+
+func (c *ClockTime) Minute() string {
+	p := strings.Split(string(*c), ":")
+	if len(p) > 0 {
+		return p[0]
+	}
+	return ""
+}
+
+func (c *ClockTime) String() string {
+	return string(*c)
+}

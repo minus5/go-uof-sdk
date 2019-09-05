@@ -2,6 +2,7 @@ package uof
 
 import (
 	"encoding/xml"
+	"strconv"
 	"strings"
 )
 
@@ -11,28 +12,30 @@ import (
 // reported.
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Odds+change
 type OddsChange struct {
+	EventID  int `json:"eventID"`
 	EventURN URN `xml:"event_id,attr" json:"eventURN"`
 	// Specifies which producer generated these odds. At any given point in time
 	// there should only be one product generating odds for a particular event.
-	Product                  Producer                  `xml:"product,attr" json:"product"`
-	Timestamp                int64                     `xml:"timestamp,attr" json:"timestamp"`
-	Odds                     *Odds                     `xml:"odds,omitempty" json:"odds,omitempty"`
-	SportEventStatus         *SportEventStatus         `xml:"sport_event_status,omitempty" json:"sportEventStatus,omitempty"`
-	OddsChangeReason         *uint8                    `xml:"odds_change_reason,attr,omitempty" json:"oddsChangeReason,omitempty"` // May be one of 1
+	Producer  Producer `xml:"product,attr" json:"producer"`
+	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
+	Markets   []Market `json:"market,omitempty"`
+	// values in range 0-6   /v1/descriptions/betting_status.xml
+	BettingStatus *int `json:"bettingStatus,omitempty"`
+	// values in range 0-87  /v1/descriptions/betstop_reasons.xml
+	BetstopReason    *int              `json:"betstopReason,omitempty"`
+	OddsChangeReason *int              `xml:"odds_change_reason,attr,omitempty" json:"oddsChangeReason,omitempty"` // May be one of 1
+	EventStatus      *SportEventStatus `xml:"sport_event_status,omitempty" json:"sportEventStatus,omitempty"`
+
 	OddsGenerationProperties *OddsGenerationProperties `xml:"odds_generation_properties,omitempty" json:"oddsGenerationProperties,omitempty"`
 	RequestID                *int64                    `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 }
+
+// Provided by the prematch odds producer only, and contains a few
+// key-parameters that can be used in a client’s own special odds model, or
+// even offer spread betting bets based on it.
 type OddsGenerationProperties struct {
 	ExpectedTotals    *float64 `xml:"expected_totals,attr,omitempty" json:"expectedTotals,omitempty"`
 	ExpectedSupremacy *float64 `xml:"expected_supremacy,attr,omitempty" json:"expectedSupremacy,omitempty"`
-}
-
-type Odds struct {
-	Markets []Market `xml:"market,omitempty" json:"market,omitempty"`
-	// values in range 0-6   /v1/descriptions/betting_status.xml
-	BettingStatus *int `xml:"betting_status,attr,omitempty" json:"bettingStatus,omitempty"`
-	// values in range 0-87  /v1/descriptions/betstop_reasons.xml
-	BetstopReason *int `xml:"betstop_reason,attr,omitempty" json:"betstopReason,omitempty"`
 }
 
 // Market describes the odds updates for a particular market.
@@ -46,25 +49,56 @@ type Odds struct {
 // LineID is hash of specifier field used to uniquely identify lines in one market.
 // One market line is uniquely identified by market id and line id.
 type Market struct {
-	ID             int               `xml:"id,attr" json:"id"`
-	LineID         int               `json:"lineID"`
-	Specifiers     map[string]string `json:"sepcifiers,omitempty"`
-	Status         MarketStatus      `xml:"status,attr,omitempty" json:"status,omitempty"`
-	CashoutStatus  *CashoutStatus    `xml:"cashout_status,attr,omitempty" json:"cashoutStatus,omitempty"`
-	Favourite      *bool             `xml:"favourite,attr,omitempty" json:"favourite,omitempty"`
-	Outcomes       []Outcome         `xml:"outcome,omitempty" json:"outcome,omitempty"`
-	MarketMetadata *MarketMetadata   `xml:"market_metadata,omitempty" json:"marketMetadata,omitempty"`
+	ID            int               `xml:"id,attr" json:"id"`
+	LineID        int               `json:"lineID"`
+	Specifiers    map[string]string `json:"sepcifiers,omitempty"`
+	Status        MarketStatus      `xml:"status,attr,omitempty" json:"status,omitempty"`
+	CashoutStatus *CashoutStatus    `xml:"cashout_status,attr,omitempty" json:"cashoutStatus,omitempty"`
+	// If present, this is set to 1, which states that this is the most balanced
+	// or recommended market line. This setting makes most sense for markets where
+	// multiple lines are provided (e.g. the Totals market).
+	Favourite *bool     `xml:"favourite,attr,omitempty" json:"favourite,omitempty"`
+	Outcomes  []Outcome `xml:"outcome,omitempty" json:"outcome,omitempty"`
+	// Timestamp in UTC when to betstop this market. Typically used for outrights
+	// and typically is the start-time of the event the market refers to.
+	NextBetstop *int64 `json:"nextBetstop,omitempty"`
 }
 type MarketMetadata struct {
 	NextBetstop *int64 `xml:"next_betstop,attr,omitempty" json:"nextBetstop,omitempty"`
 }
 
 type Outcome struct {
-	URN           URN      `xml:"id,attr" json:"id"`
+	ID            int      `json:"id"`
+	PlayerID      int      `json:"playerID"`
+	SRID          string   `xml:"id,attr" json:"urn"`
 	Odds          *float64 `xml:"odds,attr,omitempty" json:"odds,omitempty"`
 	Probabilities *float64 `xml:"probabilities,attr,omitempty" json:"probabilities,omitempty"`
 	Active        *bool    `xml:"active,attr,omitempty" json:"active,omitempty"`
 	Team          *Team    `xml:"team,attr,omitempty" json:"team,omitempty"`
+}
+
+// UnmarshalXML
+func (t *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	type T OddsChange
+	var overlay struct {
+		*T
+		Odds *struct {
+			Markets       []Market `xml:"market,omitempty"`
+			BettingStatus *int     `xml:"betting_status,attr,omitempty"`
+			BetstopReason *int     `xml:"betstop_reason,attr,omitempty"`
+		} `xml:"odds,omitempty"`
+	}
+	overlay.T = (*T)(t)
+	if err := d.DecodeElement(&overlay, &start); err != nil {
+		return err
+	}
+	if overlay.Odds != nil {
+		t.BettingStatus = overlay.Odds.BettingStatus
+		t.BetstopReason = overlay.Odds.BetstopReason
+		t.Markets = overlay.Odds.Markets
+	}
+	t.EventID = t.EventURN.ID()
+	return nil
 }
 
 // Custom unmarshaling reasons:
@@ -80,31 +114,39 @@ func (t *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		Status             *int8  `xml:"status,attr,omitempty"`
 		Specifiers         string `xml:"specifiers,attr,omitempty" json:"specifiers,omitempty"`
 		ExtendedSpecifiers string `xml:"extended_specifiers,attr,omitempty" json:"extendedSpecifiers,omitempty"`
+		MarketMetadata     *struct {
+			NextBetstop *int64 `xml:"next_betstop,attr,omitempty"`
+		} `xml:"market_metadata,omitempty"`
 	}
 	overlay.T = (*T)(t)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	overlay.T.Status = MarketStatusActive // default
+	t.Status = MarketStatusActive // default
 	if overlay.Status != nil {
-		overlay.T.Status = MarketStatus(*overlay.Status)
+		t.Status = MarketStatus(*overlay.Status)
 	}
-	overlay.T.Specifiers = toSpecifiers(overlay.Specifiers, overlay.ExtendedSpecifiers)
-	overlay.T.LineID = toLineID(overlay.Specifiers)
+	t.Specifiers = toSpecifiers(overlay.Specifiers, overlay.ExtendedSpecifiers)
+	t.LineID = toLineID(overlay.Specifiers)
+	if overlay.MarketMetadata != nil {
+		t.NextBetstop = overlay.MarketMetadata.NextBetstop
+	}
 	return nil
 }
 
-func (o *OddsChange) EventID() int {
-	return o.EventURN.ID()
+func (t *Outcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	type T Outcome
+	var overlay struct {
+		*T
+	}
+	overlay.T = (*T)(t)
+	if err := d.DecodeElement(&overlay, &start); err != nil {
+		return err
+	}
+	t.ID = toOutcomeID(overlay.SRID)
+	t.PlayerID = toPlayerID(overlay.SRID)
+	return nil
 }
-
-// func (o OddsChange) Scope() uint8 {
-// 	//1 =	LiveOdds producer, 3 = Betradar Ctrl producer, 4 = BetPal producer, 5 = Premium Cricket producer
-// 	if o.Product == 3 {
-// 		return uof.Prematch
-// 	}
-// 	return uof.Live
-// }
 
 func (m Market) VariantSpecifier() string {
 	for k, v := range m.Specifiers {
@@ -167,3 +209,20 @@ func toSpecifiers(specifiers, extendedSpecifiers string) map[string]string {
 // 	}
 // 	return nil
 // }
+
+func toPlayerID(id string) int {
+	if strings.HasPrefix(id, srPlayer) {
+		return URN(id).ID()
+	}
+	return 0
+}
+
+func toOutcomeID(id string) int {
+	if strings.HasPrefix(id, srPlayer) {
+		return toPlayerID(id)
+	}
+	if i, err := strconv.ParseInt(id, 10, 64); err == nil {
+		return int(i)
+	}
+	return hash32(id)
+}

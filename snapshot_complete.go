@@ -8,7 +8,7 @@ package uof
 // recommended to set a request_id to some number.
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Snapshot+complete
 type SnapshotComplete struct {
-	Product   Producer `xml:"product,attr" json:"product"`
+	Producer  Producer `xml:"product,attr" json:"producer"`
 	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
 	RequestID int      `xml:"request_id,attr" json:"requestID"`
 }

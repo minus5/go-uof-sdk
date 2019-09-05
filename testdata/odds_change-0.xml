@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<odds_change event_id="sr:match:1234" timestamp="1234" product="2">
+<odds_change event_id="sr:match:123" timestamp="1234" product="2">
     <sport_event_status status="1" reporting="1" match_status="7" home_score="2" away_score="2">
         <clock match_time="75:02"/>
         <period_scores>
@@ -16,6 +16,7 @@
 
     <odds betting_status="1" betstop_reason="2">
         <market id="47" specifiers="score=41.5" favourite="1" status="1">
+            <market_metadata next_betstop="12345"/>
             <outcome id="1" odds="1.12" active="1"/>
             <outcome id="2" odds="1.92" active="1"/>
         </market>
