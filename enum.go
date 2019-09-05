@@ -283,8 +283,10 @@ const (
 	SpecifierTypeUnknown SpecifierType = -1
 )
 
+type Gender int8
+
 const (
-	GenderUnknown int8 = iota
+	GenderUnknown Gender = iota
 	Male
 	Female
 )

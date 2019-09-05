@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fixtures_fixture xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2019-08-20T12:35:11+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa-staging/unified/v1/xml/endpoints/unified/fixtures_fixture.xsd">
+  <fixture id="sr:match:18001015" scheduled="2019-05-08T19:00:00+00:00" start_time_tbd="false" status="closed" next_live_time="2019-05-08T19:00:00+00:00" liveodds="not_available" start_time="2019-05-08T19:00:00+00:00" start_time_confirmed="true">
+    <tournament_round type="cup" name="semifinal" cup_round_match_number="2" cup_round_matches="2" phase="final_phase" betradar_id="23"/>
+    <season id="sr:season:54533" name="UEFA Champions League 18/19" start_date="2018-06-26" end_date="2019-06-02" year="18/19" tournament_id="sr:tournament:7"/>
+    <tournament id="sr:tournament:7" name="UEFA Champions League">
+      <sport id="sr:sport:1" name="Soccer"/>
+      <category id="sr:category:393" name="International Clubs"/>
+    </tournament>
+    <competitors>
+      <competitor id="sr:competitor:2953" name="Ajax Amsterdam" country="Netherlands" country_code="NLD" abbreviation="AJA" qualifier="home" gender="male">
+        <reference_ids>
+          <reference_id name="betradar" value="32158"/>
+        </reference_ids>
+      </competitor>
+      <competitor id="sr:competitor:33" name="Tottenham Hotspur" country="England" country_code="ENG" abbreviation="TOT" qualifier="away" gender="male">
+        <reference_ids>
+          <reference_id name="betradar" value="5431246"/>
+        </reference_ids>
+      </competitor>
+    </competitors>
+    <venue id="sr:venue:577" name="Johan Cruijff Arena" capacity="54990" city_name="Amsterdam" country_name="Netherlands" map_coordinates="52.314167,4.941944" country_code="NLD"/>
+    <tv_channels>
+      <tv_channel name="SRF zwei HD - Hot Bird 1/2/3/4/6 (13.0E) - Schweizer Fernsehen - 2298"/>
+      <tv_channel name="RSI La 2 HD - Hot Bird 1/2/3/4/6 (13.0E) - Televisione Svizzera Italiana - 1414"/>
+      <tv_channel name="RTS1 - Eutelsat W2 (16.0E) - Total TV - 570"/>
+      <tv_channel name="HRT-TV2 HD - Eutelsat W2 (16.0E) - OIV Zagreb"/>
+      <tv_channel name="TVP SPORT HD - Hot Bird 1/2/3/4/6 (13.0E) - CYFRA + - 1417"/>
+      <tv_channel name="SKY Sport 251 HD - Hot Bird 1/2/3/4/6 (13.0E) - SkyItalia - 5005"/>
+      <tv_channel name="TV6 Estonia - Sirius 2/3 (5.0E) - unknown - 3809"/>
+      <tv_channel name="Bein Sports HD 1 TR - Eutelsat W3A (7.0E)"/>
+      <tv_channel name="RTS Deux HD - Hot Bird (13.0E)"/>
+      <tv_channel name="Digi Sport 1 RO - Thor 2/3 (1.0W) - RCS - 5457"/>
+      <tv_channel name="TK Futbol 2 UA - (5.0E)"/>
+      <tv_channel name="C More Sport 1 HD FI - (1.0W)"/>
+      <tv_channel name="Sky Sport HD 1 (D) - Astra (19.2E) - SKY"/>
+      <tv_channel name="Fox Sports 1 South America - (95.0W)"/>
+      <tv_channel name="Fox Sports 2 South America - (95.0W)"/>
+      <tv_channel name="BT Sport 2 - Eurobird 1 / Astra 2A/2B/2D (28.2E) - BSkyB - 489"/>
+      <tv_channel name="Q2 HD - Astra 1D/3A (23.5E)"/>
+      <tv_channel name="M4 Sport HD - (1.0W)"/>
+      <tv_channel name="Sky Sport Austria 1 HD - Astra 1C-1H / 2C (19.2E)"/>
+      <tv_channel name="CBC Sport HD - Africasat (46.0E)"/>
+      <tv_channel name="M.LCAMPEONES ES - Astra 1C-1H / 2C (19.2E)"/>
+      <tv_channel name="Viasat Sport Premium HD - Sirius 2/3 (5.0E)"/>
+      <tv_channel name="Veronica/DisneyXD HD - Astra 1D/3A (23.5E)"/>
+      <tv_channel name="Match Futbol 1 HD - Eutelsat W4 (36.0E)"/>
+      <tv_channel name="Match TV HD - Eutelsat W4 (36.0E)"/>
+      <tv_channel name="Fox Sports 1 PE - Amazonas 1/2 (61.0W)"/>
+      <tv_channel name="Fox Sports 2 PE - Amazonas 1/2 (61.0W)"/>
+      <tv_channel name="ESPN 2 Colombia - Amazonas 1/2 (61.0W)"/>
+      <tv_channel name="ESPN 2 PE - Amazonas 1/2 (61.0W)"/>
+      <tv_channel name="RMC Sport 1 HD - Astra 1C-1H / 2C (19.2E)"/>
+    </tv_channels>
+    <extra_info>
+      <info key="neutral_ground" value="false"/>
+      <info key="period_length" value="45"/>
+      <info key="overtime_length" value="15"/>
+      <info key="coverage_source" value="tv"/>
+      <info key="extended_live_markets_offered" value="true"/>
+    </extra_info>
+    <coverage_info level="platinum" live_coverage="true" covered_from="tv">
+      <coverage includes="basic_score"/>
+      <coverage includes="key_events"/>
+      <coverage includes="detailed_events"/>
+      <coverage includes="lineups"/>
+      <coverage includes="passes_and_duels"/>
+      <coverage includes="commentary"/>
+      <coverage includes="extended_markets"/>
+    </coverage_info>
+    <product_info>
+      <streaming>
+        <channel id="2" name="Live Channel Retail LIVE Visualisation"/>
+      </streaming>
+      <is_in_live_score/>
+      <is_in_hosted_statistics/>
+      <is_in_live_center_soccer/>
+      <links>
+        <link name="live_match_tracker" ref="https://cs.betradar.com/ls/widgets/?/betradar/en/Europe:Berlin/page/show#widget=widgets.lmts&amp;matchId=18001015"/>
+      </links>
+    </product_info>
+    <reference_ids>
+      <reference_id name="BetradarCtrl" value="17699027"/>
+    </reference_ids>
+  </fixture>
+</fixtures_fixture>

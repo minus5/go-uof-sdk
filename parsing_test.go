@@ -130,6 +130,45 @@ func TestMarkets(t *testing.T) {
 	assert.Equal(t, 3487053313, m.VariantID)
 	assert.Len(t, m.Groups, 0)
 	assert.Len(t, m.Outcomes, 3)
-
 	//testu.PP(ms)
+}
+
+func TestPlayer(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/player_profile.xml")
+	assert.Nil(t, err)
+
+	pp := &PlayerProfile{}
+	err = xml.Unmarshal(buf, pp)
+	assert.Nil(t, err)
+
+	p := pp.Player
+	assert.Equal(t, 947, p.ID)
+	assert.Equal(t, Male, p.Gender)
+	assert.Equal(t, "forward", p.Type)
+	assert.Equal(t, "1984-07-18", p.DateOfBirth.Format(apiDateFormat))
+	//testu.PP(p)
+}
+
+func TestFixture(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/fixture-0.xml")
+	assert.Nil(t, err)
+
+	fr := &FixtureRsp{}
+	err = xml.Unmarshal(buf, fr)
+	assert.Nil(t, err)
+
+	f := fr.Fixture
+	assert.Equal(t, 18001015, f.ID)
+	assert.Equal(t, "2019-05-08 19:00", f.StartTime.Format("2006-01-02 15:04"))
+	assert.Len(t, f.Competitors, 2)
+	assert.Len(t, f.TvChannels, 30)
+
+	assert.Equal(t, "Soccer", f.Sport.Name)
+	assert.Equal(t, 1, f.Sport.ID)
+	assert.Equal(t, "International Clubs", f.Category.Name)
+	assert.Equal(t, 393, f.Category.ID)
+	assert.Equal(t, "UEFA Champions League", f.Tournament.Name)
+	assert.Equal(t, 7, f.Tournament.ID)
+
+	//testu.PP(f)
 }
