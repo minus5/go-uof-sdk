@@ -82,3 +82,54 @@ func TestFixtureChange(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, FixtureChangeTypeCoverage, *fc.ChangeType)
 }
+
+func TestMarkets(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/markets-0.xml")
+	assert.Nil(t, err)
+
+	ms := &MarketDescriptions{}
+	err = xml.Unmarshal(buf, ms)
+	assert.Nil(t, err)
+
+	assert.Len(t, ms.Markets, 7)
+	m := ms.Markets[0]
+	assert.Equal(t, 1, m.ID)
+	assert.Equal(t, 0, m.VariantID)
+	assert.Len(t, m.Groups, 2)
+	assert.Len(t, m.Outcomes, 3)
+	assert.Equal(t, OutcomeTypeDefault, m.OutcomeType)
+
+	m = ms.Markets[3]
+	assert.Equal(t, 21, m.ID)
+	assert.Equal(t, 1686878731, m.VariantID)
+	assert.Len(t, m.Groups, 0)
+	assert.Len(t, m.Outcomes, 7)
+	assert.Equal(t, 1644387477, m.Outcomes[0].ID)
+	assert.Equal(t, 1627609858, m.Outcomes[1].ID)
+
+	m = ms.Markets[4]
+	assert.Equal(t, 575, m.ID)
+	assert.Len(t, m.Groups, 2)
+	assert.Len(t, m.Outcomes, 2)
+	assert.Len(t, m.Specifiers, 3)
+	assert.Equal(t, SpecifierTypeDecimal, m.Specifiers[0].Type)
+	assert.Equal(t, SpecifierTypeInteger, m.Specifiers[1].Type)
+
+	m = ms.Markets[5]
+	assert.Equal(t, 892, m.ID)
+	assert.Equal(t, 0, m.VariantID)
+	assert.Len(t, m.Groups, 2)
+	assert.Len(t, m.Outcomes, 0)
+	assert.Equal(t, OutcomeTypePlayer, m.OutcomeType)
+	assert.Equal(t, SpecifierTypeVariableText, m.Specifiers[0].Type)
+	assert.Equal(t, SpecifierTypeInteger, m.Specifiers[1].Type)
+	assert.Equal(t, SpecifierTypeString, m.Specifiers[2].Type)
+
+	m = ms.Markets[6]
+	assert.Equal(t, 892, m.ID)
+	assert.Equal(t, 3487053313, m.VariantID)
+	assert.Len(t, m.Groups, 0)
+	assert.Len(t, m.Outcomes, 3)
+
+	//testu.PP(ms)
+}

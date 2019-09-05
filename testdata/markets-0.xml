@@ -1,0 +1,61 @@
+{"t":129,"l":1}
+<market_descriptions response_code="OK">
+  <market id="1" name="1x2" groups="all|score|regular_play">
+    <outcomes>
+      <outcome id="1" name="{$competitor1}"/>
+      <outcome id="2" name="draw"/>
+      <outcome id="3" name="{$competitor2}"/>
+    </outcomes>
+  </market>
+  <market id="11" name="Draw no bet" groups="all|score|regular_play">
+    <outcomes>
+      <outcome id="4" name="{$competitor1}"/>
+      <outcome id="5" name="{$competitor2}"/>
+    </outcomes>
+  </market>
+
+  <market id="21" name="Exact goals" groups="all|score|regular_play">
+    <specifiers>
+      <specifier name="variant" type="variable_text"/>
+    </specifiers>
+  </market>
+  <market id="21" name="Exact goals" variant="sr:exact_goals:6+">
+    <outcomes>
+      <outcome id="sr:exact_goals:6+:68" name="0"/>
+      <outcome id="sr:exact_goals:6+:69" name="1"/>
+      <outcome id="sr:exact_goals:6+:70" name="2"/>
+      <outcome id="sr:exact_goals:6+:71" name="3"/>
+      <outcome id="sr:exact_goals:6+:72" name="4"/>
+      <outcome id="sr:exact_goals:6+:73" name="5"/>
+      <outcome id="sr:exact_goals:6+:74" name="6+"/>
+    </outcomes>
+  </market>
+
+  <market id="575" name="10 minutes - total corners from {from} to {to}" groups="all|10_min|corners">
+    <outcomes>
+      <outcome id="13" name="under {total}"/>
+      <outcome id="12" name="over {total}"/>
+    </outcomes>
+    <specifiers>
+      <specifier name="total" type="decimal"/>
+      <specifier name="from" type="integer"/>
+      <specifier name="to" type="integer"/>
+    </specifiers>
+  </market>
+
+  <market id="892" name="{!goalnr} goalscorer" groups="all|regular_play|scorers" includes_outcomes_of_type="sr:player" outcome_type="player">
+    <specifiers>
+      <specifier name="variant" type="variable_text"/>
+      <specifier name="goalnr" type="integer"/>
+      <specifier name="version" type="string"/>
+    </specifiers>
+  </market>
+  <market id="892" name="{!goalnr} goalscorer" variant="sr:goalscorer:fieldplayers_nogoal_owngoal_other">
+    <outcomes>
+      <outcome id="sr:goalscorer:fieldplayers_nogoal_owngoal_other:1333" name="no goal"/>
+      <outcome id="sr:goalscorer:fieldplayers_nogoal_owngoal_other:1334" name="own goal"/>
+      <outcome id="sr:goalscorer:fieldplayers_nogoal_owngoal_other:1335" name="other"/>
+    </outcomes>
+  </market>
+
+</market_descriptions>

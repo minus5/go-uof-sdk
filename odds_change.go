@@ -27,7 +27,7 @@ type OddsChange struct {
 	EventStatus      *SportEventStatus `xml:"sport_event_status,omitempty" json:"sportEventStatus,omitempty"`
 
 	OddsGenerationProperties *OddsGenerationProperties `xml:"odds_generation_properties,omitempty" json:"oddsGenerationProperties,omitempty"`
-	RequestID                *int64                    `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
+	RequestID                *int                      `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 }
 
 // Provided by the prematch odds producer only, and contains a few

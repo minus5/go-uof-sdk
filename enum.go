@@ -261,3 +261,30 @@ const (
 	// cannot be offered for a match.
 	FixtureChangeTypeCoverage FixtureChangeType = 5
 )
+
+type OutcomeType int8
+
+const (
+	OutcomeTypeDefault OutcomeType = iota
+	OutcomeTypePlayer
+	OutcomeTypeCompetitor
+	OutcomeTypeCompetitors
+	OutcomeTypeFreeText
+	OutcomeTypeUnknown OutcomeType = -1
+)
+
+type SpecifierType int8
+
+const (
+	SpecifierTypeString SpecifierType = iota
+	SpecifierTypeInteger
+	SpecifierTypeDecimal
+	SpecifierTypeVariableText
+	SpecifierTypeUnknown SpecifierType = -1
+)
+
+const (
+	GenderUnknown int8 = iota
+	Male
+	Female
+)

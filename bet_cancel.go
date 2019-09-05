@@ -11,7 +11,7 @@ type BetCancel struct {
 	EventURN  URN      `xml:"event_id,attr" json:"eventURN"`
 	Producer  Producer `xml:"product,attr" json:"producer"`
 	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
-	RequestID *int64   `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
+	RequestID *int     `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 	// If start and end time are specified, they designate a range in time for
 	// which bets made should be cancelled. If there is an end_time but no
 	// start_time, this means cancel all bets placed before the specified time. If
@@ -38,7 +38,7 @@ type RollbackBetCancel struct {
 	EventURN  URN               `xml:"event_id,attr" json:"eventURN"`
 	Producer  Producer          `xml:"product,attr" json:"producer"`
 	Timestamp int64             `xml:"timestamp,attr" json:"timestamp"`
-	RequestID *int64            `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
+	RequestID *int              `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 	StartTime *int64            `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
 	EndTime   *int64            `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
 	Markets   []BetCancelMarket `xml:"market" json:"market"`

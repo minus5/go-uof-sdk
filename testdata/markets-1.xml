@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<market_descriptions response_code="OK">
+    <market id="10" name="Double chance" groups="all|score|regular_play">
+        <outcomes>
+            <outcome id="9" name="{$competitor1} or draw"/>
+            <outcome id="10" name="{$competitor1} or {$competitor2}"/>
+            <outcome id="11" name="draw or {$competitor2}"/>
+        </outcomes>
+        <mappings>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:1" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:4" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:6" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:12" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:13" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:16" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:24" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:29" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="46">
+                <mapping_outcome outcome_id="9" product_outcome_id="69" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="70" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="71" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="46">
+                <mapping_outcome outcome_id="9" product_outcome_id="69" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="70" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="71" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="46">
+                <mapping_outcome outcome_id="9" product_outcome_id="69" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="70" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="71" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="46">
+                <mapping_outcome outcome_id="9" product_outcome_id="69" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="70" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="71" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="46">
+                <mapping_outcome outcome_id="9" product_outcome_id="69" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="70" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="71" product_outcome_name="X2"/>
+            </mapping>
+            <mapping product_id="5" product_ids="5" sport_id="sr:sport:21" market_id="40"/>
+            <mapping product_id="6" product_ids="6" sport_id="sr:sport:1" market_id="8:27">
+                <mapping_outcome outcome_id="9" product_outcome_id="34" product_outcome_name="1X"/>
+                <mapping_outcome outcome_id="10" product_outcome_id="35" product_outcome_name="12"/>
+                <mapping_outcome outcome_id="11" product_outcome_id="36" product_outcome_name="X2"/>
+            </mapping>
+        </mappings>
+    </market>
+
+
+    <market id="16" name="Handicap" groups="all|score|regular_play">
+        <outcomes>
+            <outcome id="1714" name="{$competitor1} ({+hcp})"/>
+            <outcome id="1715" name="{$competitor2} ({-hcp})"/>
+        </outcomes>
+        <specifiers>
+            <specifier name="hcp" type="decimal"/>
+        </specifiers>
+        <mappings>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:1" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:2" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:4" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:6" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:12" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:13" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:24" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:29" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="51" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="51" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="51" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="51" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="566" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="566" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="566" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="566" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="51" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="51" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="51" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="51" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="566" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="566" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="566" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="566" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="51" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="51" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="51" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="51" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="566" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="566" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="566" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="566" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="51" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="51" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="51" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="51" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="566" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="566" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="566" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="566" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="51" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="51" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="51" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="51" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="566" sov_template="{hcp}" valid_for="hcp~*.0">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="566" sov_template="{hcp}" valid_for="hcp~*.25">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="566" sov_template="{hcp}" valid_for="hcp~*.5">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="566" sov_template="{hcp}" valid_for="hcp~*.75">
+                <mapping_outcome outcome_id="1714" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="6" product_ids="6" sport_id="sr:sport:1" market_id="7:34" sov_template="{hcp}">
+                <mapping_outcome outcome_id="1714" product_outcome_id="17" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="1715" product_outcome_id="18" product_outcome_name="2"/>
+            </mapping>
+        </mappings>
+    </market>
+
+
+    <market id="1" name="1x2" groups="all|score|regular_play">
+        <outcomes>
+            <outcome id="1" name="{$competitor1}"/>
+            <outcome id="2" name="draw"/>
+            <outcome id="3" name="{$competitor2}"/>
+        </outcomes>
+        <mappings>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:1" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:2" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:3" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:4" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:6" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:12" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:13" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:16" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:22" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:24" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:29" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:109" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:2" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:2" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:2" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:3" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:7" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:7" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:10" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:15" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:15" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:16" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:19" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:19" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:21" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:21" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:22" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:22" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:24" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:24" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:26" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:26" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:29" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:29" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:60" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:60" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:61" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:61" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="10">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:109" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:110" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:111" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:117" market_id="225">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:135" market_id="381">
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:136" market_id="381">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="X"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+            <mapping product_id="5" product_ids="5" sport_id="sr:sport:21" market_id="2"/>
+            <mapping product_id="6" product_ids="6" sport_id="sr:sport:1" market_id="2:-1">
+                <mapping_outcome outcome_id="1" product_outcome_id="1" product_outcome_name="1"/>
+                <mapping_outcome outcome_id="2" product_outcome_id="2" product_outcome_name="x"/>
+                <mapping_outcome outcome_id="3" product_outcome_id="3" product_outcome_name="2"/>
+            </mapping>
+        </mappings>
+    </market>
+
+    <market id="18" name="Ukupno golova" groups="all|score|regular_play">
+        <outcomes>
+            <outcome id="13" name="manje od {total}"/>
+            <outcome id="12" name="više od {total}"/>
+        </outcomes>
+        <specifiers>
+            <specifier name="total" type="decimal"/>
+        </specifiers>
+        <mappings>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:1" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:1" market_id="8:33" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:1" market_id="8:33" sov_template="{total}" valid_for="total~*.25">
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:1" market_id="8:33" sov_template="{total}" valid_for="total~*.75">
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:2" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:2" market_id="8:970" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="4576" product_outcome_name="under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="4578" product_outcome_name="over"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:4" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:4" market_id="8:33" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:6" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:12" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:13" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:24" market_id="5:-1" sov_template="{total}">
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:24" market_id="8:33" sov_template="{total}">
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:29" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+            </mapping>
+            <mapping product_id="1" product_ids="1|4" sport_id="sr:sport:29" market_id="8:33" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="383" sov_template="{total}">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="52" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="52" sov_template="{total}" valid_for="total~*.25">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="52" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="52" sov_template="{total}" valid_for="total~*.75">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="56" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:1" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:2" market_id="375" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:2" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="383" sov_template="{total}">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="52" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="52" sov_template="{total}" valid_for="total~*.25">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="52" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="52" sov_template="{total}" valid_for="total~*.75">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="56" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:4" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="52" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="52" sov_template="{total}" valid_for="total~*.25">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="52" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="52" sov_template="{total}" valid_for="total~*.75">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:6" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:7" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:7" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:10" market_id="383" sov_template="{total}">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="383" sov_template="{total}">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="52" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="52" sov_template="{total}" valid_for="total~*.25">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="52" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="52" sov_template="{total}" valid_for="total~*.75">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:12" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:13" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:13" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:15" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:15" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:24" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:24" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:26" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:26" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:29" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:29" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:60" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:60" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="52" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="52" sov_template="{total}" valid_for="total~*.25">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="52" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="52" sov_template="{total}" valid_for="total~*.75">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="56" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:106" market_id="60" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="3" product_ids="3" sport_id="sr:sport:117" market_id="383" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="7" product_outcome_name="Under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="6" product_outcome_name="Over"/>
+            </mapping>
+            <mapping product_id="6" product_ids="6" sport_id="sr:sport:1" market_id="5:-1" sov_template="{total}" valid_for="total~*.5">
+                <mapping_outcome outcome_id="13" product_outcome_id="12" product_outcome_name="u"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="11" product_outcome_name="o"/>
+            </mapping>
+            <mapping product_id="6" product_ids="6" sport_id="sr:sport:1" market_id="8:33" sov_template="{total}" valid_for="total~*.0">
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+            </mapping>
+            <mapping product_id="6" product_ids="6" sport_id="sr:sport:1" market_id="8:33" sov_template="{total}" valid_for="total~*.25">
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+            </mapping>
+            <mapping product_id="6" product_ids="6" sport_id="sr:sport:1" market_id="8:33" sov_template="{total}" valid_for="total~*.75">
+                <mapping_outcome outcome_id="13" product_outcome_id="114" product_outcome_name="under"/>
+                <mapping_outcome outcome_id="12" product_outcome_id="115" product_outcome_name="over"/>
+            </mapping>
+        </mappings>
+    </market>
+    
+
+</market_descriptions>

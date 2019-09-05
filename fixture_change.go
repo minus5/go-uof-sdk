@@ -20,7 +20,7 @@ type FixtureChange struct {
 	EventURN     URN                `xml:"event_id,attr" json:"eventURN"`
 	Producer     Producer           `xml:"product,attr" json:"producer"`
 	Timestamp    int64              `xml:"timestamp,attr" json:"timestamp"`
-	RequestID    *int64             `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
+	RequestID    *int               `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 	ChangeType   *FixtureChangeType `xml:"change_type,attr,omitempty" json:"changeType,omitempty"`
 	StartTime    *int64             `xml:"start_time,attr" json:"startTime"`
 	NextLiveTime *int64             `xml:"next_live_time,attr,omitempty" json:"nextLiveTime,omitempty"`
