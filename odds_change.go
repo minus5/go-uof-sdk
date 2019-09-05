@@ -70,7 +70,6 @@ type MarketMetadata struct {
 type Outcome struct {
 	ID            int      `json:"id"`
 	PlayerID      int      `json:"playerID"`
-	SRID          string   `xml:"id,attr" json:"urn"`
 	Odds          *float64 `xml:"odds,attr,omitempty" json:"odds,omitempty"`
 	Probabilities *float64 `xml:"probabilities,attr,omitempty" json:"probabilities,omitempty"`
 	Active        *bool    `xml:"active,attr,omitempty" json:"active,omitempty"`
@@ -138,13 +137,14 @@ func (t *Outcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Outcome
 	var overlay struct {
 		*T
+		ID string `xml:"id,attr" json:"urn"`
 	}
 	overlay.T = (*T)(t)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.ID = toOutcomeID(overlay.SRID)
-	t.PlayerID = toPlayerID(overlay.SRID)
+	t.ID = toOutcomeID(overlay.ID)
+	t.PlayerID = toPlayerID(overlay.ID)
 	return nil
 }
 

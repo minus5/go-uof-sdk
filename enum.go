@@ -227,3 +227,14 @@ func (c *ClockTime) Minute() string {
 func (c *ClockTime) String() string {
 	return string(*c)
 }
+
+type OutcomeResult int8
+
+const (
+	OutcomeResultUnknown  OutcomeResult = 0
+	OutcomeResultLose     OutcomeResult = 1
+	OutcomeResultWin      OutcomeResult = 2
+	OutcomeResultVoid     OutcomeResult = 3
+	OutcomeResultHalfLose OutcomeResult = 4
+	OutcomeResultHalfWin  OutcomeResult = 5
+)

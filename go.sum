@@ -52,6 +52,7 @@ github.com/mattn/go-isatty v0.0.7/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hd
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.6/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/minus5/go-simplejson v0.5.1-0.20190518182223-8af509724a86/go.mod h1:eBPLk8FJ9uc035DnbHAWvINeYXIIVduZe5EILao6s7o=
+github.com/minus5/sportsbook v0.0.0-20190903074107-d0b122a81a34 h1:9a87Mz6X8AW+EwcYZZ8TQZTIr2LmyHT2y1esRWSWPOA=
 github.com/minus5/svckit v0.0.0-20190823112917-d76782930758 h1:Vuyc6X9XuysIsaf+FJNatveUaZKi43LPX+ArxLEF6DA=
 github.com/minus5/svckit v0.0.0-20190823112917-d76782930758/go.mod h1:nriu6t5mztHqZgO+rT+RUcI9k+LfSZNjWP7K1p/lTpI=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=

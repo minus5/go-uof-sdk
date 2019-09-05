@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bet_settlement certainty="2" product="3" event_id="sr:match:16807109" timestamp="1547538073717">
+  <outcomes>
+    <market id="193">
+        <outcome id="74" result="0"/>
+        <outcome id="76" result="1"/>
+    </market>
+    <market id="204" specifiers="setnr=1|total=9.5">
+        <outcome id="12" result="0"/>
+        <outcome id="13" result="1"/>
+    </market>
+    <market id="201">
+        <outcome id="863" result="0" void_factor="1"/>
+        <outcome id="864" result="0" void_factor="0.5"/>
+        <outcome id="861" result="1" void_factor="0.5"/>
+        <outcome id="862" result="0"/>
+    </market>
+    </outcomes>
+</bet_settlement>
+
