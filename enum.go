@@ -238,3 +238,26 @@ const (
 	OutcomeResultHalfLose OutcomeResult = 4
 	OutcomeResultHalfWin  OutcomeResult = 5
 )
+
+// The change_type attribute (if present), describes what type of change that
+// caused the message to be sent. In general, best practices are to always
+// re-fetch the updated fixture from the API and not solely rely on the
+// change_type and the message content. This is because multiple different
+// changes could have been made.
+// May be one of 1, 2, 3, 4, 5
+type FixtureChangeType int8
+
+const (
+	// This is a new match/event that has been just added.
+	FixtureChangeTypeNew FixtureChangeType = 1
+	// Start-time update
+	FixtureChangeTypeTime FixtureChangeType = 2
+	// This sport event will not take place. It has been cancelled.
+	FixtureChangeTypeCancelled FixtureChangeType = 3
+	// The format of the sport-event has been updated (e.g. the number of sets to
+	// play has been updated or the length of the match etc.)
+	FixtureChangeTypeFromat FixtureChangeType = 4
+	// Coverage update. Sent for example when liveodds coverage for some reason
+	// cannot be offered for a match.
+	FixtureChangeTypeCoverage FixtureChangeType = 5
+)
