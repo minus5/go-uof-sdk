@@ -38,8 +38,8 @@ type Fixture struct {
 	Competitors []Competitor `xml:"competitors>competitor,omitempty" json:"competitors,omitempty"`
 	TvChannels  []TvChannel  `xml:"tv_channels>tv_channel,omitempty" json:"tvChannels,omitempty"`
 
-	Home *Competitor `json:"home"`
-	Away *Competitor `json:"away"`
+	Home Competitor `json:"home"`
+	Away Competitor `json:"away"`
 	// this also exists but we are skiping for the time being
 	//ReferenceIDs         ReferenceIDs         `xml:"reference_ids,omitempty" json:"referenceIDs,omitempty"`
 	//SportEventConditions SportEventConditions `xml:"sport_event_conditions,omitempty" json:"sportEventConditions,omitempty"`
@@ -185,10 +185,10 @@ func (t *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 	for _, c := range t.Competitors {
 		if c.Qualifier == "home" {
-			t.Home = &c
+			t.Home = c
 		}
 		if c.Qualifier == "away" {
-			t.Away = &c
+			t.Away = c
 		}
 	}
 	return nil

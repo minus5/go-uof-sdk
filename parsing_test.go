@@ -170,5 +170,7 @@ func TestFixture(t *testing.T) {
 	assert.Equal(t, "UEFA Champions League", f.Tournament.Name)
 	assert.Equal(t, 7, f.Tournament.ID)
 
+	assert.Equal(t, 2953, f.Home.ID)
+	assert.Equal(t, 33, f.Away.ID)
 	//testu.PP(f)
 }
