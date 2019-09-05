@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bet_cancel end_time="1564598513000" event_id="sr:match:18941600" product="1" start_time="1564597838000" timestamp="1564602448841">
+    <market name="1st half - 1st goal" id="62" specifiers="goalnr=1" void_reason="12"/>
+</bet_cancel>

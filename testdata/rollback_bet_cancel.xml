@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rollback_bet_cancel event_id="sr:match:4444" timestamp="1239">
+    <market id="48" specifiers="score=41.5"/>
+</rollback_bet_cancel>
+ 
