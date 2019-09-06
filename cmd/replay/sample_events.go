@@ -1,10 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/minus5/uof"
+)
 
 type sampleEvent struct {
 	Description string
-	URN         string
+	URN         uof.URN
 }
 
 func sampleEvents() []sampleEvent {

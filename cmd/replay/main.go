@@ -10,6 +10,7 @@ import (
 	"github.com/minus5/svckit/signal"
 	"github.com/minus5/uof"
 	"github.com/minus5/uof/api"
+	"github.com/minus5/uof/pipe"
 	"github.com/minus5/uof/queue"
 )
 
@@ -61,14 +62,25 @@ func main() {
 	must(err)
 	log.Debug("connected")
 
-	done(saveMsgs(conn.Listen()))
+	languages := uof.Languages("en,de,hr")
+	stg := api.Staging(token)
+
+	startReplay()
+
+	done(
+		pipe.FileStore(outputFolder,
+			pipe.VariantMarket(stg, languages,
+				pipe.Player(stg, languages,
+					pipe.Fixture(stg, languages,
+						pipe.Markets(stg, languages,
+							pipe.ToMessage(
+								conn.Listen())))))))
 }
 
 func startReplay() {
 	rpl := api.Replay(token)
 	if eventID > 0 {
-		eventURN := fmt.Sprintf("sr:match:%d", eventID)
-		must(rpl.StartEvent(eventURN, speed, maxDelay))
+		must(rpl.StartEvent(uof.NewEventURN(eventID), speed, maxDelay))
 	}
 	if scenarioID > 0 {
 		must(rpl.StartScenario(scenarioID, speed, maxDelay))
@@ -88,9 +100,23 @@ func must(err error) {
 	}
 }
 
-func done(in <-chan uof.QueueMsg) {
-	for _ = range in {
-		fmt.Print(".")
+func done(in <-chan *uof.Message) {
+	for m := range in {
+		v := func() string {
+			switch m.Type {
+			case uof.MessageTypeAlive:
+				return "a"
+			case uof.MessageTypeMarkets:
+				return "m"
+			case uof.MessageTypePlayer:
+				return "p"
+			case uof.MessageTypeFixture:
+				return "f"
+			default:
+				return "."
+			}
+		}()
+		fmt.Printf("%s", v)
 	}
 }
 

@@ -226,3 +226,27 @@ func toOutcomeID(id string) int {
 	}
 	return hash32(id)
 }
+
+func (o *OddsChange) EachPlayer(handler func(int)) {
+	if o == nil {
+		return
+	}
+	for _, m := range o.Markets {
+		for _, o := range m.Outcomes {
+			if id := o.PlayerID; id != 0 {
+				handler(id)
+			}
+		}
+	}
+}
+
+func (o *OddsChange) EachVariantMarket(handler func(int, string)) {
+	if o == nil {
+		return
+	}
+	for _, m := range o.Markets {
+		if s := m.VariantSpecifier(); s != "" {
+			handler(m.ID, s)
+		}
+	}
+}

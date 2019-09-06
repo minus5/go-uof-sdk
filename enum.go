@@ -1,6 +1,7 @@
 package uof
 
 import (
+	"fmt"
 	"hash/fnv"
 	"strconv"
 	"strings"
@@ -53,6 +54,7 @@ func (p Producer) Prematch() bool {
 
 const (
 	InvalidName = "?"
+	srMatch     = "sr:match:"
 	srPlayer    = "sr:player:"
 )
 
@@ -97,6 +99,14 @@ func (u URN) Type() int8 {
 		return URNTypePlayer
 	}
 	return URNTypeUnknown
+}
+
+func NewEventURN(eventID int) URN {
+	return URN(fmt.Sprintf("%s%d", srMatch, eventID))
+}
+
+func (u URN) String() string {
+	return string(u)
 }
 
 const (

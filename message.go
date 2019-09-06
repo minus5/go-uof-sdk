@@ -41,7 +41,7 @@ func NewQueueMessage(routingKey string, timestamp int64, body []byte) (*Message,
 	if err := r.parseRoutingKey(routingKey); err != nil {
 		return nil, err
 	}
-	return r, nil //r.unpack()
+	return r, r.unpack()
 }
 
 func (m *Message) parseRoutingKey(routingKey string) error {
