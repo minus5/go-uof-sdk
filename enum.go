@@ -290,3 +290,106 @@ const (
 	Male
 	Female
 )
+
+type MessageType int8
+
+// amqp message types
+const (
+	MessageTypeUnknown    MessageType = -1
+	MessageTypeOddsChange MessageType = iota
+	MessageTypeFixtureChange
+	MessageTypeBetCancel
+	MessageTypeBetSettlement
+	MessageTypeBetStop
+	MessageTypeRollbackBetSettlement
+	MessageTypeRollbackBetCancel
+	MessageTypeSnapshotComplete
+	MessageTypeAlive
+	MessageTypeProductDown
+)
+
+// api message types
+const (
+	MessageTypeFixture MessageType = iota + 32
+	MessageTypeMarkets
+	MessageTypePlayer
+)
+
+func (m *MessageType) Parse(name string) {
+	v := func() MessageType {
+		switch name {
+		case "alive":
+			return MessageTypeAlive
+		case "bet_cancel":
+			return MessageTypeBetCancel
+		case "bet_settlement":
+			return MessageTypeBetSettlement
+		case "bet_stop":
+			return MessageTypeBetStop
+		case "fixture_change":
+			return MessageTypeFixtureChange
+		case "odds_change":
+			return MessageTypeOddsChange
+		case "rollback_bet_settlement":
+			return MessageTypeRollbackBetSettlement
+		case "rollback_bet_cancel":
+			return MessageTypeRollbackBetCancel
+		case "snapshot_complete":
+			return MessageTypeSnapshotComplete
+		case "product_down":
+			return MessageTypeProductDown
+		default:
+			return MessageTypeUnknown
+		}
+	}()
+	*m = v
+}
+
+type MessageScope int8
+
+// Scope of the message
+const (
+	MessageScopePrematch MessageScope = iota
+	MessageScopeLive
+	MessageScopePrematchAndLive
+	MessageScopeVirtuals
+	MessageScopeSystem // system scope messages, like alive, product down
+)
+
+func (s *MessageScope) Parse(prematchInterest, liveInterest string) {
+	v := func() MessageScope {
+		if prematchInterest == "pre" {
+			if liveInterest == "live" {
+				return MessageScopePrematchAndLive
+			}
+			return MessageScopePrematch
+		}
+		if prematchInterest == "virt" {
+			return MessageScopeVirtuals
+		}
+		if liveInterest == "live" {
+			return MessageScopeLive
+		}
+		return MessageScopeSystem
+	}()
+	*s = v
+}
+
+type MessagePriority int8
+
+const (
+	MessagePriorityLow MessagePriority = iota
+	MessagePriorityHigh
+)
+
+func (p *MessagePriority) Parse(priority string) {
+	v := func() MessagePriority {
+		switch priority {
+		case "hi":
+			return MessagePriorityHigh
+		default:
+			return MessagePriorityLow
+		}
+	}()
+	*p = v
+}

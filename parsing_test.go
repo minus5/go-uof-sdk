@@ -87,7 +87,7 @@ func TestMarkets(t *testing.T) {
 	buf, err := ioutil.ReadFile("./testdata/markets-0.xml")
 	assert.Nil(t, err)
 
-	ms := &MarketDescriptions{}
+	ms := &MarketsRsp{}
 	err = xml.Unmarshal(buf, ms)
 	assert.Nil(t, err)
 

@@ -6,11 +6,22 @@ import (
 )
 
 // Markets betradar api response
-type MarketDescriptions struct {
-	Markets []MarketDescription `xml:"market,omitempty" json:"markets,omitempty"`
+type MarketsRsp struct {
+	Markets MarketDescriptions `xml:"market,omitempty" json:"markets,omitempty"`
 	// unused
 	//ResponseCode string   `xml:"response_code,attr,omitempty" json:"responseCode,omitempty"`
 	//Location     string   `xml:"location,attr,omitempty" json:"location,omitempty"`
+}
+
+type MarketDescriptions []MarketDescription
+
+func (md MarketDescriptions) Find(id int) *MarketDescription {
+	for _, m := range md {
+		if m.ID == id {
+			return &m
+		}
+	}
+	return nil
 }
 
 type MarketDescription struct {

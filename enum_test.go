@@ -18,3 +18,17 @@ func TestURN(t *testing.T) {
 	assert.Equal(t, 123, u.ID())
 	assert.Equal(t, URNTypeMatch, u.Type())
 }
+
+func TestLanguage(t *testing.T) {
+	var l Lang
+	l.Parse("hr")
+	assert.Equal(t, LangHR, l)
+	assert.Equal(t, "hr", l.Code())
+	assert.Equal(t, "Croatian", l.Name())
+
+	ls := Languages("hr,en,de")
+	assert.Len(t, ls, 3)
+	assert.Equal(t, LangHR, ls[0])
+	assert.Equal(t, LangEN, ls[1])
+	assert.Equal(t, LangDE, ls[2])
+}
