@@ -9,23 +9,35 @@ import (
 
 type Producer int8
 
+const (
+	ProducerLiveOdds Producer = 1
+	ProducerPrematch Producer = 3
+)
+
 var producers = []struct {
-	id          Producer
-	name        string
-	description string
+	id             Producer
+	name           string
+	description    string
+	code           string
+	scope          string
+	recoveryWindow int
 }{
-	{id: 1, name: "LO", description: "Live Odds"},
-	{id: 3, name: "Ctrl", description: "Betradar Ctrl"},
-	{id: 4, name: "BetPal", description: "BetPal"},
-	{id: 5, name: "PremiumCricket", description: "Premium Cricket"},
-	{id: 6, name: "VF", description: "Virtual football"},
-	{id: 7, name: "WNS", description: "World Number Service"},
-	{id: 8, name: "VBL", description: "Virtual Basketball League"},
-	{id: 9, name: "VTO", description: "Virtual Tennis Open"},
+	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 4320},
+	{id: 3, name: "Ctrl", description: "Betradar Ctrl", code: "pre", scope: "prematch", recoveryWindow: 4320},
+	{id: 4, name: "BetPal", description: "BetPal", code: "betpal", scope: "live", recoveryWindow: 4320},
+	{id: 5, name: "PremiumCricket", description: "Premium Cricket", code: "premium_cricket", scope: "live|prematch", recoveryWindow: 4320},
+	{id: 6, name: "VF", description: "Virtual football", code: "vf", scope: "virtual", recoveryWindow: 180},
+	{id: 7, name: "WNS", description: "Numbers Betting", code: "wns", scope: "prematch", recoveryWindow: 4320},
+	{id: 8, name: "VBL", description: "Virtual Basketball League", code: "vbl", scope: "virtual", recoveryWindow: 180},
+	{id: 9, name: "VTO", description: "Virtual Tennis Open", code: "vto", scope: "virtual", recoveryWindow: 180},
+	{id: 10, name: "VDR", description: "Virtual Dog Racing", code: "vdr", scope: "virtual", recoveryWindow: 180},
+	{id: 11, name: "VHC", description: "Virtual Horse Classics", code: "vhc", scope: "virtual", recoveryWindow: 180},
+	{id: 12, name: "VTI", description: "Virtual Tennis In-Play", code: "vti", scope: "virtual", recoveryWindow: 180},
+	{id: 15, name: "VBI", description: "Virtual Baseball In-Play", code: "vbi", scope: "virtual", recoveryWindow: 180},
 }
 
 func (p Producer) String() string {
-	return p.Name()
+	return p.Code()
 }
 
 func (p Producer) Name() string {
@@ -41,6 +53,15 @@ func (p Producer) Description() string {
 	for _, d := range producers {
 		if p == d.id {
 			return d.description
+		}
+	}
+	return InvalidName
+}
+
+func (p Producer) Code() string {
+	for _, d := range producers {
+		if p == d.id {
+			return d.code
 		}
 	}
 	return InvalidName

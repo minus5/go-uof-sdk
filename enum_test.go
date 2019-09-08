@@ -7,7 +7,8 @@ import (
 )
 
 func TestProducer(t *testing.T) {
-	assert.Equal(t, "Ctrl", Producer(3).String())
+	assert.Equal(t, "pre", ProducerPrematch.String())
+	assert.Equal(t, "pre", Producer(3).Code())
 	assert.Equal(t, "Ctrl", Producer(3).Name())
 	assert.Equal(t, "Betradar Ctrl", Producer(3).Description())
 	assert.Equal(t, InvalidName, Producer(-1).String())
