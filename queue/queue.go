@@ -1,4 +1,8 @@
 // Package queue implements connection to the Betradar amqp queue
+
+// You cannot create your own queues. Instead you have to request a server-named
+// queue (empty queue name in the request). Passive, Exclusive, Non-durable.
+// Reference: https://docs.betradar.com/display/BD/UOF+-+Messages
 package queue
 
 import (
@@ -16,6 +20,8 @@ const (
 	replayServer     = "replaymq.betradar.com:5671"
 	stagingServer    = "stgmq.betradar.com:5671"
 	productionServer = "mq.betradar.com:5671"
+	queueExchange    = "unifiedfeed"
+	bindingKeyAll    = "#"
 )
 
 // Dial connects to the production queue
@@ -34,8 +40,9 @@ func DialReplay(ctx context.Context, bookmakerID, token string) (*Connection, er
 }
 
 type Connection struct {
-	msgs <-chan amqp.Delivery
-	errs <-chan *amqp.Error
+	msgs   <-chan amqp.Delivery
+	errs   <-chan *amqp.Error
+	reDial func() (*Connection, error)
 }
 
 func (c *Connection) Listen() <-chan uof.QueueMsg {
@@ -60,6 +67,13 @@ func (c *Connection) Listen() <-chan uof.QueueMsg {
 			}
 		}
 	}()
+	go func() {
+		for e := range c.errs {
+			fmt.Printf("error: %s\n, code: %d, reason: %s, server: %v, recover: %v\n", e, e.Code, e.Reason, e.Server, e.Recover)
+		}
+		fmt.Printf("errs chan closed\n")
+	}()
+
 	return out
 }
 
@@ -102,8 +116,8 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 
 	err = chnl.QueueBind(
 		qee.Name,      // name of the queue
-		"#",           // bindingKey - bind to all messages
-		"unifiedfeed", // sourceExchange
+		bindingKeyAll, // bindingKey
+		queueExchange, // sourceExchange
 		false,         // noWait
 		nil,           // arguments
 	)
@@ -111,14 +125,15 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		return nil, errors.WithStack(err)
 	}
 
+	consumerTag := ""
 	msgs, err := chnl.Consume(
-		qee.Name, // queue
-		"",       // consumer
-		true,     // auto-ack
-		true,     // exclusive
-		false,    // no-local
-		false,    // no-wait
-		nil,      // args
+		qee.Name,    // queue
+		consumerTag, // consumerTag
+		true,        // auto-ack
+		true,        // exclusive
+		false,       // no-local
+		false,       // no-wait
+		nil,         // args
 	)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -130,11 +145,15 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 	c := &Connection{
 		msgs: msgs,
 		errs: errs,
+		reDial: func() (*Connection, error) {
+			return dial(ctx, server, bookmakerID, token)
+		},
 	}
 
 	go func() {
 		<-ctx.Done()
-		chnl.Cancel("", false)
+		// cleanup on exit
+		chnl.Cancel(consumerTag, true)
 		conn.Close()
 	}()
 
