@@ -2,7 +2,6 @@ package pipe
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/minus5/uof"
 	"github.com/minus5/uof/api"
@@ -23,15 +22,12 @@ type recovery struct {
 	api        *api.Api
 	recoveryID int
 	producers  map[uof.Producer]*producer
-	apiWg      *sync.WaitGroup
 }
 
 func newRecovery(api *api.Api, producers map[uof.Producer]int64) *recovery {
-	var wg sync.WaitGroup
 	r := &recovery{
 		api:       api,
 		producers: make(map[uof.Producer]*producer),
-		apiWg:     &wg,
 	}
 	for id, timestamp := range producers {
 		r.producers[id] = &producer{
@@ -44,7 +40,6 @@ func newRecovery(api *api.Api, producers map[uof.Producer]int64) *recovery {
 
 func (r *recovery) requestRecoveryForAll(errc chan<- error) {
 	r.recoveryID++
-	r.apiWg.Add(len(r.producers))
 	for _, p := range r.producers {
 		go func(producer uof.Producer, timestamp int64, recoveryID int) {
 			// TODO log message as error ?!
@@ -52,7 +47,6 @@ func (r *recovery) requestRecoveryForAll(errc chan<- error) {
 			if err := r.api.RequestRecovery(producer, timestamp, recoveryID); err != nil {
 				errc <- errors.Wrap(err, "api request failed")
 			}
-			r.apiWg.Done()
 		}(p.id, p.aliveTimestamp, r.recoveryID)
 		r.recoveryID++
 	}
@@ -61,13 +55,11 @@ func (r *recovery) requestRecoveryForAll(errc chan<- error) {
 
 func (r *recovery) requestRecovery(p *producer, errc chan<- error) {
 	r.recoveryID++
-	r.apiWg.Add(1)
 	go func(producer uof.Producer, timestamp int64, recoveryID int) {
 		errc <- fmt.Errorf("requesting recovery for %s, timestamp: %d\n", producer.Code(), timestamp)
 		if err := r.api.RequestRecovery(producer, timestamp, recoveryID); err != nil {
 			errc <- errors.Wrap(err, "api request failed")
 		}
-		r.apiWg.Done()
 	}(p.id, p.aliveTimestamp, r.recoveryID)
 }
 
@@ -97,9 +89,6 @@ func (r *recovery) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc ch
 		}
 		out <- m
 	}
-
-	// TODO sto ce mi ovo cekanje i komplikacija oko wait group
-	r.apiWg.Wait()
 }
 
 func Recovery(api *api.Api, producers map[uof.Producer]int64) stage {
