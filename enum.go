@@ -336,7 +336,6 @@ const (
 	MessageTypeRollbackBetCancel
 	MessageTypeSnapshotComplete
 	MessageTypeAlive
-	MessageTypeProductDown
 )
 
 // api message types
@@ -344,6 +343,10 @@ const (
 	MessageTypeFixture MessageType = iota + 32
 	MessageTypeMarkets
 	MessageTypePlayer
+)
+
+const (
+	MessageTypeConnection MessageType = 127
 )
 
 func (m *MessageType) Parse(name string) {
@@ -367,8 +370,6 @@ func (m *MessageType) Parse(name string) {
 			return MessageTypeRollbackBetCancel
 		case "snapshot_complete":
 			return MessageTypeSnapshotComplete
-		case "product_down":
-			return MessageTypeProductDown
 		default:
 			return MessageTypeUnknown
 		}

@@ -96,7 +96,7 @@ func (a *Api) get(tpl string, p *params) ([]byte, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	if resp.StatusCode != 200 {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		err := fmt.Errorf("status code: %d\npath: %s\nresponse: %s", resp.StatusCode, path, buf)
 		return nil, errors.WithStack(err)
 	}
@@ -126,7 +126,7 @@ func (a *Api) httpRequest(tpl string, p *params, method string) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	if resp.StatusCode != 200 {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		defer resp.Body.Close()
 		buf, _ := ioutil.ReadAll(resp.Body)
 		return fmt.Errorf("status code %d, url: %s, rsp: %s", resp.StatusCode, url, buf)

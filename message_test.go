@@ -85,7 +85,7 @@ func TestMessageParseRoutingKeys(t *testing.T) {
 	}
 
 	for _, d := range data {
-		rm, err := NewQueueMessage(d.key, 0, nil)
+		rm, err := NewQueueMessage(d.key, nil)
 		assert.Nil(t, err)
 		assert.Equal(t, d.rm.Scope, rm.Scope)
 		assert.Equal(t, d.rm.Type, rm.Type)

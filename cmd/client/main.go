@@ -51,29 +51,37 @@ func main() {
 	// TODO ping na startu
 
 	producers := map[uof.Producer]int64{
-		uof.ProducerPrematch: 1567859558616,
-		uof.ProducerLiveOdds: 1567859558616,
+		uof.ProducerPrematch: 1567960553490,
+		uof.ProducerLiveOdds: 1567960553490,
 	}
 
-	done(
-		pipe.Recovery(stg, producers,
-			pipe.ToMessage(
-				queue.WithReconnect(sig, conn))))
-	//conn.Listen()))
+	errc := pipe.Build(
+		queue.WithReconnect(sig, conn),
+		pipe.Recovery(stg, producers),
+		pipe.Simple(logMessage),
+	)
+
+	for err := range errc {
+		//fmt.Printf("error: %s\n", err.Error())
+		log.Error(err)
+	}
 }
 
-func done(in <-chan *uof.Message) {
-	for m := range in {
-		b := m.Body
-		// remove xml header
-		if i := bytes.Index(b, []byte("?>")); i > 0 {
-			b = b[i+2:]
-		}
-
-		// show just first x characters
-		if len(b) > 128 {
-			b = b[:128]
-		}
-		fmt.Printf("%s\n", b)
+func logMessage(m *uof.Message) error {
+	if m.Type == uof.MessageTypeConnection {
+		fmt.Printf("%-3d connection status: %s\n", m.Type, m.Connection.Status)
+		return nil
 	}
+
+	b := m.Body
+	// remove xml header
+	if i := bytes.Index(b, []byte("?>")); i > 0 {
+		b = b[i+2:]
+	}
+	// show just first x characters
+	if len(b) > 128 {
+		b = b[:128]
+	}
+	fmt.Printf("%-3d %s\n", m.Type, b)
+	return nil
 }

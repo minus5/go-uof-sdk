@@ -1,40 +1,108 @@
 package pipe
 
 import (
+	"fmt"
+	"sync"
+
 	"github.com/minus5/uof"
 	"github.com/minus5/uof/api"
+	"github.com/pkg/errors"
 )
 
 // on start recover all after timestamp or full
 // on reconnect recover all after timestamp
 // on alive with subscribed = 0, revocer that producer with last valid ts
+// TODO counting on number of requests per period
 
-func Recovery(api *api.Api, producers map[uof.Producer]int64, in <-chan *uof.Message) <-chan *uof.Message {
-	out := make(chan *uof.Message)
-
-	recoveryID := 1
-
-	for producer, timestamp := range producers {
-		go recover(api, producer, timestamp, recoveryID)
-		recoveryID++
-	}
-
-	go func() {
-		defer close(out)
-		for m := range in {
-			if m.Type != uof.MessageTypeAlive {
-				out <- m
-				continue
-			}
-			if _, ok := producers[m.Alive.Producer]; ok {
-				producers[m.Alive.Producer] = m.Alive.Timestamp
-				out <- m
-			}
-		}
-	}()
-	return out
+type producer struct {
+	id             uof.Producer
+	aliveTimestamp int64
 }
 
-func recover(api *api.Api, producer uof.Producer, timestamp int64, recoveryID int) {
-	api.RequestRecovery(producer, timestamp, recoveryID)
+type recovery struct {
+	api        *api.Api
+	recoveryID int
+	producers  map[uof.Producer]*producer
+	apiWg      *sync.WaitGroup
+}
+
+func newRecovery(api *api.Api, producers map[uof.Producer]int64) *recovery {
+	var wg sync.WaitGroup
+	r := &recovery{
+		api:       api,
+		producers: make(map[uof.Producer]*producer),
+		apiWg:     &wg,
+	}
+	for id, timestamp := range producers {
+		r.producers[id] = &producer{
+			id:             id,
+			aliveTimestamp: timestamp,
+		}
+	}
+	return r
+}
+
+func (r *recovery) requestRecoveryForAll(errc chan<- error) {
+	r.recoveryID++
+	r.apiWg.Add(len(r.producers))
+	for _, p := range r.producers {
+		go func(producer uof.Producer, timestamp int64, recoveryID int) {
+			// TODO log message as error ?!
+			errc <- fmt.Errorf("requesting recovery for %s, timestamp: %d", producer.Code(), timestamp)
+			if err := r.api.RequestRecovery(producer, timestamp, recoveryID); err != nil {
+				errc <- errors.Wrap(err, "api request failed")
+			}
+			r.apiWg.Done()
+		}(p.id, p.aliveTimestamp, r.recoveryID)
+		r.recoveryID++
+	}
+
+}
+
+func (r *recovery) requestRecovery(p *producer, errc chan<- error) {
+	r.recoveryID++
+	r.apiWg.Add(1)
+	go func(producer uof.Producer, timestamp int64, recoveryID int) {
+		errc <- fmt.Errorf("requesting recovery for %s, timestamp: %d\n", producer.Code(), timestamp)
+		if err := r.api.RequestRecovery(producer, timestamp, recoveryID); err != nil {
+			errc <- errors.Wrap(err, "api request failed")
+		}
+		r.apiWg.Done()
+	}(p.id, p.aliveTimestamp, r.recoveryID)
+}
+
+// returns false if we are not interested in that producer
+func (r *recovery) alive(a *uof.Alive, errc chan<- error) bool {
+	p, ok := r.producers[a.Producer]
+	if !ok {
+		return false // not interested in this producer
+	}
+	if a.Subscribed == 0 {
+		r.requestRecovery(p, errc)
+		return true
+	}
+	p.aliveTimestamp = a.Timestamp
+	return true
+}
+
+func (r *recovery) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
+	for m := range in {
+		if a := m.Alive; m.Type == uof.MessageTypeAlive && a != nil {
+			if !r.alive(a, errc) {
+				continue // do not propagate
+			}
+		}
+		if c := m.Connection; m.Type == uof.MessageTypeConnection && c != nil && c.Status == uof.ConnectionStatusUp {
+			r.requestRecoveryForAll(errc)
+		}
+		out <- m
+	}
+
+	// TODO sto ce mi ovo cekanje i komplikacija oko wait group
+	r.apiWg.Wait()
+}
+
+func Recovery(api *api.Api, producers map[uof.Producer]int64) stage {
+	r := newRecovery(api, producers)
+	return Stage(r.loop)
 }

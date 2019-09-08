@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -18,7 +20,7 @@ type Message struct {
 	EventID               int                    `json:"eventID,omitempty"`
 	EventURN              URN                    `json:"eventURN,omitempty"`
 	ReceivedAt            int64                  `json:"receivedAt,omitempty"`
-	Body                  []byte                 `json:"-"`
+	Body                  []byte                 `json:"-,omitempty"`
 	Alive                 *Alive                 `json:"alive,omitempty"`
 	BetCancel             *BetCancel             `json:"betCancel,omitempty"`
 	RollbackBetSettlement *RollbackBetSettlement `json:"rollbackBetSettlement,omitempty"`
@@ -31,12 +33,40 @@ type Message struct {
 	Fixture               *Fixture               `json:"fixture,omitempty"`
 	Markets               MarketDescriptions     `json:"markets,omitempty"`
 	Player                *Player                `json:"player,omitempty"`
+	Connection            *Connection            `json:"connection,omitempty"`
 }
 
-func NewQueueMessage(routingKey string, timestamp int64, body []byte) (*Message, error) {
+var uniqTimestamp func() int64 // ensures unique timestamp value
+
+func init() {
+	// init makes clousure for lastTs and mu
+	lastTs := CurrentTimestamp()
+	var mu sync.Mutex
+
+	uniqTimestamp = func() int64 {
+		mu.Lock()
+		defer mu.Unlock()
+		ts := CurrentTimestamp()
+		if ts <= lastTs {
+			ts += 1
+		}
+		lastTs = ts
+		return ts
+	}
+}
+
+// CurrentTimestamp in milliseconds
+func CurrentTimestamp() int64 {
+	return timeToTimestamp(time.Now())
+}
+func timeToTimestamp(t time.Time) int64 {
+	return t.UnixNano() / 1e6
+}
+
+func NewQueueMessage(routingKey string, body []byte) (*Message, error) {
 	r := &Message{
 		Body:       body,
-		ReceivedAt: timestamp,
+		ReceivedAt: uniqTimestamp(),
 	}
 	if err := r.parseRoutingKey(routingKey); err != nil {
 		return nil, err
@@ -145,22 +175,35 @@ func (m *Message) unpack() error {
 
 func NewMarketsMessage(lang Lang, body []byte) (*Message, error) {
 	m := &Message{
-		Type: MessageTypeMarkets,
-		Body: body,
-		Lang: lang,
-		//ReceivedAt: uniqTimestamp(),
+		Type:       MessageTypeMarkets,
+		Body:       body,
+		Lang:       lang,
+		ReceivedAt: uniqTimestamp(),
 	}
 	return m, m.unpack()
 }
 
 func NewPlayerMessage(lang Lang, body []byte) (*Message, error) {
 	m := &Message{
-		Type: MessageTypePlayer,
-		Body: body,
-		Lang: lang,
-		//ReceivedAt: uniqTimestamp(),
+		Type:       MessageTypePlayer,
+		Body:       body,
+		Lang:       lang,
+		ReceivedAt: uniqTimestamp(),
 	}
 	return m, m.unpack()
+}
+
+func NewConnnectionMessage(status ConnectionStatus) *Message {
+	ts := uniqTimestamp()
+	return &Message{
+		Type:       MessageTypeConnection,
+		Scope:      MessageScopeSystem,
+		ReceivedAt: ts,
+		Connection: &Connection{
+			Status:    status,
+			Timestamp: ts,
+		},
+	}
 }
 
 // AsFixture transforms fixture change message to the fixture message
