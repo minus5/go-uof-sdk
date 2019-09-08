@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/minus5/svckit/file"
 	"github.com/minus5/svckit/log"
 	"github.com/minus5/svckit/signal"
@@ -57,14 +60,21 @@ func init() {
 	bookmakerID = env(EnvBookmakerID)
 }
 
+func debugHTTP() {
+	if err := http.ListenAndServe("localhost:8123", nil); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
+	go debugHTTP()
+
 	conn, err := queue.DialReplay(signal.InteruptContext(), bookmakerID, token)
 	must(err)
 	log.Debug("connected")
 
 	languages := uof.Languages("en,de,hr")
 	stg := api.Staging(token)
-
 	startReplay()
 
 	done(
