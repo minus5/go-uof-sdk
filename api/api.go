@@ -39,17 +39,29 @@ func Production(token string) *Api {
 	}
 }
 
-// // RequestRecoverySinceTimestamp does recovery of odds and stateful messages
-// // over the feed since after timestamp. Subscribes client to feed messages.
-// func (a *Api) RequestRecoverySinceTimestamp(product string, timestamp int64) error {
-// 	return a.post(fmt.Sprintf("/v1/%s/recovery/initiate_request?after=%d", product, timestamp))
-// }
+const (
+	recovery     = "/v1/{{.Producer}}/recovery/initiate_request?after={{.Timestamp}}&request_id={{.RequestID}}"
+	fullRecovery = "/v1/{{.Producer}}/recovery/initiate_request&request_id={{.RequestID}}"
+)
 
-// // RequestFullOddsRecovery does recovery of odds over the feed. Subscribes
-// // client to feed messages.
-// func (a *Api) RequestFullOddsRecovery(product string) error {
-// 	return a.post(fmt.Sprintf("/v1/%s/recovery/initiate_request", product))
-// }
+func (a *Api) RequestRecovery(producer uof.Producer, timestamp int64, requestID int) error {
+	if timestamp <= 0 {
+		return a.RequestFullOddsRecovery(producer, requestID)
+	}
+	return a.RequestRecoverySinceTimestamp(producer, timestamp, requestID)
+}
+
+// RequestRecoverySinceTimestamp does recovery of odds and stateful messages
+// over the feed since after timestamp. Subscribes client to feed messages.
+func (a *Api) RequestRecoverySinceTimestamp(producer uof.Producer, timestamp int64, requestID int) error {
+	return a.post(recovery, &params{Producer: producer, Timestamp: timestamp, RequestID: requestID})
+}
+
+// RequestFullOddsRecovery does recovery of odds over the feed. Subscribes
+// client to feed messages.
+func (a *Api) RequestFullOddsRecovery(producer uof.Producer, requestID int) error {
+	return a.post(fullRecovery, &params{Producer: producer, RequestID: requestID})
+}
 
 // // RecoverSportEvent requests to resend all odds for all markets for a sport
 // // event.
@@ -134,6 +146,9 @@ type params struct {
 	MarketID           int
 	Variant            string
 	IncludeMappings    bool
+	Producer           uof.Producer
+	Timestamp          int64
+	RequestID          int
 }
 
 func runTemplate(def string, p *params) string {
