@@ -10,6 +10,7 @@ import (
 type Producer int8
 
 const (
+	ProducerUnknown  Producer = 0
 	ProducerLiveOdds Producer = 1
 	ProducerPrematch Producer = 3
 )
@@ -20,7 +21,7 @@ var producers = []struct {
 	description    string
 	code           string
 	scope          string
-	recoveryWindow int
+	recoveryWindow int64 // in minutes
 }{
 	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 4320},
 	{id: 3, name: "Ctrl", description: "Betradar Ctrl", code: "pre", scope: "prematch", recoveryWindow: 4320},
@@ -65,6 +66,16 @@ func (p Producer) Code() string {
 		}
 	}
 	return InvalidName
+}
+
+// RecoveryWindow in milliseconds
+func (p Producer) RecoveryWindow() int64 {
+	for _, d := range producers {
+		if p == d.id {
+			return d.recoveryWindow * 60 * 1000
+		}
+	}
+	return 0
 }
 
 // Prematch means that producer markets are valid only for betting before the
@@ -346,7 +357,8 @@ const (
 )
 
 const (
-	MessageTypeConnection MessageType = 127
+	MessageTypeConnection      MessageType = 127
+	MessageTypeProducersChange MessageType = 126
 )
 
 func (m *MessageType) Parse(name string) {

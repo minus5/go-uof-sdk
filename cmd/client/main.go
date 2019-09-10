@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -50,15 +51,16 @@ func main() {
 	stg := api.Staging(token)
 	// TODO ping na startu
 
-	producers := map[uof.Producer]int64{
-		uof.ProducerPrematch: 1567960553490,
-		uof.ProducerLiveOdds: 1567960553490,
-	}
+	timestamp := uof.CurrentTimestamp() - 10*1000
+	var ps uof.ProducersChange
+	ps.Add(uof.ProducerPrematch, timestamp)
+	ps.Add(uof.ProducerLiveOdds, timestamp)
 
 	errc := pipe.Build(
 		queue.WithReconnect(sig, conn),
-		pipe.Recovery(stg, producers),
 		pipe.Simple(logMessage),
+		pipe.Recovery(stg, ps),
+		pipe.Simple(logProducersChange),
 	)
 
 	for err := range errc {
@@ -67,10 +69,22 @@ func main() {
 	}
 }
 
+func logProducersChange(m *uof.Message) error {
+	if m.Type == uof.MessageTypeProducersChange {
+		buf, _ := json.Marshal(m.Producers)
+		fmt.Printf("%-3d %s\n", m.Type, buf)
+		return nil
+	}
+	return nil
+}
+
 func logMessage(m *uof.Message) error {
 	if m.Type == uof.MessageTypeConnection {
 		fmt.Printf("%-3d connection status: %s\n", m.Type, m.Connection.Status)
 		return nil
+	}
+	if m.Type == uof.MessageTypeProducersChange {
+		return logProducersChange(m)
 	}
 
 	b := m.Body

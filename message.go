@@ -34,6 +34,7 @@ type Message struct {
 	Markets               MarketDescriptions     `json:"markets,omitempty"`
 	Player                *Player                `json:"player,omitempty"`
 	Connection            *Connection            `json:"connection,omitempty"`
+	Producers             ProducersChange        `json:"producerChange,omitempty"`
 }
 
 var uniqTimestamp func() int64 // ensures unique timestamp value
@@ -203,6 +204,15 @@ func NewConnnectionMessage(status ConnectionStatus) *Message {
 			Status:    status,
 			Timestamp: ts,
 		},
+	}
+}
+
+func NewProducersChangeMessage(pc ProducersChange) *Message {
+	return &Message{
+		Type:       MessageTypeProducersChange,
+		Scope:      MessageScopeSystem,
+		ReceivedAt: uniqTimestamp(),
+		Producers:  pc,
 	}
 }
 

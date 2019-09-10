@@ -1,0 +1,22 @@
+package uof
+
+type ProducersChange []ProducerChange
+
+type ProducerChange struct {
+	Producer   Producer       `json:"producer,omitempty"`
+	Status     ProducerStatus `json:"status,omitempty"`
+	RecoveryID int            `json:"recoveryID,omitempty"`
+	Timestamp  int64          `json:"timestamp,omitempty"`
+}
+
+func (p *ProducersChange) Add(producer Producer, timestamp int64) {
+	*p = append(*p, ProducerChange{Producer: producer, Timestamp: timestamp})
+}
+
+type ProducerStatus int8
+
+const (
+	ProducerStatusDown       ProducerStatus = -1
+	ProducerStatusActive     ProducerStatus = 1
+	ProducerStatusInRecovery ProducerStatus = 2
+)
