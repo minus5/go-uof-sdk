@@ -108,7 +108,7 @@ func (r *recovery) requestRecovery(p *recoveryProducer) {
 
 	go func(producer uof.Producer, timestamp int64, requestID int) {
 		for {
-			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", p.producer.Code(), p.recoveryTimestamp(), r.requestID)
+			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", producer.Code(), timestamp, requestID)
 			r.log(fmt.Errorf("staring %s", op))
 			err := r.api.RequestRecovery(producer, timestamp, requestID)
 			if err == nil {
