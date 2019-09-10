@@ -38,20 +38,18 @@ func init() {
 }
 
 func main() {
-	//go debugHTTP()
-
 	sig := signal.InteruptContext()
 	conn, err := queue.DialStaging(sig, bookmakerID, token)
 	if err != nil {
 		log.Fatal(err)
 	}
+	stg, err := api.Staging(token)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Debug("connected")
 
-	//languages := uof.Languages("en,de,hr")
-	stg := api.Staging(token)
-	// TODO ping na startu
-
-	timestamp := uof.CurrentTimestamp() - 10*1000
+	timestamp := uof.CurrentTimestamp() - 5*60*1000
 	var ps uof.ProducersChange
 	ps.Add(uof.ProducerPrematch, timestamp)
 	ps.Add(uof.ProducerLiveOdds, timestamp)

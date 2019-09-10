@@ -25,7 +25,8 @@ func TestIntegration(t *testing.T) {
 		t.Skip("integration token not found")
 	}
 
-	a := Staging(token)
+	a, err := Staging(token)
+	assert.NoError(t, err)
 
 	tests := []struct {
 		name string

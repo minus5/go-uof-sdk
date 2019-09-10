@@ -24,24 +24,27 @@ type Api struct {
 }
 
 // Staging connects to the staging system
-func Staging(token string) *Api {
-	return &Api{
+func Staging(token string) (*Api, error) {
+	a := &Api{
 		server: stagingServer,
 		token:  token,
 	}
+	return a, a.Ping()
 }
 
 // Production connects to the production system
-func Production(token string) *Api {
-	return &Api{
+func Production(token string) (*Api, error) {
+	a := &Api{
 		server: productionServer,
 		token:  token,
 	}
+	return a, a.Ping()
 }
 
 const (
 	recovery     = "/v1/{{.Producer}}/recovery/initiate_request?after={{.Timestamp}}&request_id={{.RequestID}}"
 	fullRecovery = "/v1/{{.Producer}}/recovery/initiate_request&request_id={{.RequestID}}"
+	ping         = "/v1/users/whoami.xml"
 )
 
 func (a *Api) RequestRecovery(producer uof.Producer, timestamp int64, requestID int) error {
@@ -75,6 +78,11 @@ func (a *Api) RequestFullOddsRecovery(producer uof.Producer, requestID int) erro
 // func (a *Api) RecoverStatefulForSportEvent(product, eventID string) error {
 // 	return a.post(fmt.Sprintf("/v1/%s/stateful_messages/events/%s/initiate_request", product, eventID))
 // }
+
+func (a *Api) Ping() error {
+	_, err := a.get(ping, nil)
+	return err
+}
 
 // http get request
 func (a *Api) get(tpl string, p *params) ([]byte, error) {

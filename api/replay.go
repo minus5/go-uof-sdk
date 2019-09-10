@@ -12,13 +12,14 @@ const (
 )
 
 // Replay service for unified feed methods
-func Replay(token string) *ReplayApi {
-	return &ReplayApi{
+func Replay(token string) (*ReplayApi, error) {
+	r := &ReplayApi{
 		api: &Api{
 			server: productionServer,
 			token:  token,
 		},
 	}
+	return r, r.api.Ping()
 }
 
 type ReplayApi struct {
