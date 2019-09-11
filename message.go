@@ -1,6 +1,8 @@
 package uof
 
 import (
+	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"strconv"
@@ -11,16 +13,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Message struct {
-	Type                  MessageType            `json:"type,omitempty"`
-	Scope                 MessageScope           `json:"scope,omitempty"`
-	Priority              MessagePriority        `json:"priority,omitempty"`
-	Lang                  Lang                   `json:"lang,omitempty"`
-	SportID               int                    `json:"sportID,omitempty"`
-	EventID               int                    `json:"eventID,omitempty"`
-	EventURN              URN                    `json:"eventURN,omitempty"`
-	ReceivedAt            int64                  `json:"receivedAt,omitempty"`
-	Body                  []byte                 `json:"-,omitempty"`
+type Header struct {
+	Type       MessageType     `json:"type,omitempty"`
+	Scope      MessageScope    `json:"scope,omitempty"`
+	Priority   MessagePriority `json:"priority,omitempty"`
+	Lang       Lang            `json:"lang,omitempty"`
+	SportID    int             `json:"sportID,omitempty"`
+	EventID    int             `json:"eventID,omitempty"`
+	EventURN   URN             `json:"eventURN,omitempty"`
+	ReceivedAt int64           `json:"receivedAt,omitempty"`
+}
+
+type Body struct {
 	Alive                 *Alive                 `json:"alive,omitempty"`
 	BetCancel             *BetCancel             `json:"betCancel,omitempty"`
 	RollbackBetSettlement *RollbackBetSettlement `json:"rollbackBetSettlement,omitempty"`
@@ -35,6 +39,12 @@ type Message struct {
 	Player                *Player                `json:"player,omitempty"`
 	Connection            *Connection            `json:"connection,omitempty"`
 	Producers             ProducersChange        `json:"producerChange,omitempty"`
+}
+
+type Message struct {
+	Header `json:",inline"`
+	Raw    []byte `json:"-"`
+	Body   `json:",inline"`
 }
 
 var uniqTimestamp func() int64 // ensures unique timestamp value
@@ -66,8 +76,8 @@ func timeToTimestamp(t time.Time) int64 {
 
 func NewQueueMessage(routingKey string, body []byte) (*Message, error) {
 	r := &Message{
-		Body:       body,
-		ReceivedAt: uniqTimestamp(),
+		Header: Header{ReceivedAt: uniqTimestamp()},
+		Raw:    body,
 	}
 	if err := r.parseRoutingKey(routingKey); err != nil {
 		return nil, err
@@ -119,13 +129,13 @@ func (m *Message) parseRoutingKey(routingKey string) error {
 }
 
 func (m *Message) unpack() error {
-	if m.Body == nil {
+	if m.Raw == nil {
 		return nil
 	}
 	var err error
 
 	unmarshal := func(i interface{}) {
-		err = xml.Unmarshal(m.Body, i)
+		err = xml.Unmarshal(m.Raw, i)
 	}
 
 	switch m.Type {
@@ -176,20 +186,24 @@ func (m *Message) unpack() error {
 
 func NewMarketsMessage(lang Lang, body []byte) (*Message, error) {
 	m := &Message{
-		Type:       MessageTypeMarkets,
-		Body:       body,
-		Lang:       lang,
-		ReceivedAt: uniqTimestamp(),
+		Header: Header{
+			Type:       MessageTypeMarkets,
+			Lang:       lang,
+			ReceivedAt: uniqTimestamp(),
+		},
+		Raw: body,
 	}
 	return m, m.unpack()
 }
 
 func NewPlayerMessage(lang Lang, body []byte) (*Message, error) {
 	m := &Message{
-		Type:       MessageTypePlayer,
-		Body:       body,
-		Lang:       lang,
-		ReceivedAt: uniqTimestamp(),
+		Header: Header{
+			Type:       MessageTypePlayer,
+			Lang:       lang,
+			ReceivedAt: uniqTimestamp(),
+		},
+		Raw: body,
 	}
 	return m, m.unpack()
 }
@@ -197,22 +211,30 @@ func NewPlayerMessage(lang Lang, body []byte) (*Message, error) {
 func NewConnnectionMessage(status ConnectionStatus) *Message {
 	ts := uniqTimestamp()
 	return &Message{
-		Type:       MessageTypeConnection,
-		Scope:      MessageScopeSystem,
-		ReceivedAt: ts,
-		Connection: &Connection{
-			Status:    status,
-			Timestamp: ts,
+		Header: Header{
+			Type:       MessageTypeConnection,
+			Scope:      MessageScopeSystem,
+			ReceivedAt: ts,
+		},
+		Body: Body{
+			Connection: &Connection{
+				Status:    status,
+				Timestamp: ts,
+			},
 		},
 	}
 }
 
 func NewProducersChangeMessage(pc ProducersChange) *Message {
 	return &Message{
-		Type:       MessageTypeProducersChange,
-		Scope:      MessageScopeSystem,
-		ReceivedAt: uniqTimestamp(),
-		Producers:  pc,
+		Header: Header{
+			Type:       MessageTypeProducersChange,
+			Scope:      MessageScopeSystem,
+			ReceivedAt: uniqTimestamp(),
+		},
+		Body: Body{
+			Producers: pc,
+		},
 	}
 }
 
@@ -223,15 +245,34 @@ func (m *Message) AsFixture(lang Lang, body []byte) (*Message, error) {
 		return nil, fmt.Errorf("wrong parent message type")
 	}
 	c := &Message{
-		Type:       MessageTypeFixture,
-		Priority:   m.Priority,
-		Scope:      m.Scope,
-		SportID:    m.SportID,
-		EventID:    m.EventID,
-		EventURN:   m.EventURN,
-		ReceivedAt: m.ReceivedAt,
-		Lang:       lang,
-		Body:       body,
+		Header: m.Header,
+		Raw:    body,
 	}
+	c.Type = MessageTypeFixture
+	c.Lang = lang
 	return c, c.unpack()
+}
+
+const separator = byte(10)
+
+func (m Message) Marshal() []byte {
+	if m.Raw == nil {
+		buf, _ := json.Marshal(m)
+		return buf
+	}
+	buf, _ := json.Marshal(m.Header)
+	buf = append(buf, separator)
+	return append(buf, m.Raw...)
+}
+
+func (m *Message) Unmarshal(buf []byte) error {
+	parts := bytes.SplitN(buf, []byte{separator}, 2)
+	if err := json.Unmarshal(parts[0], m); err != nil {
+		return err
+	}
+	if len(parts) < 2 {
+		return nil
+	}
+	m.Raw = parts[1]
+	return m.unpack()
 }

@@ -154,10 +154,11 @@ func TestRecoveryRequests(t *testing.T) {
 
 	// 2. snapshot complete for the prematch is received
 	in <- &uof.Message{
-		Type: uof.MessageTypeSnapshotComplete,
-		SnapshotComplete: &uof.SnapshotComplete{
+		Header: uof.Header{Type: uof.MessageTypeSnapshotComplete},
+		Body: uof.Body{SnapshotComplete: &uof.SnapshotComplete{
 			Producer:  uof.ProducerPrematch,
 			RequestID: recoveryRequestPrematch.requestID},
+		},
 	}
 	producersChangeMessage = <-out
 	// status of the prematch is changed to the active
@@ -173,21 +174,23 @@ func TestRecoveryRequests(t *testing.T) {
 
 	// 3. alive message
 	in <- &uof.Message{
-		Type: uof.MessageTypeAlive,
-		Alive: &uof.Alive{
+		Header: uof.Header{Type: uof.MessageTypeAlive},
+		Body: uof.Body{Alive: &uof.Alive{
 			Producer:   uof.ProducerPrematch,
 			Timestamp:  timestamp + 2,
 			Subscribed: 1,
+		},
 		},
 	}
 
 	// 4. alive with subscribed=0 triggers recovery request
 	in <- &uof.Message{
-		Type: uof.MessageTypeAlive,
-		Alive: &uof.Alive{
+		Header: uof.Header{Type: uof.MessageTypeAlive},
+		Body: uof.Body{Alive: &uof.Alive{
 			Producer:   uof.ProducerPrematch,
 			Timestamp:  timestamp + 3,
 			Subscribed: 0,
+		},
 		},
 	}
 	recoveryRequestPrematch = <-m.calls

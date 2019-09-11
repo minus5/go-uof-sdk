@@ -57,6 +57,7 @@ func main() {
 	errc := pipe.Build(
 		queue.WithReconnect(sig, conn),
 		pipe.Simple(logMessage),
+		pipe.FileStore("./tmp/log"),
 		pipe.Recovery(stg, ps),
 		pipe.Simple(logProducersChange),
 	)
@@ -85,7 +86,7 @@ func logMessage(m *uof.Message) error {
 		return logProducersChange(m)
 	}
 
-	b := m.Body
+	b := m.Raw
 	// remove xml header
 	if i := bytes.Index(b, []byte("?>")); i > 0 {
 		b = b[i+2:]

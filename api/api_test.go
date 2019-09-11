@@ -74,7 +74,7 @@ func testFixture(t *testing.T, a *Api) {
 	buf, err := a.Fixture(lang, "sr:match:8696826")
 	assert.Nil(t, err)
 
-	fc := uof.Message{Type: uof.MessageTypeFixtureChange}
+	fc := uof.Message{Header: uof.Header{Type: uof.MessageTypeFixtureChange}}
 	fm, err := fc.AsFixture(lang, buf)
 	assert.Nil(t, err)
 

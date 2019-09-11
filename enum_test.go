@@ -33,3 +33,14 @@ func TestLanguage(t *testing.T) {
 	assert.Equal(t, LangEN, ls[1])
 	assert.Equal(t, LangDE, ls[2])
 }
+
+func TestMessageTypes(t *testing.T) {
+	for i, n := range messageTypeNames {
+		m := messageTypes[i]
+		assert.Equal(t, m.String(), n)
+
+		var m2 MessageType
+		m2.Parse(n)
+		assert.Equal(t, m, m2)
+	}
+}

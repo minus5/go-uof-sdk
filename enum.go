@@ -335,9 +335,12 @@ const (
 
 type MessageType int8
 
-// amqp message types
 const (
-	MessageTypeUnknown    MessageType = -1
+	MessageTypeUnknown MessageType = -1
+)
+
+// event related message types
+const (
 	MessageTypeOddsChange MessageType = iota
 	MessageTypeFixtureChange
 	MessageTypeBetCancel
@@ -345,8 +348,6 @@ const (
 	MessageTypeBetStop
 	MessageTypeRollbackBetSettlement
 	MessageTypeRollbackBetCancel
-	MessageTypeSnapshotComplete
-	MessageTypeAlive
 )
 
 // api message types
@@ -356,38 +357,93 @@ const (
 	MessageTypePlayer
 )
 
+// system message types
 const (
-	MessageTypeConnection      MessageType = 127
-	MessageTypeProducersChange MessageType = 126
+	MessageTypeAlive MessageType = iota + 64
+	MessageTypeSnapshotComplete
+	MessageTypeConnection
+	MessageTypeProducersChange
 )
 
+var messageTypes = []MessageType{
+	MessageTypeUnknown,
+
+	MessageTypeOddsChange,
+	MessageTypeFixtureChange,
+	MessageTypeBetCancel,
+	MessageTypeBetSettlement,
+	MessageTypeBetStop,
+	MessageTypeRollbackBetSettlement,
+	MessageTypeRollbackBetCancel,
+
+	MessageTypeFixture,
+	MessageTypeMarkets,
+	MessageTypePlayer,
+
+	MessageTypeAlive,
+	MessageTypeSnapshotComplete,
+	MessageTypeConnection,
+	MessageTypeProducersChange,
+}
+
+var messageTypeNames = []string{
+	InvalidName,
+
+	"odds_change",
+	"fixture_change",
+	"bet_cancel",
+	"bet_settlement",
+	"bet_stop",
+	"rollback_bet_settlement",
+	"rollback_bet_cancel",
+
+	"fixture",
+	"market",
+	"player",
+
+	"alive",
+	"snapshot_complete",
+	"connection",
+	"producer_change",
+}
+
 func (m *MessageType) Parse(name string) {
-	v := func() MessageType {
-		switch name {
-		case "alive":
-			return MessageTypeAlive
-		case "bet_cancel":
-			return MessageTypeBetCancel
-		case "bet_settlement":
-			return MessageTypeBetSettlement
-		case "bet_stop":
-			return MessageTypeBetStop
-		case "fixture_change":
-			return MessageTypeFixtureChange
-		case "odds_change":
-			return MessageTypeOddsChange
-		case "rollback_bet_settlement":
-			return MessageTypeRollbackBetSettlement
-		case "rollback_bet_cancel":
-			return MessageTypeRollbackBetCancel
-		case "snapshot_complete":
-			return MessageTypeSnapshotComplete
-		default:
-			return MessageTypeUnknown
+	v := MessageTypeUnknown
+	for i, n := range messageTypeNames {
+		if n == name {
+			v = messageTypes[i]
+			break
 		}
-	}()
+	}
 	*m = v
 }
+
+func (m MessageType) String() string {
+	for i, t := range messageTypes {
+		if t == m {
+			return messageTypeNames[i]
+		}
+	}
+	return InvalidName
+}
+
+func (m MessageType) Kind() MessageKind {
+	if m < 32 {
+		return MessageKindEvent
+	}
+	if m < 64 {
+		return MessageKindLexicon
+	}
+	return MessageKindSystem
+}
+
+type MessageKind int8
+
+const (
+	MessageKindEvent MessageKind = iota
+	MessageKindLexicon
+	MessageKindSystem
+)
 
 type MessageScope int8
 
