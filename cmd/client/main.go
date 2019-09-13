@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/minus5/svckit/log"
 	"github.com/minus5/svckit/signal"
@@ -49,15 +50,21 @@ func main() {
 	}
 	log.Debug("connected")
 
-	timestamp := uof.CurrentTimestamp() - 5*60*1000
+	languages := uof.Languages("en,de,hr")
+	preloadTo := time.Now().Add(24 * time.Hour)
+	//preloadTo := time.Now()
+	timestamp := int64(0)
+	//timestamp := uof.CurrentTimestamp() - 5*60*1000
+
 	var ps uof.ProducersChange
 	ps.Add(uof.ProducerPrematch, timestamp)
 	ps.Add(uof.ProducerLiveOdds, timestamp)
 
 	errc := pipe.Build(
 		queue.WithReconnect(sig, conn),
+		pipe.Fixture(stg, languages, preloadTo),
 		pipe.Simple(logMessage),
-		pipe.FileStore("./tmp/log"),
+		pipe.FileStore("./tmp"),
 		pipe.Recovery(stg, ps),
 		pipe.Simple(logProducersChange),
 	)
@@ -70,31 +77,35 @@ func main() {
 
 func logProducersChange(m *uof.Message) error {
 	if m.Type == uof.MessageTypeProducersChange {
-		buf, _ := json.Marshal(m.Producers)
-		fmt.Printf("%-3d %s\n", m.Type, buf)
-		return nil
+		return logMessage(m)
 	}
 	return nil
 }
 
 func logMessage(m *uof.Message) error {
-	if m.Type == uof.MessageTypeConnection {
-		fmt.Printf("%-3d connection status: %s\n", m.Type, m.Connection.Status)
-		return nil
-	}
-	if m.Type == uof.MessageTypeProducersChange {
-		return logProducersChange(m)
-	}
+	// if m.Type == uof.MessageTypeConnection {
+	// 	fmt.Printf("%-25s connection status: %s\n", m.Type, m.Connection.Status)
+	// 	return nil
+	// }
+	// if m.Type == uof.MessageTypeProducersChange {
+	// 	return logProducersChange(m)
+	// }
 
-	b := m.Raw
-	// remove xml header
-	if i := bytes.Index(b, []byte("?>")); i > 0 {
-		b = b[i+2:]
+	var b []byte
+	if false && m.Raw != nil {
+		b = m.Raw
+		// remove xml header
+		if i := bytes.Index(b, []byte("?>")); i > 0 {
+			b = b[i+2:]
+		}
+	} else {
+		b, _ = json.Marshal(m.Body)
 	}
 	// show just first x characters
-	if len(b) > 128 {
-		b = b[:128]
+	x := 186
+	if len(b) > x {
+		b = b[:x]
 	}
-	fmt.Printf("%-3d %s\n", m.Type, b)
+	fmt.Printf("%-25s %s\n", m.Type, b)
 	return nil
 }

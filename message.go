@@ -238,19 +238,44 @@ func NewProducersChangeMessage(pc ProducersChange) *Message {
 	}
 }
 
-// AsFixture transforms fixture change message to the fixture message
-// Takes attributes from the first message with date from api.
-func (m *Message) AsFixture(lang Lang, body []byte) (*Message, error) {
-	if m.Type != MessageTypeFixtureChange {
-		return nil, fmt.Errorf("wrong parent message type")
+func NewFixtureMessage(lang Lang, x Fixture) *Message {
+	return &Message{
+		Header: Header{
+			Type:       MessageTypeFixture,
+			EventURN:   x.URN,
+			EventID:    x.ID,
+			Lang:       lang,
+			ReceivedAt: uniqTimestamp(),
+		},
+		Body: Body{
+			Fixture: &x,
+		},
 	}
+}
+
+// // AsFixture transforms fixture change message to the fixture message
+// // Takes attributes from the first message with date from api.
+// func (m *Message) AsFixture(lang Lang, body []byte) (*Message, error) {
+// 	if m.Type != MessageTypeFixtureChange {
+// 		return nil, fmt.Errorf("wrong parent message type")
+// 	}
+// 	c := &Message{
+// 		Header: m.Header,
+// 		Raw:    body,
+// 	}
+// 	c.Type = MessageTypeFixture
+// 	c.Lang = lang
+// 	return c, c.unpack()
+// }
+
+func (m *Message) NewFixtureMessage(lang Lang, f Fixture) *Message {
 	c := &Message{
 		Header: m.Header,
-		Raw:    body,
 	}
 	c.Type = MessageTypeFixture
 	c.Lang = lang
-	return c, c.unpack()
+	c.Fixture = &f
+	return c
 }
 
 const separator = byte(10)

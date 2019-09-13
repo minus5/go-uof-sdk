@@ -81,7 +81,9 @@ func mergeErrors(errors []<-chan error) <-chan error {
 	return out
 }
 
-func Stage(looper func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error)) stage {
+type stageFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error)
+
+func Stage(looper stageFunc) stage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)
