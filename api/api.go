@@ -43,7 +43,7 @@ func Production(token string) (*Api, error) {
 
 const (
 	recovery     = "/v1/{{.Producer}}/recovery/initiate_request?after={{.Timestamp}}&request_id={{.RequestID}}"
-	fullRecovery = "/v1/{{.Producer}}/recovery/initiate_request&request_id={{.RequestID}}"
+	fullRecovery = "/v1/{{.Producer}}/recovery/initiate_request?request_id={{.RequestID}}"
 	ping         = "/v1/users/whoami.xml"
 )
 
@@ -157,6 +157,8 @@ type params struct {
 	Producer           uof.Producer
 	Timestamp          int64
 	RequestID          int
+	Start              int
+	Limit              int
 }
 
 func runTemplate(def string, p *params) string {

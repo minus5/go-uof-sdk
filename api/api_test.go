@@ -1,8 +1,10 @@
 package api
 
 import (
+	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/minus5/uof"
 	"github.com/stretchr/testify/assert"
@@ -36,6 +38,7 @@ func TestIntegration(t *testing.T) {
 		{"marketVariant", testMarketVariant},
 		{"fixture", testFixture},
 		{"player", testPlayer},
+		{"fixtures", testFixtures},
 	}
 	for _, s := range tests {
 		t.Run(s.name, func(t *testing.T) { s.f(t, a) })
@@ -52,8 +55,6 @@ func testMarkets(t *testing.T, a *Api) {
 	assert.True(t, len(mm.Markets) >= 992)
 	m := mm.Markets.Find(1)
 	assert.Equal(t, "1x2", m.Name)
-	//testu.PP(m)
-	//testu.PP(m)
 }
 
 func testMarketVariant(t *testing.T, a *Api) {
@@ -66,21 +67,13 @@ func testMarketVariant(t *testing.T, a *Api) {
 	m := mm.Markets[0]
 	assert.Equal(t, "Exact games", m.Name)
 	assert.Len(t, m.Outcomes, 3)
-	//testu.PP(mm)
 }
 
 func testFixture(t *testing.T, a *Api) {
 	lang := uof.LangEN
-	buf, err := a.Fixture(lang, "sr:match:8696826")
+	f, err := a.Fixture(lang, "sr:match:8696826")
 	assert.Nil(t, err)
-
-	fc := uof.Message{Header: uof.Header{Type: uof.MessageTypeFixtureChange}}
-	fm, err := fc.AsFixture(lang, buf)
-	assert.Nil(t, err)
-
-	assert.Equal(t, "IK Oddevold", fm.Fixture.Home.Name)
-
-	//testu.PP(fm)
+	assert.Equal(t, "IK Oddevold", f.Home.Name)
 }
 
 func testPlayer(t *testing.T, a *Api) {
@@ -92,5 +85,16 @@ func testPlayer(t *testing.T, a *Api) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, "Lee Barnard", pm.Player.FullName)
-	//testu.PP(pm.Player)
+}
+
+var scheduleFormat = "02.01.2006 15:04"
+
+func testFixtures(t *testing.T, a *Api) {
+	out, errc := a.Fixtures(uof.LangEN, time.Now().Add(1*24*time.Hour))
+	i := 1
+	for f := range out {
+		fmt.Printf("\t%6d %s - %s %s\n", i, f.Home.Name, f.Away.Name, f.Scheduled.Format(scheduleFormat))
+		i++
+	}
+	assert.NoError(t, <-errc)
 }
