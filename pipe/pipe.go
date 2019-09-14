@@ -83,6 +83,7 @@ func mergeErrors(errors []<-chan error) <-chan error {
 }
 
 type stageFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error)
+type stageWithDrainFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup
 
 func Stage(looper stageFunc) stage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
@@ -96,6 +97,56 @@ func Stage(looper stageFunc) stage {
 			// looper has to range over in chan until it is closed
 			// out channel will be consumed by following stages
 			looper(in, out, errc)
+		}()
+
+		return out, errc
+	}
+}
+
+func StageWithDrain(looper stageWithDrainFunc) stage {
+	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
+		out := make(chan *uof.Message)
+		errc := make(chan error)
+
+		go func() {
+			looperOut := make(chan *uof.Message)
+			looperErrc := make(chan error)
+			looperDone := make(chan struct{})
+			defer close(looperOut)
+			defer close(looperErrc)
+
+			// copy form looper chans to output chanels
+			go func() {
+				defer close(out)
+				defer close(errc)
+
+				for {
+					select {
+					case <-looperDone:
+						return
+					case m := <-looperOut:
+						out <- m
+					case e := <-looperErrc:
+						errc <- e
+					}
+				}
+			}()
+
+			// looper has to range over in chan until it is closed
+			wg := looper(in, out, errc)
+			// stop coping from looperOut/Errc to out/errc chans
+			// and close the out/errc chans
+			close(looperDone)
+			// drain looper chans to allow sub processes to finish
+			go func() {
+				for range looperOut {
+				}
+			}()
+			go func() {
+				for range looperErrc {
+				}
+			}()
+			wg.Wait()
 		}()
 
 		return out, errc

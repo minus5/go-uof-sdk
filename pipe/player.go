@@ -1,6 +1,7 @@
 package pipe
 
 import (
+	"sync"
 	"time"
 
 	"github.com/minus5/uof"
@@ -16,36 +17,36 @@ type player struct {
 	languages []uof.Lang // suported languages
 	errc      chan<- error
 	out       chan<- *uof.Message
+	subProcs  *sync.WaitGroup
 }
 
 func Player(api playerApi, languages []uof.Lang) stage {
+	var wg sync.WaitGroup
 	p := &player{
 		api:       api,
 		languages: languages,
 		em:        newExpireMap(time.Hour),
+		subProcs:  &wg,
 	}
-	return Stage(p.loop)
+	return StageWithDrain(p.loop)
 
 }
 
-func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
+func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {
 	p.errc, p.out = errc, out
-	defer func() {
-		p.errc, p.out = nil, nil
-	}()
 
 	for m := range in {
 		out <- m
-		if m.Type == uof.MessageTypeOddsChange {
+		if m.Is(uof.MessageTypeOddsChange) {
+			p.subProcs.Add(1)
 			go p.get(m.OddsChange)
 		}
 	}
+	return p.subProcs
 }
 
 func (p *player) get(oc *uof.OddsChange) {
-	if oc == nil {
-		return
-	}
+	defer p.subProcs.Done()
 
 	oc.EachPlayer(func(playerID int) {
 		for _, lang := range p.languages {
@@ -62,5 +63,4 @@ func (p *player) get(oc *uof.OddsChange) {
 			p.em.insert(key)
 		}
 	})
-
 }

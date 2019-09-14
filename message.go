@@ -325,3 +325,7 @@ func UIDWithLang(id int, lang Lang) int {
 	}
 	return -((-id << 8) | int(lang))
 }
+
+func (m *Message) Is(mt MessageType) bool {
+	return m.Type == mt
+}
