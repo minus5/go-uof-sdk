@@ -1,78 +1,86 @@
 package pipe
 
 import (
-	"fmt"
 	"sync"
+	"time"
 
-	"github.com/minus5/svckit/log"
 	"github.com/minus5/uof"
-	"github.com/minus5/uof/api"
 )
 
-func VariantMarket(api *api.Api, languages []uof.Lang, in <-chan *uof.Message) <-chan *uof.Message {
-	out := make(chan *uof.Message, 16)
-	done := make(map[string]struct{})
-
-	go func() {
-		var wg sync.WaitGroup
-		defer close(out)
-
-		for m := range in {
-			out <- m
-			m.OddsChange.EachVariantMarket(func(marketID int, variant string) {
-				k := fmt.Sprintf("%d %s", marketID, variant)
-				if _, ok := done[k]; ok {
-					return
-				}
-				done[k] = struct{}{}
-
-				wg.Add(1)
-				go func(marketID int, variant string) {
-					defer wg.Done()
-					for _, lang := range languages {
-						buf, err := api.MarketVariant(lang, marketID, variant)
-						if err != nil {
-							log.I("marketID", int(marketID)).S("lang", lang.String()).S("variant", variant).Error(err)
-							continue
-						}
-						mm, err := uof.NewMarketsMessage(lang, buf)
-						if err != nil {
-							log.Error(err)
-							continue
-						}
-						out <- mm
-					}
-				}(marketID, variant)
-			})
-		}
-		wg.Wait()
-	}()
-	return out
+type marketsApi interface {
+	Markets(lang uof.Lang) (uof.MarketDescriptions, error)
+	MarketVariant(lang uof.Lang, marketID int, variant string) (uof.MarketDescriptions, error)
 }
 
-// osigurava da uvijek na startu prvo posalje markete za sve jezike
-func Markets(api *api.Api, languages []uof.Lang, in <-chan *uof.Message) <-chan *uof.Message {
-	out := make(chan *uof.Message, len(languages))
+type markets struct {
+	api       marketsApi
+	languages []uof.Lang
+	em        *expireMap
+	errc      chan<- error
+	out       chan<- *uof.Message
+	subProcs  *sync.WaitGroup
+}
 
-	for _, lang := range languages {
-		buf, err := api.Markets(lang)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		mm, err := uof.NewMarketsMessage(lang, buf)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-		out <- mm
+// getting all markets on the start
+func Markets(api marketsApi, languages []uof.Lang) stage {
+	var wg sync.WaitGroup
+	m := &markets{
+		api:       api,
+		languages: languages,
+		em:        newExpireMap(24 * time.Hour),
+		subProcs:  &wg,
 	}
+	return StageWithSubProcesses(m.loop)
+}
 
-	go func() {
-		defer close(out)
-		for m := range in {
-			out <- m
+func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {
+	s.out, s.errc = out, errc
+
+	s.getAll()
+	for m := range in {
+		out <- m
+		if m.Is(uof.MessageTypeOddsChange) {
+			m.OddsChange.EachVariantMarket(s.variantMarket)
 		}
-	}()
-	return out
+	}
+	return s.subProcs
+}
+
+func (s *markets) getAll() {
+	s.subProcs.Add(len(s.languages))
+
+	for _, lang := range s.languages {
+		go func(lang uof.Lang) {
+			defer s.subProcs.Done()
+
+			ms, err := s.api.Markets(lang)
+			if err != nil {
+				s.errc <- err
+				return
+			}
+			s.out <- uof.NewMarketsMessage(lang, ms)
+		}(lang)
+	}
+}
+
+func (s *markets) variantMarket(marketID int, variant string) {
+	s.subProcs.Add(len(s.languages))
+
+	for _, lang := range s.languages {
+		go func(lang uof.Lang) {
+			defer s.subProcs.Done()
+
+			key := uof.UIDWithLang(uof.Hash(variant)<<32|marketID, lang)
+			if s.em.fresh(key) {
+				return
+			}
+			ms, err := s.api.MarketVariant(lang, marketID, variant)
+			if err != nil {
+				s.errc <- err
+				return
+			}
+			s.out <- uof.NewMarketsMessage(lang, ms)
+			s.em.insert(key)
+		}(lang)
+	}
 }

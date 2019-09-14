@@ -17,12 +17,14 @@ const (
 )
 
 // Markets all currently available markets for a language
-func (a *Api) Markets(lang uof.Lang) ([]byte, error) {
-	return a.get(pathMarkets, &params{Lang: lang})
+func (a *Api) Markets(lang uof.Lang) (uof.MarketDescriptions, error) {
+	var mr marketsRsp
+	return mr.Markets, a.getAs(&mr, pathMarkets, &params{Lang: lang})
 }
 
-func (a *Api) MarketVariant(lang uof.Lang, marketID int, variant string) ([]byte, error) {
-	return a.get(pathMarketVariant, &params{Lang: lang, MarketID: marketID, Variant: variant})
+func (a *Api) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.MarketDescriptions, error) {
+	var mr marketsRsp
+	return mr.Markets, a.getAs(&mr, pathMarketVariant, &params{Lang: lang, MarketID: marketID, Variant: variant})
 }
 
 // Fixture lists the fixture for a specified sport event
@@ -34,6 +36,13 @@ func (a *Api) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
 func (a *Api) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
 	var pr playerRsp
 	return &pr.Player, a.getAs(&pr, pathPlayer, &params{Lang: lang, PlayerID: playerID})
+}
+
+type marketsRsp struct {
+	Markets uof.MarketDescriptions `xml:"market,omitempty" json:"markets,omitempty"`
+	// unused
+	// ResponseCode string   `xml:"response_code,attr,omitempty" json:"responseCode,omitempty"`
+	// Location     string   `xml:"location,attr,omitempty" json:"location,omitempty"`
 }
 
 type playerRsp struct {

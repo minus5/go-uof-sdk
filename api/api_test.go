@@ -47,24 +47,22 @@ func TestIntegration(t *testing.T) {
 
 func testMarkets(t *testing.T, a *Api) {
 	lang := uof.LangEN
-	buf, err := a.Markets(lang)
-	assert.Nil(t, err)
-	mm, err := uof.NewMarketsMessage(lang, buf)
+	mm, err := a.Markets(lang)
 	assert.Nil(t, err)
 
-	assert.True(t, len(mm.Markets) >= 992)
-	m := mm.Markets.Find(1)
+	assert.True(t, len(mm) >= 992)
+	m := mm.Find(1)
 	assert.Equal(t, "1x2", m.Name)
 }
 
 func testMarketVariant(t *testing.T, a *Api) {
 	lang := uof.LangEN
-	buf, err := a.MarketVariant(lang, 241, "sr:exact_games:bestof:5")
+	mm, err := a.MarketVariant(lang, 241, "sr:exact_games:bestof:5")
 	assert.Nil(t, err)
-	mm, err := uof.NewMarketsMessage(lang, buf)
+
 	assert.Nil(t, err)
-	assert.Len(t, mm.Markets, 1)
-	m := mm.Markets[0]
+	assert.Len(t, mm, 1)
+	m := mm[0]
 	assert.Equal(t, "Exact games", m.Name)
 	assert.Len(t, m.Outcomes, 3)
 }

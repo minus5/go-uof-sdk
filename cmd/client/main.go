@@ -73,6 +73,7 @@ func main() {
 
 	errc := pipe.Build(
 		queue.WithReconnect(sig, conn),
+		pipe.Markets(stg, languages),
 		pipe.Fixture(stg, languages, preloadTo),
 		pipe.Simple(logMessage),
 		pipe.FileStore("./tmp"),
@@ -97,35 +98,36 @@ func logMessage(m *uof.Message) error {
 	switch m.Type {
 	case uof.MessageTypeConnection:
 		fmt.Printf("%-25s status: %s\n", m.Type, m.Connection.Status)
-		return nil
 	case uof.MessageTypeFixture:
 		fmt.Printf("%-25s lang: %s, urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
-		return nil
 		// case uof.MessageTypeOddsChange:
 		// 	fmt.Printf("%-25s urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
 		// 	return nil
+	case uof.MessageTypeMarkets:
+		fmt.Printf("%-25s lang: %s, count: %d\n", m.Type, m.Lang, len(m.Markets))
 	case uof.MessageTypeAlive:
 		if m.Alive.Subscribed != 0 {
 			fmt.Printf("%-25s producer: %s, timestamp: %d\n", m.Type, m.Alive.Producer, m.Alive.Timestamp)
 		}
-		return nil
-	}
-
-	var b []byte
-	if false && m.Raw != nil {
-		b = m.Raw
-		// remove xml header
-		if i := bytes.Index(b, []byte("?>")); i > 0 {
-			b = b[i+2:]
+	case uof.MessageTypeOddsChange:
+		fmt.Printf("%-25s event: %s, markets: %d\n", m.Type, m.EventURN, len(m.OddsChange.Markets))
+	default:
+		var b []byte
+		if false && m.Raw != nil {
+			b = m.Raw
+			// remove xml header
+			if i := bytes.Index(b, []byte("?>")); i > 0 {
+				b = b[i+2:]
+			}
+		} else {
+			b, _ = json.Marshal(m.Body)
 		}
-	} else {
-		b, _ = json.Marshal(m.Body)
+		// show just first x characters
+		x := 186
+		if len(b) > x {
+			b = b[:x]
+		}
+		fmt.Printf("%-25s %s\n", m.Type, b)
 	}
-	// show just first x characters
-	x := 186
-	if len(b) > x {
-		b = b[:x]
-	}
-	fmt.Printf("%-25s %s\n", m.Type, b)
 	return nil
 }

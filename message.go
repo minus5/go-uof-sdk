@@ -184,16 +184,16 @@ func (m *Message) unpack() error {
 	return err
 }
 
-func NewMarketsMessage(lang Lang, body []byte) (*Message, error) {
+func NewMarketsMessage(lang Lang, ms MarketDescriptions) *Message {
 	m := &Message{
 		Header: Header{
 			Type:       MessageTypeMarkets,
 			Lang:       lang,
 			ReceivedAt: uniqTimestamp(),
 		},
-		Raw: body,
+		Body: Body{Markets: ms},
 	}
-	return m, m.unpack()
+	return m
 }
 
 func NewPlayerMessage(lang Lang, player *Player) *Message {
@@ -203,9 +203,7 @@ func NewPlayerMessage(lang Lang, player *Player) *Message {
 			Lang:       lang,
 			ReceivedAt: uniqTimestamp(),
 		},
-		Body: Body{
-			Player: player,
-		},
+		Body: Body{Player: player},
 	}
 }
 
@@ -233,9 +231,7 @@ func NewProducersChangeMessage(pc ProducersChange) *Message {
 			Scope:      MessageScopeSystem,
 			ReceivedAt: uniqTimestamp(),
 		},
-		Body: Body{
-			Producers: pc,
-		},
+		Body: Body{Producers: pc},
 	}
 }
 
@@ -248,9 +244,7 @@ func NewFixtureMessage(lang Lang, x Fixture) *Message {
 			Lang:       lang,
 			ReceivedAt: uniqTimestamp(),
 		},
-		Body: Body{
-			Fixture: &x,
-		},
+		Body: Body{Fixture: &x},
 	}
 }
 
@@ -324,6 +318,10 @@ func UIDWithLang(id int, lang Lang) int {
 		return (id << 8) | int(lang)
 	}
 	return -((-id << 8) | int(lang))
+}
+
+func Hash(s string) int {
+	return hash32(s)
 }
 
 func (m *Message) Is(mt MessageType) bool {

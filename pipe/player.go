@@ -28,8 +28,7 @@ func Player(api playerApi, languages []uof.Lang) stage {
 		em:        newExpireMap(time.Hour),
 		subProcs:  &wg,
 	}
-	return StageWithDrain(p.loop)
-
+	return StageWithSubProcesses(p.loop)
 }
 
 func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {
@@ -38,18 +37,17 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 	for m := range in {
 		out <- m
 		if m.Is(uof.MessageTypeOddsChange) {
-			p.subProcs.Add(1)
-			go p.get(m.OddsChange)
+			m.OddsChange.EachPlayer(p.get)
 		}
 	}
 	return p.subProcs
 }
 
-func (p *player) get(oc *uof.OddsChange) {
-	defer p.subProcs.Done()
-
-	oc.EachPlayer(func(playerID int) {
-		for _, lang := range p.languages {
+func (p *player) get(playerID int) {
+	p.subProcs.Add(len(p.languages))
+	for _, lang := range p.languages {
+		go func(lang uof.Lang) {
+			defer p.subProcs.Done()
 			key := uof.UIDWithLang(playerID, lang)
 			if p.em.fresh(key) {
 				return
@@ -61,6 +59,7 @@ func (p *player) get(oc *uof.OddsChange) {
 			}
 			p.out <- uof.NewPlayerMessage(lang, ap)
 			p.em.insert(key)
-		}
-	})
+		}(lang)
+	}
+
 }

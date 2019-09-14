@@ -103,7 +103,7 @@ func Stage(looper stageFunc) stage {
 	}
 }
 
-func StageWithDrain(looper stageWithDrainFunc) stage {
+func StageWithSubProcesses(looper stageWithDrainFunc) stage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)
@@ -133,7 +133,7 @@ func StageWithDrain(looper stageWithDrainFunc) stage {
 			}()
 
 			// looper has to range over in chan until it is closed
-			wg := looper(in, out, errc)
+			subProcs := looper(in, out, errc)
 			// stop coping from looperOut/Errc to out/errc chans
 			// and close the out/errc chans
 			close(looperDone)
@@ -146,7 +146,7 @@ func StageWithDrain(looper stageWithDrainFunc) stage {
 				for range looperErrc {
 				}
 			}()
-			wg.Wait()
+			subProcs.Wait()
 		}()
 
 		return out, errc

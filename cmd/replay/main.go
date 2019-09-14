@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"flag"
 	"fmt"
@@ -148,3 +149,4 @@ func saveMsg(m uof.QueueMsg) {
 		log.Fatal(err)
 	}
 }
+*/
