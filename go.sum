@@ -99,9 +99,6 @@ github.com/minus5/go-simplejson v0.5.1-0.20190518182223-8af509724a86 h1:bsm6+lQ2
 github.com/minus5/go-simplejson v0.5.1-0.20190518182223-8af509724a86/go.mod h1:eBPLk8FJ9uc035DnbHAWvINeYXIIVduZe5EILao6s7o=
 github.com/minus5/gofreetds v0.0.0-20180326091651-052917677671/go.mod h1:WvwUDnIBzwSEfXYkuvWQ+mKYt7Ja7I2uI1o5WoAotk4=
 github.com/minus5/nsqm v0.0.0-20180124131437-bb786a0943ff/go.mod h1:f4aunz6tiHF4wpOnciBu470/Fk8X6omiODKCJKwGnpg=
-github.com/minus5/services v1.3.4 h1:N5Hfpwcs5ctiTLNbTqODwIwiFY9NG3EU8KeFjcZ1FyY=
-github.com/minus5/services v1.3.4/go.mod h1:fx5ir1CWPCEYLSsWZXM5oEiWgxbbkrhpMD7BN6MHuPI=
-github.com/minus5/sportsbook v0.0.0-20190903074107-d0b122a81a34 h1:9a87Mz6X8AW+EwcYZZ8TQZTIr2LmyHT2y1esRWSWPOA=
 github.com/minus5/svckit v0.0.0-20190531083804-b1f6db1c1a3a/go.mod h1:Atti17OQwZ99onCm/tLzRaaCqEXIVdCU1dHPyvPpIiY=
 github.com/minus5/svckit v0.0.0-20190823112917-d76782930758 h1:Vuyc6X9XuysIsaf+FJNatveUaZKi43LPX+ArxLEF6DA=
 github.com/minus5/svckit v0.0.0-20190823112917-d76782930758/go.mod h1:nriu6t5mztHqZgO+rT+RUcI9k+LfSZNjWP7K1p/lTpI=
