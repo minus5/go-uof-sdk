@@ -196,16 +196,17 @@ func NewMarketsMessage(lang Lang, body []byte) (*Message, error) {
 	return m, m.unpack()
 }
 
-func NewPlayerMessage(lang Lang, body []byte) (*Message, error) {
-	m := &Message{
+func NewPlayerMessage(lang Lang, player *Player) *Message {
+	return &Message{
 		Header: Header{
 			Type:       MessageTypePlayer,
 			Lang:       lang,
 			ReceivedAt: uniqTimestamp(),
 		},
-		Raw: body,
+		Body: Body{
+			Player: player,
+		},
 	}
-	return m, m.unpack()
 }
 
 func NewConnnectionMessage(status ConnectionStatus) *Message {
@@ -300,4 +301,27 @@ func (m *Message) Unmarshal(buf []byte) error {
 	}
 	m.Raw = parts[1]
 	return m.unpack()
+}
+
+// UID unique id for statefull messages
+// Combines id of the content and language.
+func (m *Message) UID() int {
+	switch m.Type {
+	case MessageTypePlayer:
+		if m.Player != nil {
+			return UIDWithLang(m.Player.ID, m.Lang)
+		}
+	case MessageTypeFixture:
+		if m.Fixture != nil {
+			return UIDWithLang(m.Fixture.ID, m.Lang)
+		}
+	}
+	return 0
+}
+
+func UIDWithLang(id int, lang Lang) int {
+	if id >= 0 {
+		return (id << 8) | int(lang)
+	}
+	return -((-id << 8) | int(lang))
 }

@@ -2,6 +2,7 @@ package pipe
 
 import (
 	"sync"
+	"time"
 
 	"github.com/minus5/uof"
 )
@@ -120,3 +121,67 @@ func Simple(each func(m *uof.Message) error) stage {
 		return out, errc
 	}
 }
+
+type expireMap struct {
+	m        map[int]int64
+	interval time.Duration
+	sync.Mutex
+}
+
+func newExpireMap(expireAfter time.Duration) *expireMap {
+	em := &expireMap{
+		m: make(map[int]int64),
+	}
+	go func() {
+		time.Sleep(expireAfter * 2)
+		em.cleanup()
+	}()
+	return em
+}
+
+func (em *expireMap) cleanup() {
+	em.Lock()
+	defer em.Unlock()
+
+	for k, v := range em.m {
+		if em.expired(v) {
+			delete(em.m, k)
+		}
+	}
+}
+
+func (em *expireMap) expired(v int64) bool {
+	return v < em.checkpoint()
+}
+
+func (em *expireMap) fresh(k int) bool {
+	em.Lock()
+	defer em.Unlock()
+
+	if v, ok := em.m[k]; ok {
+		return v > em.checkpoint()
+	}
+	return false
+}
+
+func (em *expireMap) checkpoint() int64 {
+	return time.Now().UnixNano() - int64(em.interval)
+}
+
+func (em *expireMap) insert(key int) {
+	em.Lock()
+	defer em.Unlock()
+
+	em.m[key] = time.Now().UnixNano()
+}
+
+// func (em *expireMap) insertS(sKey string) {
+// 	key := hash64(sKey)
+// 	em.insert(key)
+// }
+
+// func hash64(s string) int64 {
+// 	h := fnv.New64()
+// 	h.Write([]byte(s))
+// 	return h.Sum64()
+// }

@@ -1,52 +1,66 @@
 package pipe
 
 import (
-	"sync"
+	"time"
 
-	"github.com/minus5/svckit/log"
 	"github.com/minus5/uof"
-	"github.com/minus5/uof/api"
 )
 
-func Player(api *api.Api, languages []uof.Lang, in <-chan *uof.Message) <-chan *uof.Message {
-	out := make(chan *uof.Message, 16)
-	done := make(map[int]struct{})
+type playerApi interface {
+	Player(lang uof.Lang, playerID int) (*uof.Player, error)
+}
 
-	go func() {
-		var wg sync.WaitGroup
-		defer close(out)
+type player struct {
+	api       playerApi
+	em        *expireMap
+	languages []uof.Lang // suported languages
+	errc      chan<- error
+	out       chan<- *uof.Message
+}
 
-		for m := range in {
-			out <- m
-			if m.Type != uof.MessageTypeOddsChange {
-				continue
-			}
-			m.OddsChange.EachPlayer(func(player int) {
-				if _, ok := done[player]; ok {
-					return
-				}
-				done[player] = struct{}{}
+func Player(api playerApi, languages []uof.Lang) stage {
+	p := &player{
+		api:       api,
+		languages: languages,
+		em:        newExpireMap(time.Hour),
+	}
+	return Stage(p.loop)
 
-				wg.Add(1)
-				go func(playerID int) {
-					defer wg.Done()
-					for _, lang := range languages {
-						buf, err := api.Player(lang, playerID)
-						if err != nil {
-							log.I("player", playerID).Error(err)
-							continue
-						}
-						pm, err := uof.NewPlayerMessage(lang, buf)
-						if err != nil {
-							log.Error(err)
-							continue
-						}
-						out <- pm
-					}
-				}(player)
-			})
-		}
-		wg.Wait()
+}
+
+func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
+	p.errc, p.out = errc, out
+	defer func() {
+		p.errc, p.out = nil, nil
 	}()
-	return out
+
+	for m := range in {
+		out <- m
+		if m.Type == uof.MessageTypeOddsChange {
+			go p.get(m.OddsChange)
+		}
+	}
+}
+
+func (p *player) get(oc *uof.OddsChange) {
+	if oc == nil {
+		return
+	}
+
+	oc.EachPlayer(func(playerID int) {
+		for _, lang := range p.languages {
+			key := uof.UIDWithLang(playerID, lang)
+			if p.em.fresh(key) {
+				return
+			}
+			ap, err := p.api.Player(lang, playerID)
+			if err != nil {
+				p.errc <- err
+				return
+			}
+			p.out <- uof.NewPlayerMessage(lang, ap)
+			p.em.insert(key)
+		}
+	})
+
 }

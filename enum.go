@@ -141,6 +141,8 @@ func (u URN) String() string {
 	return string(u)
 }
 
+const NoURN = URN("")
+
 const (
 	URNTypeMatch int8 = iota
 	URNTypeStage

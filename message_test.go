@@ -160,3 +160,69 @@ func TestMessageWithoutRaw(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, m, m2)
 }
+
+func TestUID(t *testing.T) {
+	data := []struct {
+		m   Message
+		uid int
+	}{
+		{
+			Message{
+				Header: Header{
+					Type: MessageTypePlayer,
+					Lang: LangHR,
+				},
+				Body: Body{
+					Player: &Player{ID: 0x12345},
+				},
+			},
+			0x1234509,
+		},
+		{
+			Message{
+				Header: Header{
+					Type: MessageTypePlayer,
+					Lang: LangTR,
+				},
+				Body: Body{
+					Player: &Player{ID: 0x007fffffffffffff},
+				},
+			},
+			0x7fffffffffffff29,
+		},
+
+		{
+			Message{
+				Header: Header{
+					Type: MessageTypeFixture,
+					Lang: LangIT,
+				},
+				Body: Body{
+					Fixture: &Fixture{ID: -0x123},
+				},
+			},
+			-0x1232c,
+		},
+	}
+
+	for i, d := range data {
+		assert.Equal(t, d.uid, d.m.UID(),
+			"case: %d, actual %x", i, d.m.UID())
+	}
+}
+
+func TestUIDWithLang(t *testing.T) {
+	data := []struct {
+		id   int
+		lang Lang
+		uid  int
+	}{
+		{0x01, LangHR, 0x0109},
+		{0x007fffffffffffff, LangTR, 0x7fffffffffffff29},
+		{-0x123, LangIT, -0x1232c},
+	}
+
+	for _, d := range data {
+		assert.Equal(t, d.uid, UIDWithLang(d.id, d.lang))
+	}
+}

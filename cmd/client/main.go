@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"time"
 
@@ -38,7 +40,15 @@ func init() {
 	bookmakerID = env(EnvBookmakerID)
 }
 
+func debugHTTP() {
+	if err := http.ListenAndServe("localhost:8124", nil); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
+	go debugHTTP()
+
 	sig := signal.InteruptContext()
 	conn, err := queue.DialStaging(sig, bookmakerID, token)
 	if err != nil {
@@ -51,10 +61,11 @@ func main() {
 	log.Debug("connected")
 
 	languages := uof.Languages("en,de,hr")
-	preloadTo := time.Now().Add(24 * time.Hour)
-	//preloadTo := time.Now()
-	timestamp := int64(0)
-	//timestamp := uof.CurrentTimestamp() - 5*60*1000
+
+	//preloadTo := time.Now().Add(24 * time.Hour)
+	// timestamp := int64(0)
+	preloadTo := time.Now()
+	timestamp := uof.CurrentTimestamp() - 5*60*1000
 
 	var ps uof.ProducersChange
 	ps.Add(uof.ProducerPrematch, timestamp)
@@ -83,13 +94,22 @@ func logProducersChange(m *uof.Message) error {
 }
 
 func logMessage(m *uof.Message) error {
-	// if m.Type == uof.MessageTypeConnection {
-	// 	fmt.Printf("%-25s connection status: %s\n", m.Type, m.Connection.Status)
-	// 	return nil
-	// }
-	// if m.Type == uof.MessageTypeProducersChange {
-	// 	return logProducersChange(m)
-	// }
+	switch m.Type {
+	case uof.MessageTypeConnection:
+		fmt.Printf("%-25s status: %s\n", m.Type, m.Connection.Status)
+		return nil
+	case uof.MessageTypeFixture:
+		fmt.Printf("%-25s lang: %s, urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
+		return nil
+		// case uof.MessageTypeOddsChange:
+		// 	fmt.Printf("%-25s urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
+		// 	return nil
+	case uof.MessageTypeAlive:
+		if m.Alive.Subscribed != 0 {
+			fmt.Printf("%-25s producer: %s, timestamp: %d\n", m.Type, m.Alive.Producer, m.Alive.Timestamp)
+		}
+		return nil
+	}
 
 	var b []byte
 	if false && m.Raw != nil {
