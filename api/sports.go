@@ -27,19 +27,18 @@ func (a *Api) MarketVariant(lang uof.Lang, marketID int, variant string) ([]byte
 
 // Fixture lists the fixture for a specified sport event
 func (a *Api) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
-	buf, err := a.get(pathFixture, &params{Lang: lang, EventURN: eventURN})
-	if err != nil {
-		return nil, err
-	}
 	var fr fixtureRsp
-	if err := xml.Unmarshal(buf, &fr); err != nil {
-		return nil, err
-	}
-	return &fr.Fixture, nil
+	return &fr.Fixture, a.getAs(&fr, pathFixture, &params{Lang: lang, EventURN: eventURN})
 }
 
-func (a *Api) Player(lang uof.Lang, playerID int) ([]byte, error) {
-	return a.get(pathPlayer, &params{Lang: lang, PlayerID: playerID})
+func (a *Api) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
+	var pr playerRsp
+	return &pr.Player, a.getAs(&pr, pathPlayer, &params{Lang: lang, PlayerID: playerID})
+}
+
+type playerRsp struct {
+	Player      uof.Player `xml:"player" json:"player"`
+	GeneratedAt time.Time  `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
 }
 
 type fixtureRsp struct {
@@ -79,6 +78,7 @@ func (a *Api) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan 
 		buf, err := a.get(liveEvents, &params{Lang: lang})
 		if err != nil {
 			errc <- err
+			return
 		}
 		if err := parse(buf); err != nil {
 			errc <- err

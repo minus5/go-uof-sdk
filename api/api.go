@@ -3,6 +3,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -82,6 +83,17 @@ func (a *Api) RequestFullOddsRecovery(producer uof.Producer, requestID int) erro
 func (a *Api) Ping() error {
 	_, err := a.get(ping, nil)
 	return err
+}
+
+func (a *Api) getAs(o interface{}, tpl string, p *params) error {
+	buf, err := a.get(tpl, p)
+	if err != nil {
+		return err
+	}
+	if err := xml.Unmarshal(buf, o); err != nil {
+		return err
+	}
+	return nil
 }
 
 // http get request
