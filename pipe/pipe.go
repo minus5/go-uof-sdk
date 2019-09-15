@@ -225,14 +225,3 @@ func (em *expireMap) insert(key int) {
 
 	em.m[key] = time.Now().UnixNano()
 }
-
-// func (em *expireMap) insertS(sKey string) {
-// 	key := hash64(sKey)
-// 	em.insert(key)
-// }
-
-// func hash64(s string) int64 {
-// 	h := fnv.New64()
-// 	h.Write([]byte(s))
-// 	return h.Sum64()
-// }
