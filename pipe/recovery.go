@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/minus5/uof"
-	"github.com/pkg/errors"
 )
 
 // on start recover all after timestamp or full
@@ -83,7 +82,7 @@ func newRecovery(api recoveryApi, producers uof.ProducersChange) *recovery {
 
 func (r *recovery) log(err error) {
 	select {
-	case r.errc <- err:
+	case r.errc <- uof.E("recovery", err):
 	default:
 	}
 }
@@ -109,12 +108,12 @@ func (r *recovery) requestRecovery(p *recoveryProducer) {
 	go func(producer uof.Producer, timestamp int, requestID int) {
 		for {
 			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", producer.Code(), timestamp, requestID)
-			r.log(fmt.Errorf("staring %s", op))
+			r.log(fmt.Errorf("starting %s", op))
 			err := r.api.RequestRecovery(producer, timestamp, requestID)
 			if err == nil {
 				return
 			}
-			r.errc <- errors.Wrap(err, "failed "+op)
+			r.errc <- uof.Notice(op, err)
 			// wait a minute
 			select {
 			case <-ctx.Done():

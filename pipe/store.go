@@ -19,7 +19,7 @@ func FileStore(root string) stage {
 			go func(m *uof.Message) {
 				fn := root + "/" + filename(m)
 				if err := file.Save(fn, m.Marshal()); err != nil {
-					errc <- err
+					errc <- uof.Notice("file save", err)
 				}
 				wg.Done()
 			}(m)

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	_ "net/http/pprof"
@@ -58,7 +59,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Debug("connected")
+	//log.Debug("connected")
 
 	languages := uof.Languages("en,de,hr")
 
@@ -82,8 +83,14 @@ func main() {
 	)
 
 	for err := range errc {
-		//fmt.Printf("error: %s\n", err.Error())
-		log.Error(err)
+		var ue uof.Error
+
+		fmt.Printf("%s ", time.Now().Format("2006-01-02 15:04:05"))
+		if errors.As(err, &ue) {
+			fmt.Println(ue.Error())
+		} else {
+			fmt.Printf("unknown error %s\n", err)
+		}
 	}
 }
 

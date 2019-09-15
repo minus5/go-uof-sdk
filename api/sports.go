@@ -72,7 +72,7 @@ func (a *Api) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan 
 		parse := func(buf []byte) error {
 			var sr scheduleRsp
 			if err := xml.Unmarshal(buf, &sr); err != nil {
-				return err
+				return uof.Notice("unmarshal", err)
 			}
 			for _, f := range sr.Fixtures {
 				out <- f
@@ -94,7 +94,7 @@ func (a *Api) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan 
 			return
 		}
 
-		// than all witch schedules before to
+		// than all witch has scheduled before to
 		limit := 1000
 		for start := 0; true; start = start + limit {
 			buf, err := a.get(events, &params{Lang: lang, Start: start, Limit: limit})

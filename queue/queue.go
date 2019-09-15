@@ -11,7 +11,6 @@ import (
 	"fmt"
 
 	"github.com/minus5/uof"
-	"github.com/pkg/errors"
 	"github.com/streadway/amqp"
 )
 
@@ -61,7 +60,7 @@ func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
 	errsDone := make(chan struct{})
 	go func() {
 		for err := range c.errs {
-			errc <- errors.Wrap(err, "amqp error")
+			errc <- uof.E("conn", err)
 		}
 		close(errsDone)
 	}()
@@ -69,7 +68,7 @@ func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
 	for m := range c.msgs {
 		m, err := uof.NewQueueMessage(m.RoutingKey, m.Body)
 		if err != nil {
-			errc <- errors.Wrap(err, "fail to parse delivery")
+			errc <- uof.Notice("conn.DeliveryParse", err)
 			continue
 		}
 		out <- m
@@ -87,12 +86,12 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 	conn, err := amqp.DialTLS(addr, tls)
 	if err != nil {
 		fmt.Println(addr)
-		return nil, errors.WithStack(err)
+		return nil, uof.Notice("conn.Dial", err)
 	}
 
 	chnl, err := conn.Channel()
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, uof.Notice("conn.Channel", err)
 	}
 
 	qee, err := chnl.QueueDeclare(
@@ -104,7 +103,7 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		nil,   // arguments
 	)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, uof.Notice("conn.QueueDeclare", err)
 	}
 
 	err = chnl.QueueBind(
@@ -115,7 +114,7 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		nil,           // arguments
 	)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, uof.Notice("conn.QueueBind", err)
 	}
 
 	consumerTag := ""
@@ -129,7 +128,7 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		nil,         // args
 	)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, uof.Notice("conn.Consume", err)
 	}
 
 	errs := make(chan *amqp.Error)

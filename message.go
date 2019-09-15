@@ -9,8 +9,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type Header struct {
@@ -88,8 +86,7 @@ func NewQueueMessage(routingKey string, body []byte) (*Message, error) {
 func (m *Message) parseRoutingKey(routingKey string) error {
 	p := strings.Split(routingKey, ".")
 	if len(p) < 7 {
-		err := fmt.Errorf("unknown routing key: %s", routingKey)
-		return errors.WithStack(err)
+		return fmt.Errorf("unknown routing key: %s", routingKey)
 	}
 	part := func(i int) string {
 		if len(p) > i && p[i] != "-" {
@@ -111,8 +108,7 @@ func (m *Message) parseRoutingKey(routingKey string) error {
 	m.Scope.Parse(prematchInterest, liveInterest)
 
 	if m.Type == MessageTypeUnknown {
-		err := fmt.Errorf("unknown message type for routing key: %s", routingKey)
-		return errors.WithStack(err)
+		return fmt.Errorf("unknown message type for routing key: %s", routingKey)
 	}
 
 	if eventID != "" {
@@ -179,9 +175,13 @@ func (m *Message) unpack() error {
 		unmarshal(&pp)
 		m.Player = &pp.Player
 	default:
-		return fmt.Errorf("unknown message type %d", m.Type)
+		err := fmt.Errorf("unknown message type %d", m.Type)
+		return Notice("message.unpack", err)
 	}
-	return err
+	if err != nil {
+		return Notice("message.unpack", err)
+	}
+	return nil
 }
 
 func NewMarketsMessage(lang Lang, ms MarketDescriptions) *Message {
@@ -248,21 +248,6 @@ func NewFixtureMessage(lang Lang, x Fixture) *Message {
 	}
 }
 
-// // AsFixture transforms fixture change message to the fixture message
-// // Takes attributes from the first message with date from api.
-// func (m *Message) AsFixture(lang Lang, body []byte) (*Message, error) {
-// 	if m.Type != MessageTypeFixtureChange {
-// 		return nil, fmt.Errorf("wrong parent message type")
-// 	}
-// 	c := &Message{
-// 		Header: m.Header,
-// 		Raw:    body,
-// 	}
-// 	c.Type = MessageTypeFixture
-// 	c.Lang = lang
-// 	return c, c.unpack()
-// }
-
 func (m *Message) NewFixtureMessage(lang Lang, f Fixture) *Message {
 	c := &Message{
 		Header: m.Header,
@@ -288,7 +273,7 @@ func (m Message) Marshal() []byte {
 func (m *Message) Unmarshal(buf []byte) error {
 	parts := bytes.SplitN(buf, []byte{separator}, 2)
 	if err := json.Unmarshal(parts[0], m); err != nil {
-		return err
+		return Notice("message.Unmarshal", err)
 	}
 	if len(parts) < 2 {
 		return nil

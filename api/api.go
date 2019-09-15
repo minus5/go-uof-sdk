@@ -6,12 +6,10 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"text/template"
 
 	"github.com/minus5/uof"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -91,7 +89,7 @@ func (a *Api) getAs(o interface{}, tpl string, p *params) error {
 		return err
 	}
 	if err := xml.Unmarshal(buf, o); err != nil {
-		return err
+		return uof.Notice("unmarshal", err)
 	}
 	return nil
 }
@@ -103,22 +101,22 @@ func (a *Api) get(tpl string, p *params) ([]byte, error) {
 	client := http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, uof.E("http.NewRequest", uof.ApiError{URL: url, Inner: err})
 	}
 
 	req.Header.Set("x-access-token", a.token)
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, uof.E("client.Do", uof.ApiError{URL: url, Inner: err})
 	}
 	defer resp.Body.Close()
 	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, uof.E("http read body", uof.ApiError{URL: url, Inner: err})
 	}
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		err := fmt.Errorf("status code: %d\npath: %s\nresponse: %s", resp.StatusCode, path, buf)
-		return nil, errors.WithStack(err)
+		err := uof.E("http response", uof.ApiError{URL: url, StatusCode: resp.StatusCode, Response: string(buf)})
+		return nil, err
 	}
 	return buf, nil
 }
@@ -138,18 +136,18 @@ func (a *Api) httpRequest(tpl string, p *params, method string) error {
 	client := http.Client{}
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
-		return errors.WithStack(err)
+		return uof.E("http.NewRequest", uof.ApiError{URL: url, Inner: err})
 	}
 
 	req.Header.Set("x-access-token", a.token)
 	resp, err := client.Do(req)
 	if err != nil {
-		return errors.WithStack(err)
+		return uof.E("client.Do", uof.ApiError{URL: url, Inner: err})
 	}
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		defer resp.Body.Close()
 		buf, _ := ioutil.ReadAll(resp.Body)
-		return fmt.Errorf("status code %d, url: %s, rsp: %s", resp.StatusCode, url, buf)
+		return uof.E("http response", uof.ApiError{URL: url, StatusCode: resp.StatusCode, Response: string(buf)})
 	}
 
 	return nil
@@ -180,7 +178,7 @@ func runTemplate(def string, p *params) string {
 	tpl := template.Must(template.New("").Parse(def))
 	buf := bytes.NewBuffer(nil)
 	if err := tpl.Execute(buf, p); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	return string(buf.Bytes())
 }
