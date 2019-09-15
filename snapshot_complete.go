@@ -9,6 +9,6 @@ package uof
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Snapshot+complete
 type SnapshotComplete struct {
 	Producer  Producer `xml:"product,attr" json:"producer"`
-	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp int      `xml:"timestamp,attr" json:"timestamp"`
 	RequestID int      `xml:"request_id,attr" json:"requestID"`
 }

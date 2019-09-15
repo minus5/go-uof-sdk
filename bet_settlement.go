@@ -6,7 +6,7 @@ type BetSettlement struct {
 	EventID   int      `json:"eventID"`
 	EventURN  URN      `xml:"event_id,attr" json:"eventURN"`
 	Producer  Producer `xml:"product,attr" json:"producer"`
-	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp int      `xml:"timestamp,attr" json:"timestamp"`
 	RequestID *int     `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 	// Is this bet-settlement sent as a consequence of scouts reporting the
 	// results live (1) or is this bet-settlement sent post-match when the
@@ -37,7 +37,7 @@ type RollbackBetSettlement struct {
 	EventID   int               `json:"eventID"`
 	EventURN  URN               `xml:"event_id,attr" json:"eventURN"`
 	Producer  Producer          `xml:"product,attr" json:"producer"`
-	Timestamp int64             `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp int               `xml:"timestamp,attr" json:"timestamp"`
 	RequestID *int              `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 	Markets   []BetCancelMarket `xml:"market" json:"market"`
 }

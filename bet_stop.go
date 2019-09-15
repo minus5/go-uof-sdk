@@ -19,7 +19,7 @@ type BetStop struct {
 	EventID   int      `json:"eventID"`
 	EventURN  URN      `xml:"event_id,attr" json:"eventURN"`
 	Producer  Producer `xml:"product,attr" json:"producer"`
-	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp int      `xml:"timestamp,attr" json:"timestamp"`
 	RequestID *int     `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 
 	Status MarketStatus `json:"status,omitempty"`

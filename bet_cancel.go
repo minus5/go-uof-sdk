@@ -10,15 +10,15 @@ type BetCancel struct {
 	EventID   int      `json:"eventID"`
 	EventURN  URN      `xml:"event_id,attr" json:"eventURN"`
 	Producer  Producer `xml:"product,attr" json:"producer"`
-	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp int      `xml:"timestamp,attr" json:"timestamp"`
 	RequestID *int     `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 	// If start and end time are specified, they designate a range in time for
 	// which bets made should be cancelled. If there is an end_time but no
 	// start_time, this means cancel all bets placed before the specified time. If
 	// there is a start_time but no end_time this means, cancel all bets placed
 	// after the specified start_time.
-	StartTime    *int64            `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
-	EndTime      *int64            `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
+	StartTime    *int              `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
+	EndTime      *int              `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
 	SupercededBy *string           `xml:"superceded_by,attr,omitempty" json:"supercededBy,omitempty"`
 	Markets      []BetCancelMarket `xml:"market" json:"market"`
 }
@@ -37,10 +37,10 @@ type RollbackBetCancel struct {
 	EventID   int               `json:"eventID"`
 	EventURN  URN               `xml:"event_id,attr" json:"eventURN"`
 	Producer  Producer          `xml:"product,attr" json:"producer"`
-	Timestamp int64             `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp int               `xml:"timestamp,attr" json:"timestamp"`
 	RequestID *int              `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
-	StartTime *int64            `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
-	EndTime   *int64            `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
+	StartTime *int              `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
+	EndTime   *int              `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
 	Markets   []BetCancelMarket `xml:"market" json:"market"`
 }
 

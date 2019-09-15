@@ -19,11 +19,11 @@ type FixtureChange struct {
 	EventID      int                `json:"eventID"`
 	EventURN     URN                `xml:"event_id,attr" json:"eventURN"`
 	Producer     Producer           `xml:"product,attr" json:"producer"`
-	Timestamp    int64              `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp    int                `xml:"timestamp,attr" json:"timestamp"`
 	RequestID    *int               `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 	ChangeType   *FixtureChangeType `xml:"change_type,attr,omitempty" json:"changeType,omitempty"`
-	StartTime    *int64             `xml:"start_time,attr" json:"startTime"`
-	NextLiveTime *int64             `xml:"next_live_time,attr,omitempty" json:"nextLiveTime,omitempty"`
+	StartTime    *int               `xml:"start_time,attr" json:"startTime"`
+	NextLiveTime *int               `xml:"next_live_time,attr,omitempty" json:"nextLiveTime,omitempty"`
 }
 
 func (t *FixtureChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
@@ -43,6 +43,6 @@ func (fc *FixtureChange) Schedule() *time.Time {
 	if fc.StartTime == nil {
 		return nil
 	}
-	ts := time.Unix(0, *fc.StartTime*int64(time.Millisecond))
+	ts := time.Unix(0, int64(*fc.StartTime*int(time.Millisecond)))
 	return &ts
 }

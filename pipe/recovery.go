@@ -26,9 +26,9 @@ import (
 type recoveryProducer struct {
 	producer              uof.Producer
 	status                uof.ProducerStatus // current status of the producer
-	aliveTimestamp        int64              // last alive timestamp
+	aliveTimestamp        int                // last alive timestamp
 	requestID             int                // last recovery requestID
-	statusChangedAt       int64              // last change of the status
+	statusChangedAt       int                // last change of the status
 	recoveryRequestCancel context.CancelFunc
 }
 
@@ -47,7 +47,7 @@ func (p *recoveryProducer) setStatus(newStatus uof.ProducerStatus) {
 // If producer is back more than recovery window (defined for each producer)
 // it has to make full recovery (forced with timestamp = 0).
 // Otherwise recovery after timestamp is done.
-func (p *recoveryProducer) recoveryTimestamp() int64 {
+func (p *recoveryProducer) recoveryTimestamp() int {
 	if uof.CurrentTimestamp()-p.aliveTimestamp >= p.producer.RecoveryWindow() {
 		return 0
 	}
@@ -62,7 +62,7 @@ type recovery struct {
 }
 
 type recoveryApi interface {
-	RequestRecovery(producer uof.Producer, timestamp int64, requestID int) error
+	RequestRecovery(producer uof.Producer, timestamp int, requestID int) error
 }
 
 func newRecovery(api recoveryApi, producers uof.ProducersChange) *recovery {
@@ -106,7 +106,7 @@ func (r *recovery) requestRecovery(p *recoveryProducer) {
 	ctx, cancel := context.WithCancel(context.Background())
 	p.recoveryRequestCancel = cancel
 
-	go func(producer uof.Producer, timestamp int64, requestID int) {
+	go func(producer uof.Producer, timestamp int, requestID int) {
 		for {
 			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", producer.Code(), timestamp, requestID)
 			r.log(fmt.Errorf("staring %s", op))
@@ -140,7 +140,7 @@ func (r *recovery) find(producer uof.Producer) *recoveryProducer {
 }
 
 // returns false if we are not interested in that producer
-func (r *recovery) alive(producer uof.Producer, timestamp int64, subscribed int) {
+func (r *recovery) alive(producer uof.Producer, timestamp int, subscribed int) {
 	p := r.find(producer)
 	if p == nil {
 		return // this is expected we are getting alive for all producers in uof (with Subscribed=0)
@@ -179,8 +179,8 @@ func (r *recovery) connectionDown() {
 	}
 }
 
-func (r *recovery) statusChangedAt() int64 {
-	var sc int64
+func (r *recovery) statusChangedAt() int {
+	var sc int
 	for _, r := range r.producers {
 		if r.statusChangedAt > sc {
 			sc = r.statusChangedAt
@@ -191,7 +191,7 @@ func (r *recovery) statusChangedAt() int64 {
 
 func (r *recovery) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
 	r.errc = errc
-	var statusChangedAt int64
+	var statusChangedAt int
 	for m := range in {
 		switch m.Type {
 		case uof.MessageTypeAlive:

@@ -63,7 +63,7 @@ func main() {
 	languages := uof.Languages("en,de,hr")
 
 	//preloadTo := time.Now().Add(24 * time.Hour)
-	// timestamp := int64(0)
+	// timestamp := int(0)
 	preloadTo := time.Now()
 	timestamp := uof.CurrentTimestamp() - 5*60*1000
 

@@ -6,10 +6,10 @@ type ProducerChange struct {
 	Producer   Producer       `json:"producer,omitempty"`
 	Status     ProducerStatus `json:"status,omitempty"`
 	RecoveryID int            `json:"recoveryID,omitempty"`
-	Timestamp  int64          `json:"timestamp,omitempty"`
+	Timestamp  int            `json:"timestamp,omitempty"`
 }
 
-func (p *ProducersChange) Add(producer Producer, timestamp int64) {
+func (p *ProducersChange) Add(producer Producer, timestamp int) {
 	*p = append(*p, ProducerChange{Producer: producer, Timestamp: timestamp})
 }
 

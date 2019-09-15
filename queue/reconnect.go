@@ -45,7 +45,7 @@ func WithReconnect(ctx context.Context, conn *Connection) func() (<-chan *uof.Me
 			defer close(errc)
 			for {
 				out <- uof.NewConnnectionMessage(uof.ConnectionStatusUp) // signal connect
-				drain(conn, out, errc)
+				conn.drain(out, errc)
 				if done() {
 					return
 				}
@@ -57,23 +57,5 @@ func WithReconnect(ctx context.Context, conn *Connection) func() (<-chan *uof.Me
 		}()
 
 		return out, errc
-	}
-}
-
-// drain consumes from connection until msgs chan is closed
-func drain(conn *Connection, out chan<- *uof.Message, errc chan<- error) {
-	go func() {
-		for err := range conn.errs {
-			errc <- errors.Wrap(err, "amqp error")
-		}
-	}()
-
-	for m := range conn.msgs {
-		m, err := uof.NewQueueMessage(m.RoutingKey, m.Body)
-		if err != nil {
-			errc <- errors.Wrap(err, "fail to parse delivery")
-			continue
-		}
-		out <- m
 	}
 }

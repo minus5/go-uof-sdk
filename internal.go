@@ -2,7 +2,7 @@ package uof
 
 type Connection struct {
 	Status    ConnectionStatus `json:"status,omitempty"`
-	Timestamp int64            `json:"timestamp,omitempty"`
+	Timestamp int              `json:"timestamp,omitempty"`
 }
 
 type ConnectionStatus int8

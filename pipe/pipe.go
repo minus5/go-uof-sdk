@@ -174,14 +174,14 @@ func Simple(each func(m *uof.Message) error) stage {
 }
 
 type expireMap struct {
-	m        map[int]int64
+	m        map[int]int
 	interval time.Duration
 	sync.Mutex
 }
 
 func newExpireMap(expireAfter time.Duration) *expireMap {
 	em := &expireMap{
-		m: make(map[int]int64),
+		m: make(map[int]int),
 	}
 	go func() {
 		time.Sleep(expireAfter * 2)
@@ -201,7 +201,7 @@ func (em *expireMap) cleanup() {
 	}
 }
 
-func (em *expireMap) expired(v int64) bool {
+func (em *expireMap) expired(v int) bool {
 	return v < em.checkpoint()
 }
 
@@ -215,13 +215,13 @@ func (em *expireMap) fresh(k int) bool {
 	return false
 }
 
-func (em *expireMap) checkpoint() int64 {
-	return time.Now().UnixNano() - int64(em.interval)
+func (em *expireMap) checkpoint() int {
+	return int(time.Now().UnixNano()) - int(em.interval)
 }
 
 func (em *expireMap) insert(key int) {
 	em.Lock()
 	defer em.Unlock()
 
-	em.m[key] = time.Now().UnixNano()
+	em.m[key] = int(time.Now().UnixNano())
 }

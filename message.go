@@ -21,7 +21,7 @@ type Header struct {
 	SportID    int             `json:"sportID,omitempty"`
 	EventID    int             `json:"eventID,omitempty"`
 	EventURN   URN             `json:"eventURN,omitempty"`
-	ReceivedAt int64           `json:"receivedAt,omitempty"`
+	ReceivedAt int             `json:"receivedAt,omitempty"`
 }
 
 type Body struct {
@@ -47,14 +47,14 @@ type Message struct {
 	Body   `json:",inline"`
 }
 
-var uniqTimestamp func() int64 // ensures unique timestamp value
+var uniqTimestamp func() int // ensures unique timestamp value
 
 func init() {
 	// init makes clousure for lastTs and mu
 	lastTs := CurrentTimestamp()
 	var mu sync.Mutex
 
-	uniqTimestamp = func() int64 {
+	uniqTimestamp = func() int {
 		mu.Lock()
 		defer mu.Unlock()
 		ts := CurrentTimestamp()
@@ -67,11 +67,11 @@ func init() {
 }
 
 // CurrentTimestamp in milliseconds
-func CurrentTimestamp() int64 {
+func CurrentTimestamp() int {
 	return timeToTimestamp(time.Now())
 }
-func timeToTimestamp(t time.Time) int64 {
-	return t.UnixNano() / 1e6
+func timeToTimestamp(t time.Time) int {
+	return int(t.UnixNano()) / 1e6
 }
 
 func NewQueueMessage(routingKey string, body []byte) (*Message, error) {

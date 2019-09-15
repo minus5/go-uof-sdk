@@ -42,7 +42,7 @@ func testOddsChangeUnmarshal(t *testing.T, oc *OddsChange) {
 	assert.Equal(t, 1, *oc.BettingStatus)
 	assert.Equal(t, 2, *oc.BetstopReason)
 
-	assert.Equal(t, int64(12345), *oc.Markets[0].NextBetstop)
+	assert.Equal(t, int(12345), *oc.Markets[0].NextBetstop)
 
 	// market line calcualtion in unmarshal
 	assert.Equal(t, 0, oc.Markets[4].LineID)

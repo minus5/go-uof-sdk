@@ -21,7 +21,7 @@ var producers = []struct {
 	description    string
 	code           string
 	scope          string
-	recoveryWindow int64 // in minutes
+	recoveryWindow int // in minutes
 }{
 	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 4320},
 	{id: 3, name: "Ctrl", description: "Betradar Ctrl", code: "pre", scope: "prematch", recoveryWindow: 4320},
@@ -69,7 +69,7 @@ func (p Producer) Code() string {
 }
 
 // RecoveryWindow in milliseconds
-func (p Producer) RecoveryWindow() int64 {
+func (p Producer) RecoveryWindow() int {
 	for _, d := range producers {
 		if p == d.id {
 			return d.recoveryWindow * 60 * 1000

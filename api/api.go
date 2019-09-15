@@ -48,7 +48,7 @@ const (
 	ping         = "/v1/users/whoami.xml"
 )
 
-func (a *Api) RequestRecovery(producer uof.Producer, timestamp int64, requestID int) error {
+func (a *Api) RequestRecovery(producer uof.Producer, timestamp int, requestID int) error {
 	if timestamp <= 0 {
 		return a.RequestFullOddsRecovery(producer, requestID)
 	}
@@ -57,7 +57,7 @@ func (a *Api) RequestRecovery(producer uof.Producer, timestamp int64, requestID 
 
 // RequestRecoverySinceTimestamp does recovery of odds and stateful messages
 // over the feed since after timestamp. Subscribes client to feed messages.
-func (a *Api) RequestRecoverySinceTimestamp(producer uof.Producer, timestamp int64, requestID int) error {
+func (a *Api) RequestRecoverySinceTimestamp(producer uof.Producer, timestamp int, requestID int) error {
 	return a.post(recovery, &params{Producer: producer, Timestamp: timestamp, RequestID: requestID})
 }
 
@@ -167,7 +167,7 @@ type params struct {
 	Variant            string
 	IncludeMappings    bool
 	Producer           uof.Producer
-	Timestamp          int64
+	Timestamp          int
 	RequestID          int
 	Start              int
 	Limit              int

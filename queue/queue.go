@@ -9,7 +9,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"time"
 
 	"github.com/minus5/uof"
 	"github.com/pkg/errors"
@@ -45,44 +44,37 @@ type Connection struct {
 	reDial func() (*Connection, error)
 }
 
-func (c *Connection) Listen() <-chan uof.QueueMsg {
-	lastTs := CurrentTimestamp()
-	uniqTimestamp := func() int64 {
-		ts := CurrentTimestamp()
-		if ts <= lastTs {
-			ts += 1
-		}
-		lastTs = ts
-		return ts
-	}
-
-	out := make(chan uof.QueueMsg)
+func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
+	out := make(chan *uof.Message)
+	errc := make(chan error)
 	go func() {
 		defer close(out)
-		for m := range c.msgs {
-			out <- uof.QueueMsg{
-				RoutingKey: m.RoutingKey,
-				Body:       m.Body,
-				Timestamp:  uniqTimestamp(),
-			}
-		}
+		defer close(errc)
+		c.drain(out, errc)
 	}()
+	return out, errc
+
+}
+
+// drain consumes from connection until msgs chan is closed
+func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
+	errsDone := make(chan struct{})
 	go func() {
-		for e := range c.errs {
-			fmt.Printf("error: %s\n, code: %d, reason: %s, server: %v, recover: %v\n", e, e.Code, e.Reason, e.Server, e.Recover)
+		for err := range c.errs {
+			errc <- errors.Wrap(err, "amqp error")
 		}
-		fmt.Printf("errs chan closed\n")
+		close(errsDone)
 	}()
 
-	return out
-}
-
-// CurrentTimestamp in milliseconds
-func CurrentTimestamp() int64 {
-	return timeToTimestamp(time.Now())
-}
-func timeToTimestamp(t time.Time) int64 {
-	return t.UnixNano() / 1e6
+	for m := range c.msgs {
+		m, err := uof.NewQueueMessage(m.RoutingKey, m.Body)
+		if err != nil {
+			errc <- errors.Wrap(err, "fail to parse delivery")
+			continue
+		}
+		out <- m
+	}
+	<-errsDone
 }
 
 func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, error) {

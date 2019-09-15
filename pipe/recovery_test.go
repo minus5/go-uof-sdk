@@ -9,7 +9,7 @@ import (
 
 type requestRecoveryParams struct {
 	producer  uof.Producer
-	timestamp int64
+	timestamp int
 	requestID int
 }
 
@@ -17,7 +17,7 @@ type recoveryApiMock struct {
 	calls chan requestRecoveryParams
 }
 
-func (m *recoveryApiMock) RequestRecovery(producer uof.Producer, timestamp int64, requestID int) error {
+func (m *recoveryApiMock) RequestRecovery(producer uof.Producer, timestamp int, requestID int) error {
 	m.calls <- requestRecoveryParams{
 		producer:  producer,
 		timestamp: timestamp,
@@ -36,7 +36,7 @@ func TestRecoveryTimestamp(t *testing.T) {
 	rp.aliveTimestamp = cs - rp.producer.RecoveryWindow() + 1
 	assert.Equal(t, rp.aliveTimestamp, rp.recoveryTimestamp())
 	rp.aliveTimestamp = cs - rp.producer.RecoveryWindow()
-	assert.Equal(t, int64(0), rp.recoveryTimestamp())
+	assert.Equal(t, int(0), rp.recoveryTimestamp())
 }
 
 func TestRecoveryStateMachine(t *testing.T) {

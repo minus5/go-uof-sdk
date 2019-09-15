@@ -17,7 +17,7 @@ type OddsChange struct {
 	// Specifies which producer generated these odds. At any given point in time
 	// there should only be one product generating odds for a particular event.
 	Producer  Producer `xml:"product,attr" json:"producer"`
-	Timestamp int64    `xml:"timestamp,attr" json:"timestamp"`
+	Timestamp int      `xml:"timestamp,attr" json:"timestamp"`
 	Markets   []Market `json:"market,omitempty"`
 	// values in range 0-6   /v1/descriptions/betting_status.xml
 	BettingStatus *int `json:"bettingStatus,omitempty"`
@@ -61,10 +61,10 @@ type Market struct {
 	Outcomes  []Outcome `xml:"outcome,omitempty" json:"outcome,omitempty"`
 	// Timestamp in UTC when to betstop this market. Typically used for outrights
 	// and typically is the start-time of the event the market refers to.
-	NextBetstop *int64 `json:"nextBetstop,omitempty"`
+	NextBetstop *int `json:"nextBetstop,omitempty"`
 }
 type MarketMetadata struct {
-	NextBetstop *int64 `xml:"next_betstop,attr,omitempty" json:"nextBetstop,omitempty"`
+	NextBetstop *int `xml:"next_betstop,attr,omitempty" json:"nextBetstop,omitempty"`
 }
 
 type Outcome struct {
@@ -114,7 +114,7 @@ func (t *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		Specifiers         string `xml:"specifiers,attr,omitempty" json:"specifiers,omitempty"`
 		ExtendedSpecifiers string `xml:"extended_specifiers,attr,omitempty" json:"extendedSpecifiers,omitempty"`
 		MarketMetadata     *struct {
-			NextBetstop *int64 `xml:"next_betstop,attr,omitempty"`
+			NextBetstop *int `xml:"next_betstop,attr,omitempty"`
 		} `xml:"market_metadata,omitempty"`
 	}
 	overlay.T = (*T)(t)
