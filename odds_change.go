@@ -96,7 +96,7 @@ func (t *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 		t.BetstopReason = overlay.Odds.BetstopReason
 		t.Markets = overlay.Odds.Markets
 	}
-	t.EventID = t.EventURN.ID()
+	t.EventID = t.EventURN.EventID()
 	return nil
 }
 
@@ -157,14 +157,6 @@ func (m Market) VariantSpecifier() string {
 	return ""
 }
 
-// func (m Market) VariantID() *uint32 {
-// 	if m.SRSpecifiers == nil {
-// 		return nil
-// 	}
-// 	id := toVariantID(m.VariantSpecifier())
-// 	return &id
-// }
-
 func toSpecifiers(specifiers, extendedSpecifiers string) map[string]string {
 	allSpecifiers := specifiers
 	if extendedSpecifiers != "" {
@@ -186,29 +178,6 @@ func toSpecifiers(specifiers, extendedSpecifiers string) map[string]string {
 	}
 	return sm
 }
-
-// func (o Outcome) ID() uint32 {
-// 	return toOutcomeID(o.SRID)
-// }
-// func (o Outcome) PlayerID() uint32 {
-// 	return toPlayerID(o.SRID)
-// }
-
-// func (o *OddsChange) Markets() []Market {
-// 	if o == nil || o.Odds == nil {
-// 		return nil
-// 	}
-// 	return o.Odds.Markets
-// }
-
-// func (o *OddsChange) market(id uint32) *Market {
-// 	for _, m := range o.Markets() {
-// 		if *m.SRID == id {
-// 			return &m
-// 		}
-// 	}
-// 	return nil
-// }
 
 func toPlayerID(id string) int {
 	if strings.HasPrefix(id, srPlayer) {

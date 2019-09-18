@@ -38,15 +38,15 @@ func TestMessageParseRoutingKeys(t *testing.T) {
 			},
 		},
 		{
-			key: "hi.virt.-.odds_change.7.vs:match.12345.-",
+			key: "hi.virt.-.odds_change.7.vf:match.12345.-",
 			rm: Message{
 				Header: Header{
 					Type:     MessageTypeOddsChange,
 					Scope:    MessageScopeVirtuals,
 					Priority: MessagePriorityHigh,
 					SportID:  7,
-					EventURN: "vs:match:12345",
-					EventID:  12345,
+					EventURN: "vf:match:12345",
+					EventID:  -3160324,
 				},
 			},
 		},

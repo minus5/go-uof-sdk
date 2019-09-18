@@ -36,7 +36,7 @@ func (t *BetStop) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.EventID = t.EventURN.ID()
+	t.EventID = t.EventURN.EventID()
 	t.Status = toMarketStatus(overlay.MarketStatus)
 	return nil
 }

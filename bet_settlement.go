@@ -51,7 +51,7 @@ func (t *BetSettlement) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.EventID = t.EventURN.ID()
+	t.EventID = t.EventURN.EventID()
 	return nil
 }
 
@@ -64,7 +64,7 @@ func (t *RollbackBetSettlement) UnmarshalXML(d *xml.Decoder, start xml.StartElem
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.EventID = t.EventURN.ID()
+	t.EventID = t.EventURN.EventID()
 	return nil
 }
 

@@ -111,14 +111,19 @@ func (m *Message) parseRoutingKey(routingKey string) error {
 		return fmt.Errorf("unknown message type for routing key: %s", routingKey)
 	}
 
-	if eventID != "" {
-		m.EventID, _ = strconv.Atoi(eventID)
-	}
+	// if eventID != "" {
+	// 	m.EventID, _ = strconv.Atoi(eventID)
+	// }
 	if sportID != "" {
 		m.SportID, _ = strconv.Atoi(sportID)
 	}
-	if eventURN != "" && sportID != "" {
+	if eventURN != "" && eventID != "" {
 		m.EventURN = URN(eventURN + ":" + eventID)
+		id := m.EventURN.EventID()
+		if id == 0 {
+			return fmt.Errorf("unknown eventID for URN: %s", m.EventURN)
+		}
+		m.EventID = id
 	}
 
 	return nil

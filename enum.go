@@ -152,9 +152,75 @@ const (
 	URNTypeDraw
 	URNTypeLottery
 	URNTypePlayer
-
 	URNTypeUnknown = int8(-1)
 )
+
+// EventID tries to generate unique id for all types of events. Most comon are
+// those with prefix sr:match for them we reserve positive id-s. All others got
+// range in negative ids.
+// Reference: https://docs.betradar.com/display/BD/MG+-+Entities
+//            http://sdk.sportradar.com/content/unifiedfeedsdk/net/doc/html/e1f73019-73cd-c9f8-0d58-7fe25800abf2.htm
+// List of currently existing event types is taken from the combo box in the
+// integration controll page. From method "Fixture for a specified sport event".
+func (u URN) EventID() int {
+	if u == "" {
+		return 0
+	}
+	p := strings.Split(string(u), ":")
+	if len(p) != 3 {
+		return 0
+	}
+	i, err := strconv.ParseUint(p[2], 10, 64)
+	if err != nil {
+		return 0
+	}
+	id := int(i)
+
+	prefix := p[0] + ":" + p[1]
+
+	suffixID := func(suffix int8) int {
+		return -(id<<8 | int(suffix))
+	}
+
+	switch prefix {
+	case "sr:match":
+		return id
+	case "sr:stage":
+		return suffixID(1)
+	case "sr:season":
+		return suffixID(2)
+	case "sr:tournament":
+		return suffixID(3)
+	case "vf:match":
+		return suffixID(4)
+	case "vf:season":
+		return suffixID(5)
+	case "vf:tournament":
+		return suffixID(6)
+	case "vbl:match":
+		return suffixID(7)
+	case "vbl:season":
+		return suffixID(8)
+	case "vbl:tournament":
+		return suffixID(9)
+	case "vto:match":
+		return suffixID(10)
+	case "vto:season":
+		return suffixID(11)
+	case "vto:tournament":
+		return suffixID(12)
+	case "vdr:stage":
+		return suffixID(13)
+	case "vhc:stage":
+		return suffixID(14)
+	case "vti:match":
+		return suffixID(15)
+	case "vti:tournament":
+		return suffixID(16)
+	}
+
+	return 0
+}
 
 func toLineID(specifiers string) int {
 	if specifiers == "" {

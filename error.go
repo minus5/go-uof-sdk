@@ -7,24 +7,6 @@ import "fmt"
 //   https://commandcenter.blogspot.com/2017/12/error-handling-in-upspin.html
 //   https://middlemost.com/failure-is-your-domain/
 type Error struct {
-
-	// // uspin
-	// Path upspin.PathName
-	// User upspin.UserName
-	// Op   Op
-	// Kind Kind
-	// Err  error
-
-	// // domain
-
-	// // Machine-readable error code.
-	// Code string
-	// // Human-readable message.
-	// Message string
-	// // Logical operation and nested error.
-	// Op  string
-	// Err error
-
 	Severity ErrorSeverity
 	Op       string // logical operation
 	Inner    error  // nested error

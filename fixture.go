@@ -13,8 +13,8 @@ type FixtureRsp struct {
 // Fixtures describe static or semi-static information about matches and races.
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Fixtures+in+the+API
 type Fixture struct {
-	URN                URN       `xml:"id,attr,omitempty" json:"urn"`
 	ID                 int       `xml:"-" json:"id"`
+	URN                URN       `xml:"id,attr,omitempty" json:"urn"`
 	StartTime          time.Time `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
 	StartTimeConfirmed bool      `xml:"start_time_confirmed,attr,omitempty" json:"startTimeConfirmed,omitempty"`
 	StartTimeTbd       bool      `xml:"start_time_tbd,attr,omitempty" json:"startTimeTbd,omitempty"`
@@ -177,7 +177,7 @@ func (t *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.ID = overlay.URN.ID()
+	t.ID = overlay.URN.EventID()
 	t.Sport = overlay.Tournament.Sport
 	t.Category = overlay.Tournament.Category
 	t.Tournament.ID = overlay.Tournament.URN.ID()

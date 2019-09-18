@@ -44,3 +44,10 @@ func TestMessageTypes(t *testing.T) {
 		assert.Equal(t, m, m2)
 	}
 }
+
+func TestURNEventID(t *testing.T) {
+	assert.Equal(t, -0xff01, URN("sr:stage:255").EventID())
+	assert.Equal(t, -0xff02, URN("sr:season:255").EventID())
+	assert.Equal(t, -0xff10, URN("vti:tournament:255").EventID())
+	assert.Equal(t, 0, URN("pero:zdero:255").EventID())
+}
