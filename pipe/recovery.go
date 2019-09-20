@@ -3,6 +3,7 @@ package pipe
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/minus5/uof"
@@ -58,6 +59,7 @@ type recovery struct {
 	requestID int
 	producers []*recoveryProducer
 	errc      chan<- error
+	subProcs  *sync.WaitGroup
 }
 
 type recoveryApi interface {
@@ -66,7 +68,8 @@ type recoveryApi interface {
 
 func newRecovery(api recoveryApi, producers uof.ProducersChange) *recovery {
 	r := &recovery{
-		api: api,
+		api:      api,
+		subProcs: &sync.WaitGroup{},
 	}
 	ct := uof.CurrentTimestamp()
 	for _, p := range producers {
@@ -95,6 +98,14 @@ func (r *recovery) requestRecoveryForAll() {
 	}
 }
 
+func (r *recovery) cancelSubProcs() {
+	for _, p := range r.producers {
+		if c := p.recoveryRequestCancel; c != nil {
+			c()
+		}
+	}
+}
+
 func (r *recovery) requestRecovery(p *recoveryProducer) {
 	p.setStatus(uof.ProducerStatusInRecovery)
 	p.requestID = r.nextRequestID()
@@ -105,8 +116,11 @@ func (r *recovery) requestRecovery(p *recoveryProducer) {
 	ctx, cancel := context.WithCancel(context.Background())
 	p.recoveryRequestCancel = cancel
 
+	r.subProcs.Add(1)
 	go func(producer uof.Producer, timestamp int, requestID int) {
 		for {
+			defer r.subProcs.Done()
+
 			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", producer.Code(), timestamp, requestID)
 			r.log(fmt.Errorf("starting %s", op))
 			err := r.api.RequestRecovery(producer, timestamp, requestID)
@@ -138,7 +152,7 @@ func (r *recovery) find(producer uof.Producer) *recoveryProducer {
 	return nil
 }
 
-// returns false if we are not interested in that producer
+// handles alive message
 func (r *recovery) alive(producer uof.Producer, timestamp int, subscribed int) {
 	p := r.find(producer)
 	if p == nil {
@@ -151,6 +165,8 @@ func (r *recovery) alive(producer uof.Producer, timestamp int, subscribed int) {
 	p.aliveTimestamp = timestamp
 }
 
+// handles snapshot complete messages
+// set that producer state to active
 func (r *recovery) snapshotComplete(producer uof.Producer, requestID int) {
 	p := r.find(producer)
 	if p == nil {
@@ -164,6 +180,7 @@ func (r *recovery) snapshotComplete(producer uof.Producer, requestID int) {
 	p.requestID = 0
 }
 
+// start recovery for all producers
 func (r *recovery) connectionUp() {
 	for _, p := range r.producers {
 		if p.status == uof.ProducerStatusDown {
@@ -172,12 +189,14 @@ func (r *recovery) connectionUp() {
 	}
 }
 
+// set status of all producers to down
 func (r *recovery) connectionDown() {
 	for _, p := range r.producers {
 		p.setStatus(uof.ProducerStatusDown)
 	}
 }
 
+// most recent status change across all producers
 func (r *recovery) statusChangedAt() int {
 	var sc int
 	for _, r := range r.producers {
@@ -188,10 +207,12 @@ func (r *recovery) statusChangedAt() int {
 	return sc
 }
 
-func (r *recovery) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
+func (r *recovery) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {
 	r.errc = errc
 	var statusChangedAt int
 	for m := range in {
+		out <- m
+
 		switch m.Type {
 		case uof.MessageTypeAlive:
 			r.alive(m.Alive.Producer, m.Alive.Timestamp, m.Alive.Subscribed)
@@ -205,7 +226,6 @@ func (r *recovery) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc ch
 				r.connectionDown()
 			}
 		default:
-			out <- m
 			continue
 		}
 		if sc := r.statusChangedAt(); sc > statusChangedAt {
@@ -213,7 +233,8 @@ func (r *recovery) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc ch
 			out <- r.producersChangeMessage()
 		}
 	}
-	r.errc = nil
+	r.cancelSubProcs()
+	return r.subProcs
 }
 
 func (r *recovery) producersChangeMessage() *uof.Message {
@@ -234,5 +255,5 @@ func (r *recovery) producersChangeMessage() *uof.Message {
 
 func Recovery(api recoveryApi, producers uof.ProducersChange) stage {
 	r := newRecovery(api, producers)
-	return Stage(r.loop)
+	return StageWithSubProcesses(r.loop)
 }

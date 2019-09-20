@@ -143,6 +143,7 @@ func TestRecoveryRequests(t *testing.T) {
 	live := r.find(uof.ProducerLiveOdds)
 	assert.Equal(t, live.requestID, recoveryRequestLive.requestID)
 	assert.Equal(t, uof.ProducerStatusInRecovery, live.status)
+	<-out // skip connection status message
 	producersChangeMessage := <-out
 	// check out message
 	assert.Equal(t, uof.MessageTypeProducersChange, producersChangeMessage.Type)
@@ -160,6 +161,7 @@ func TestRecoveryRequests(t *testing.T) {
 			RequestID: recoveryRequestPrematch.requestID},
 		},
 	}
+	<-out //snapshot complete
 	producersChangeMessage = <-out
 	// status of the prematch is changed to the active
 	assert.Equal(t, prematch.requestID, 0)
@@ -195,6 +197,8 @@ func TestRecoveryRequests(t *testing.T) {
 	}
 	recoveryRequestPrematch = <-m.calls
 	assert.Equal(t, uof.ProducerPrematch, recoveryRequestPrematch.producer)
+	<-out //alive messages
+	<-out
 	producersChangeMessage = <-out
 	// check out message, both producers are again in recovery
 	assert.Equal(t, uof.ProducerPrematch, producersChangeMessage.Producers[0].Producer)

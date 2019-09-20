@@ -109,9 +109,6 @@ func logMessage(m *uof.Message) error {
 		fmt.Printf("%-25s status: %s\n", m.Type, m.Connection.Status)
 	case uof.MessageTypeFixture:
 		fmt.Printf("%-25s lang: %s, urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
-		// case uof.MessageTypeOddsChange:
-		// 	fmt.Printf("%-25s urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
-		// 	return nil
 	case uof.MessageTypeMarkets:
 		fmt.Printf("%-25s lang: %s, count: %d\n", m.Type, m.Lang, len(m.Markets))
 	case uof.MessageTypeAlive:
