@@ -17,6 +17,7 @@ type player struct {
 	languages []uof.Lang // suported languages
 	errc      chan<- error
 	out       chan<- *uof.Message
+	rateLimit chan struct{}
 	subProcs  *sync.WaitGroup
 }
 
@@ -27,6 +28,7 @@ func Player(api playerApi, languages []uof.Lang) stage {
 		languages: languages,
 		em:        newExpireMap(time.Hour),
 		subProcs:  &wg,
+		rateLimit: make(chan struct{}, 16),
 	}
 	return StageWithSubProcesses(p.loop)
 }
@@ -48,6 +50,9 @@ func (p *player) get(playerID int) {
 	for _, lang := range p.languages {
 		go func(lang uof.Lang) {
 			defer p.subProcs.Done()
+			p.rateLimit <- struct{}{}
+			defer func() { <-p.rateLimit }()
+
 			key := uof.UIDWithLang(playerID, lang)
 			if p.em.fresh(key) {
 				return
@@ -61,5 +66,4 @@ func (p *player) get(playerID int) {
 			p.em.insert(key)
 		}(lang)
 	}
-
 }

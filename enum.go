@@ -191,32 +191,39 @@ func (u URN) EventID() int {
 		return suffixID(2)
 	case "sr:tournament":
 		return suffixID(3)
-	case "vf:match":
+	case "sr:simple_tournament":
 		return suffixID(4)
-	case "vf:season":
-		return suffixID(5)
-	case "vf:tournament":
-		return suffixID(6)
-	case "vbl:match":
-		return suffixID(7)
-	case "vbl:season":
-		return suffixID(8)
-	case "vbl:tournament":
-		return suffixID(9)
-	case "vto:match":
-		return suffixID(10)
-	case "vto:season":
-		return suffixID(11)
-	case "vto:tournament":
-		return suffixID(12)
-	case "vdr:stage":
-		return suffixID(13)
-	case "vhc:stage":
-		return suffixID(14)
-	case "vti:match":
+
+	case "test:match":
 		return suffixID(15)
-	case "vti:tournament":
+	case "vf:match":
 		return suffixID(16)
+	case "vf:season":
+		return suffixID(17)
+	case "vf:tournament":
+		return suffixID(18)
+	case "vbl:match":
+		return suffixID(19)
+	case "vbl:season":
+		return suffixID(20)
+	case "vbl:tournament":
+		return suffixID(21)
+	case "vto:match":
+		return suffixID(22)
+	case "vto:season":
+		return suffixID(23)
+	case "vto:tournament":
+		return suffixID(24)
+	case "vdr:stage":
+		return suffixID(25)
+	case "vhc:stage":
+		return suffixID(26)
+	case "vti:match":
+		return suffixID(27)
+	case "vti:tournament":
+		return suffixID(28)
+	case "wns:draw":
+		return suffixID(29)
 	}
 
 	return 0

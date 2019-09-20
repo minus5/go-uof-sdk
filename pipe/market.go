@@ -1,6 +1,7 @@
 package pipe
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -18,6 +19,7 @@ type markets struct {
 	em        *expireMap
 	errc      chan<- error
 	out       chan<- *uof.Message
+	rateLimit chan struct{}
 	subProcs  *sync.WaitGroup
 }
 
@@ -29,6 +31,7 @@ func Markets(api marketsApi, languages []uof.Lang) stage {
 		languages: languages,
 		em:        newExpireMap(24 * time.Hour),
 		subProcs:  &wg,
+		rateLimit: make(chan struct{}, 16),
 	}
 	return StageWithSubProcesses(m.loop)
 }
@@ -64,16 +67,23 @@ func (s *markets) getAll() {
 }
 
 func (s *markets) variantMarket(marketID int, variant string) {
+	if strings.HasPrefix(variant, "pre:playerprops") {
+		// TODO it is not working for this type of variant markets
+		return
+	}
 	s.subProcs.Add(len(s.languages))
 
 	for _, lang := range s.languages {
 		go func(lang uof.Lang) {
 			defer s.subProcs.Done()
+			s.rateLimit <- struct{}{}
+			defer func() { <-s.rateLimit }()
 
 			key := uof.UIDWithLang(uof.Hash(variant)<<32|marketID, lang)
 			if s.em.fresh(key) {
 				return
 			}
+
 			ms, err := s.api.MarketVariant(lang, marketID, variant)
 			if err != nil {
 				s.errc <- err

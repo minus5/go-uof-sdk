@@ -124,16 +124,22 @@ func StageWithSubProcesses(looper stageWithDrainFunc) stage {
 					select {
 					case <-looperDone:
 						return
-					case m := <-looperOut:
+					case m, ok := <-looperOut:
+						if !ok {
+							return
+						}
 						out <- m
-					case e := <-looperErrc:
+					case e, ok := <-looperErrc:
+						if !ok {
+							return
+						}
 						errc <- e
 					}
 				}
 			}()
 
 			// looper has to range over in chan until it is closed
-			subProcs := looper(in, out, errc)
+			subProcs := looper(in, looperOut, looperErrc)
 			// stop coping from looperOut/Errc to out/errc chans
 			// and close the out/errc chans
 			close(looperDone)
@@ -181,7 +187,8 @@ type expireMap struct {
 
 func newExpireMap(expireAfter time.Duration) *expireMap {
 	em := &expireMap{
-		m: make(map[int]int),
+		m:        make(map[int]int),
+		interval: expireAfter,
 	}
 	go func() {
 		time.Sleep(expireAfter * 2)

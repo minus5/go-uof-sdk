@@ -19,7 +19,7 @@ func Replay(token string) (*ReplayApi, error) {
 			token:  token,
 		},
 	}
-	return r, r.api.Ping()
+	return r, r.Reset()
 }
 
 type ReplayApi struct {

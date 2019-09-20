@@ -1,15 +1,15 @@
 package main
 
-/*
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/minus5/svckit/file"
 	"github.com/minus5/svckit/log"
 	"github.com/minus5/svckit/signal"
 	"github.com/minus5/uof"
@@ -67,29 +67,47 @@ func debugHTTP() {
 	}
 }
 
+// UOF - Example replays:
+// https://docs.betradar.com/display/BD/UOF+-+Example+replays
 func main() {
 	go debugHTTP()
 
-	conn, err := queue.DialReplay(signal.InteruptContext(), bookmakerID, token)
+	sig := signal.InteruptContext()
+	conn, err := queue.DialReplay(sig, bookmakerID, token)
 	must(err)
-	log.Debug("connected")
 
 	languages := uof.Languages("en,de,hr")
-	stg := api.Staging(token)
+	stg, err := api.Staging(token)
+	must(err)
 	startReplay()
+	var zero time.Time
 
-	done(
-		pipe.FileStore(outputFolder,
-			pipe.VariantMarket(stg, languages,
-				pipe.Player(stg, languages,
-					pipe.Fixture(stg, languages,
-						pipe.Markets(stg, languages,
-							pipe.ToMessage(
-								conn.Listen())))))))
+	fmt.Printf("▶️")
+	errc := pipe.Build(
+		queue.WithReconnect(sig, conn),
+		pipe.Markets(stg, languages),
+		pipe.Fixture(stg, languages, zero),
+		pipe.Player(stg, languages),
+		pipe.BetStop(),
+		pipe.FileStore("./tmp"),
+		pipe.Simple(show),
+	)
+
+	for err := range errc {
+		var ue uof.Error
+
+		fmt.Printf("%s ", time.Now().Format("2006-01-02 15:04:05"))
+		if errors.As(err, &ue) {
+			fmt.Println(ue.Error())
+		} else {
+			fmt.Printf("unknown error %s\n", err)
+		}
+	}
 }
 
 func startReplay() {
-	rpl := api.Replay(token)
+	rpl, err := api.Replay(token)
+	must(err)
 	if eventID > 0 {
 		must(rpl.StartEvent(uof.NewEventURN(eventID), speed, maxDelay))
 	}
@@ -111,42 +129,21 @@ func must(err error) {
 	}
 }
 
-func done(in <-chan *uof.Message) {
-	for m := range in {
-		v := func() string {
-			switch m.Type {
-			case uof.MessageTypeAlive:
-				return "a"
-			case uof.MessageTypeMarkets:
-				return "m"
-			case uof.MessageTypePlayer:
-				return "p"
-			case uof.MessageTypeFixture:
-				return "f"
-			default:
-				return "."
-			}
-		}()
-		fmt.Printf("%s", v)
-	}
-}
-
-func saveMsgs(in <-chan uof.QueueMsg) <-chan uof.QueueMsg {
-	out := make(chan uof.QueueMsg, 128)
-	go func() {
-		defer close(out)
-		for m := range in {
-			out <- m
-			saveMsg(m)
+func show(m *uof.Message) error {
+	v := func() string {
+		switch m.Type {
+		case uof.MessageTypeAlive:
+			return "a"
+		case uof.MessageTypeMarkets:
+			return "m"
+		case uof.MessageTypePlayer:
+			return "p"
+		case uof.MessageTypeFixture:
+			return "f"
+		default:
+			return "."
 		}
-	}()
-	return out
-}
-
-func saveMsg(m uof.QueueMsg) {
-	fn := fmt.Sprintf("%s/%011d-%s", outputFolder, m.Timestamp, m.RoutingKey)
-	if err := file.Save(fn, m.Body); err != nil {
-		log.Fatal(err)
 	}
+	fmt.Printf("%s", v())
+	return nil
 }
-*/

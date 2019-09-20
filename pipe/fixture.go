@@ -91,6 +91,9 @@ func (f *fixture) preloadLoop(in <-chan *uof.Message) []uof.URN {
 }
 
 func (f *fixture) preload() {
+	if f.preloadTo.IsZero() {
+		return
+	}
 	var wg sync.WaitGroup
 	wg.Add(len(f.languages))
 	for _, lang := range f.languages {

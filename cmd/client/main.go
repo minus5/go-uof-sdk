@@ -77,11 +77,10 @@ func main() {
 		pipe.Markets(stg, languages),
 		pipe.Fixture(stg, languages, preloadTo),
 		pipe.Player(stg, languages),
-		pipe.Simple(logMessage),
 		pipe.FileStore("./tmp"),
 		pipe.Recovery(stg, ps),
 		pipe.BetStop(),
-		pipe.Simple(logProducersChange),
+		pipe.Simple(logMessage),
 	)
 
 	for err := range errc {
@@ -94,13 +93,6 @@ func main() {
 			fmt.Printf("unknown error %s\n", err)
 		}
 	}
-}
-
-func logProducersChange(m *uof.Message) error {
-	if m.Type == uof.MessageTypeProducersChange {
-		return logMessage(m)
-	}
-	return nil
 }
 
 func logMessage(m *uof.Message) error {

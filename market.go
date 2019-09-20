@@ -44,7 +44,7 @@ type MarketDescription struct {
 	IncludesOutcomesOfType string            `xml:"includes_outcomes_of_type,attr,omitempty" json:"includesOutcomesOfType,omitempty"`
 	Variant                string            `xml:"variant,attr,omitempty" json:"variant,omitempty"`
 	OutcomeType            OutcomeType       `json:"outcomeType,omitempty"`
-	Groups                 []string          `json:"groups"`
+	Groups                 []string          `json:"groups,omitempty"`
 	Outcomes               []MarketOutcome   `xml:"outcomes>outcome,omitempty" json:"outcomes,omitempty"`
 	Specifiers             []MarketSpecifier `xml:"specifiers>specifier,omitempty" json:"specifiers,omitempty"`
 	Attributes             []MarketAttribute `xml:"attributes>attribute,omitempty" json:"attributes,omitempty"`
@@ -53,19 +53,19 @@ type MarketDescription struct {
 
 type MarketOutcome struct {
 	ID          int    `json:"id"`
-	Name        string `xml:"name,attr" json:"name"`
+	Name        string `xml:"name,attr" json:"name,omitempty"`
 	Description string `xml:"description,attr,omitempty" json:"description,omitempty"`
 }
 
 type MarketSpecifier struct {
 	Type        SpecifierType `json:"type"`
-	Name        string        `xml:"name,attr" json:"name"`
+	Name        string        `xml:"name,attr" json:"name,omitempty"`
 	Description string        `xml:"description,attr,omitempty" json:"description,omitempty"`
 }
 
 type MarketAttribute struct {
-	Name        string `xml:"name,attr" json:"name"`
-	Description string `xml:"description,attr" json:"description"`
+	Name        string `xml:"name,attr" json:"name,omitempty"`
+	Description string `xml:"description,attr" json:"description,omitempty"`
 }
 
 // // currently unused but parsing is valid
@@ -90,7 +90,7 @@ func (t *MarketDescription) UnmarshalXML(d *xml.Decoder, start xml.StartElement)
 	var overlay struct {
 		*T
 		Groups      string `xml:"groups,attr"`
-		OutcomeType string `xml:"outcome_type,attr,omitempty" json:"outcomeType,omitempty"`
+		OutcomeType string `xml:"outcome_type,attr,omitempty"`
 	}
 	overlay.T = (*T)(t)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
@@ -106,7 +106,7 @@ func (t *MarketOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 	type T MarketOutcome
 	var overlay struct {
 		*T
-		ID string `xml:"id,attr" json:"id"`
+		ID string `xml:"id,attr"`
 	}
 	overlay.T = (*T)(t)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
