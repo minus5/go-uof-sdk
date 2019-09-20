@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -43,6 +44,26 @@ func TestIntegration(t *testing.T) {
 	for _, s := range tests {
 		t.Run(s.name, func(t *testing.T) { s.f(t, a) })
 	}
+}
+
+func TestBetCancelSeedData(t *testing.T) {
+	if os.Getenv("seed_data") == "" {
+		t.Skip("skipping test; $seed_data env not set")
+	}
+	token, ok := os.LookupEnv(EnvToken)
+	if !ok {
+		t.Skip("integration token not found")
+	}
+
+	a, err := Staging(token)
+	assert.NoError(t, err)
+
+	mm, err := a.Markets(uof.LangEN)
+	assert.NoError(t, err)
+
+	buf, err := json.Marshal(mm.Groups())
+	assert.NoError(t, err)
+	fmt.Printf("bet cancel seed data: \n%s\n", buf)
 }
 
 func testMarkets(t *testing.T, a *Api) {

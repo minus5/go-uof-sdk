@@ -66,7 +66,7 @@ func main() {
 	//preloadTo := time.Now().Add(24 * time.Hour)
 	// timestamp := int(0)
 	preloadTo := time.Now()
-	timestamp := uof.CurrentTimestamp() - 5*60*1000
+	timestamp := uof.CurrentTimestamp() - 5*60*1000 // -5 minutes
 
 	var ps uof.ProducersChange
 	ps.Add(uof.ProducerPrematch, timestamp)
@@ -76,9 +76,11 @@ func main() {
 		queue.WithReconnect(sig, conn),
 		pipe.Markets(stg, languages),
 		pipe.Fixture(stg, languages, preloadTo),
+		pipe.Player(stg, languages),
 		pipe.Simple(logMessage),
 		pipe.FileStore("./tmp"),
 		pipe.Recovery(stg, ps),
+		pipe.BetStop(),
 		pipe.Simple(logProducersChange),
 	)
 

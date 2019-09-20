@@ -66,7 +66,14 @@ func TestBetStop(t *testing.T) {
 
 	assert.Equal(t, 471123, bc.EventID)
 	assert.Equal(t, MarketStatusSuspended, bc.Status)
-	assert.Equal(t, "all", bc.Groups)
+	assert.Equal(t, []string(nil), bc.Groups)
+	assert.Len(t, bc.Groups, 0)
+
+	buf = []byte(`<bet_stop timestamp="12345" product="3" event_id="sr:match:471123" groups="10_min|180s"/>`)
+	bc = &BetStop{}
+	err = xml.Unmarshal(buf, bc)
+	assert.Nil(t, err)
+	assert.Len(t, bc.Groups, 2)
 }
 
 func TestFixtureChange(t *testing.T) {

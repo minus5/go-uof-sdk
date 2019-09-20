@@ -24,6 +24,18 @@ func (md MarketDescriptions) Find(id int) *MarketDescription {
 	return nil
 }
 
+func (md MarketDescriptions) Groups() map[string][]int {
+	marketGroups := make(map[string][]int)
+	for _, m := range md {
+		for _, group := range m.Groups {
+			a := marketGroups[group]
+			a = append(a, m.ID)
+			marketGroups[group] = a
+		}
+	}
+	return marketGroups
+}
+
 type MarketDescription struct {
 	ID                     int               `xml:"id,attr" json:"id"`
 	VariantID              int               `json:"variantID,omitempty"`
