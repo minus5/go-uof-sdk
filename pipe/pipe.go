@@ -7,6 +7,10 @@ import (
 	"github.com/minus5/uof"
 )
 
+// Number of concurent api calls of one type. For example: no more than x
+// running Player api calls in any point in time.
+const ConcurentApiCallsLimit = 16
+
 // What is a pipeline?
 // There's no formal definition of a pipeline in Go; it's just one of many kinds
 // of concurrent programs. Informally, a pipeline is a series of stages

@@ -22,13 +22,12 @@ type player struct {
 }
 
 func Player(api playerApi, languages []uof.Lang) stage {
-	var wg sync.WaitGroup
 	p := &player{
 		api:       api,
 		languages: languages,
 		em:        newExpireMap(time.Hour),
-		subProcs:  &wg,
-		rateLimit: make(chan struct{}, 16),
+		subProcs:  &sync.WaitGroup{},
+		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
 	}
 	return StageWithSubProcesses(p.loop)
 }

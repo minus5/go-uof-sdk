@@ -1,7 +1,6 @@
 package pipe
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -15,11 +14,14 @@ type fixtureApi interface {
 
 type fixture struct {
 	api       fixtureApi
-	languages []uof.Lang           // suported languages
-	requests  map[string]time.Time // last sucessful request time
+	languages []uof.Lang // suported languages
+	//requests  map[string]time.Time // last sucessful request time
+	em        *expireMap
 	errc      chan<- error
 	out       chan<- *uof.Message
 	preloadTo time.Time
+	subProcs  *sync.WaitGroup
+	rateLimit chan struct{}
 	sync.Mutex
 }
 
@@ -27,10 +29,13 @@ func Fixture(api fixtureApi, languages []uof.Lang, preloadTo time.Time) stage {
 	f := &fixture{
 		api:       api,
 		languages: languages,
-		requests:  make(map[string]time.Time),
+		em:        newExpireMap(time.Minute),
+		//requests:  make(map[string]time.Time),
+		subProcs:  &sync.WaitGroup{},
+		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
 		preloadTo: preloadTo,
 	}
-	return Stage(f.loop)
+	return StageWithSubProcesses(f.loop)
 }
 
 // Na sto sve pazim ovdje:
@@ -40,11 +45,8 @@ func Fixture(api fixtureApi, languages []uof.Lang, preloadTo time.Time) stage {
 //  * nakon sto zavrsi preload napravim one koje preload nije ubacio
 //  * ne radim request cesce od svakih x (bitno za replay, da ne proizvedem puno requesta)
 //  * kada radim scenario replay htio bi da samo jednom opali, dok je neki in process da na pokrece isti
-func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
+func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {
 	f.errc, f.out = errc, out
-	defer func() {
-		f.errc, f.out = nil, nil
-	}()
 
 	for _, u := range f.preloadLoop(in) {
 		f.getFixture(u)
@@ -56,6 +58,7 @@ func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 		}
 	}
 
+	return f.subProcs
 }
 
 func (f *fixture) eventURN(m *uof.Message) uof.URN {
@@ -68,7 +71,10 @@ func (f *fixture) eventURN(m *uof.Message) uof.URN {
 // returns list of fixture changes urns appeared in 'in' during preload
 func (f *fixture) preloadLoop(in <-chan *uof.Message) []uof.URN {
 	done := make(chan struct{})
+
+	f.subProcs.Add(1)
 	go func() {
+		defer f.subProcs.Done()
 		f.preload()
 		close(done)
 	}()
@@ -102,7 +108,7 @@ func (f *fixture) preload() {
 			in, errc := f.api.Fixtures(lang, f.preloadTo)
 			for x := range in {
 				f.out <- uof.NewFixtureMessage(lang, x)
-				f.done(lang, x.URN)
+				f.em.insert(uof.UIDWithLang(x.URN.EventID(), lang))
 			}
 			for err := range errc {
 				f.errc <- err
@@ -113,43 +119,24 @@ func (f *fixture) preload() {
 }
 
 func (f *fixture) getFixture(eventURN uof.URN) {
+	f.subProcs.Add(len(f.languages))
 	for _, lang := range f.languages {
-		if f.requestedRecently(lang, eventURN) {
-			continue
-		}
 		go func(lang uof.Lang) {
+			defer f.subProcs.Done()
+			f.rateLimit <- struct{}{}
+			defer func() { <-f.rateLimit }()
+
+			key := uof.UIDWithLang(eventURN.EventID(), lang)
+			if f.em.fresh(key) {
+				return
+			}
 			x, err := f.api.Fixture(lang, eventURN)
 			if err != nil {
+				f.errc <- err
 				return
 			}
 			f.out <- uof.NewFixtureMessage(lang, *x)
-			f.done(lang, eventURN)
+			f.em.insert(key)
 		}(lang)
 	}
-}
-
-func (f *fixture) done(lang uof.Lang, u uof.URN) {
-	f.Lock()
-	defer f.Unlock()
-
-	f.requests[f.key(lang, u)] = time.Now()
-}
-
-func (f *fixture) key(lang uof.Lang, u uof.URN) string {
-	return fmt.Sprintf("%s %d", u, lang)
-}
-
-func (f *fixture) requestedRecently(lang uof.Lang, eventURN uof.URN) bool {
-	f.Lock()
-	defer f.Unlock()
-
-	key := f.key(lang, eventURN)
-	if last, ok := f.requests[key]; ok {
-		return last.After(f.checkpoint())
-	}
-	return false
-}
-
-func (f *fixture) checkpoint() time.Time {
-	return time.Now().Add(-time.Minute)
 }
