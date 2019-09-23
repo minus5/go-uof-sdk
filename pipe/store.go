@@ -2,11 +2,12 @@ package pipe
 
 import (
 	"fmt"
+	"io/ioutil"
+	"path"
 
 	"os"
 	"sync"
 
-	"github.com/minus5/svckit/file"
 	"github.com/minus5/uof"
 )
 
@@ -18,7 +19,7 @@ func FileStore(root string) stage {
 			wg.Add(1)
 			go func(m *uof.Message) {
 				fn := root + "/" + filename(m)
-				if err := file.Save(fn, m.Marshal()); err != nil {
+				if err := save(fn, m.Marshal()); err != nil {
 					errc <- uof.Notice("file save", err)
 				}
 				wg.Done()
@@ -60,4 +61,13 @@ func emptyDir(root string) error {
 		return err
 	}
 	return os.MkdirAll(root, os.ModePerm)
+}
+
+func save(filename string, buf []byte) error {
+	dir, _ := path.Split(filename)
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filename, buf, 0644)
 }

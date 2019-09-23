@@ -7,12 +7,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/minus5/svckit/signal"
 	"github.com/minus5/uof"
 	"github.com/minus5/uof/api"
 	"github.com/minus5/uof/pipe"
@@ -68,12 +69,24 @@ func debugHTTP() {
 	}
 }
 
+func interuptContext() context.Context {
+	ctx, stop := context.WithCancel(context.Background())
+	go func() {
+		c := make(chan os.Signal, 1)
+		//SIGINT je ctrl-C u shell-u, SIGTERM salje upstart kada se napravi sudo stop ...
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		<-c
+		stop()
+	}()
+	return ctx
+}
+
 // UOF - Example replays:
 // https://docs.betradar.com/display/BD/UOF+-+Example+replays
 func main() {
 	go debugHTTP()
 
-	sig := signal.InteruptContext()
+	sig := interuptContext()
 	conn, err := queue.DialReplay(sig, bookmakerID, token)
 	must(err)
 

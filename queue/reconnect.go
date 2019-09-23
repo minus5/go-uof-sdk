@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/minus5/svckit/signal"
+	"github.com/cenkalti/backoff/v3"
 	"github.com/minus5/uof"
 	"github.com/pkg/errors"
 )
@@ -50,7 +50,7 @@ func WithReconnect(ctx context.Context, conn *Connection) func() (<-chan *uof.Me
 					return
 				}
 				out <- uof.NewConnnectionMessage(uof.ConnectionStatusDown) // signal connection lost
-				if err := signal.WithBackoff(ctx, reconnect, maxInterval, maxElapsedTime); err != nil {
+				if err := withBackoff(ctx, reconnect, maxInterval, maxElapsedTime); err != nil {
 					return
 				}
 			}
@@ -58,4 +58,13 @@ func WithReconnect(ctx context.Context, conn *Connection) func() (<-chan *uof.Me
 
 		return out, errc
 	}
+}
+
+func withBackoff(ctx context.Context, op func() error,
+	maxInterval, maxElapsedTime time.Duration) error {
+	b := backoff.NewExponentialBackOff()
+	b.MaxInterval = maxInterval
+	b.MaxElapsedTime = maxElapsedTime
+	bc := backoff.WithContext(b, ctx)
+	return backoff.Retry(op, bc)
 }

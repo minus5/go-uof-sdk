@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,9 +10,10 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/minus5/svckit/signal"
 	"github.com/minus5/uof"
 	"github.com/minus5/uof/api"
 	"github.com/minus5/uof/pipe"
@@ -47,10 +49,22 @@ func debugHTTP() {
 	}
 }
 
+func interuptContext() context.Context {
+	ctx, stop := context.WithCancel(context.Background())
+	go func() {
+		c := make(chan os.Signal, 1)
+		//SIGINT je ctrl-C u shell-u, SIGTERM salje upstart kada se napravi sudo stop ...
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		<-c
+		stop()
+	}()
+	return ctx
+}
+
 func main() {
 	go debugHTTP()
 
-	sig := signal.InteruptContext()
+	sig := interuptContext()
 	conn, err := queue.DialStaging(sig, bookmakerID, token)
 	if err != nil {
 		log.Fatal(err)
