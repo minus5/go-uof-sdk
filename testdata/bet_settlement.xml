@@ -2,19 +2,52 @@
 <bet_settlement certainty="2" product="3" event_id="sr:match:16807109" timestamp="1547538073717">
   <outcomes>
     <market id="193">
-        <outcome id="74" result="0"/>
-        <outcome id="76" result="1"/>
+      <outcome id="74" result="0"/>
+      <outcome id="76" result="1"/>
     </market>
     <market id="204" specifiers="setnr=1|total=9.5">
-        <outcome id="12" result="0"/>
-        <outcome id="13" result="1"/>
+      <outcome id="12" result="0"/>
+      <outcome id="13" result="1"/>
     </market>
     <market id="201">
-        <outcome id="863" result="0" void_factor="1"/>
-        <outcome id="864" result="0" void_factor="0.5"/>
-        <outcome id="861" result="1" void_factor="0.5"/>
-        <outcome id="862" result="0"/>
+      <outcome id="863" result="0" void_factor="1"/>
+      <outcome id="864" result="0" void_factor="0.5"/>
+      <outcome id="861" result="1" void_factor="0.5"/>
+      <outcome id="862" result="0"/>
     </market>
-    </outcomes>
+    <market id="535" specifiers="variant=pre:markettext:52751">
+      <outcome dead_heat_factor="0.5" id="pre:outcometext:6388892" result="1"/>
+      <outcome dead_heat_factor="0.5" id="pre:outcometext:6408970" result="1"/>
+      <outcome id="pre:outcometext:30101" result="0"/>
+      <outcome id="pre:outcometext:33493" result="0"/>
+      <outcome id="pre:outcometext:34348" result="0"/>
+      <outcome id="pre:outcometext:34350" result="0"/>
+      <outcome id="pre:outcometext:43731" result="0"/>
+      <outcome id="pre:outcometext:71743" result="0"/>
+      <outcome id="pre:outcometext:72382" result="0"/>
+      <outcome id="pre:outcometext:218149" result="0"/>
+      <outcome id="pre:outcometext:552248" result="0"/>
+      <outcome id="pre:outcometext:628059" result="0"/>
+      <outcome id="pre:outcometext:661983" result="0"/>
+      <outcome id="pre:outcometext:932278" result="0"/>
+      <outcome id="pre:outcometext:1023212" result="0"/>
+      <outcome id="pre:outcometext:1092357" result="0"/>
+      <outcome id="pre:outcometext:1287045" result="0"/>
+      <outcome id="pre:outcometext:1447256" result="0"/>
+      <outcome id="pre:outcometext:1679292" result="0"/>
+      <outcome id="pre:outcometext:5225860" result="0"/>
+      <outcome id="pre:outcometext:5265881" result="0"/>
+      <outcome id="pre:outcometext:5540451" result="0"/>
+      <outcome id="pre:outcometext:6370264" result="0"/>
+      <outcome id="pre:outcometext:6565214" result="0"/>
+      <outcome id="pre:outcometext:6750031" result="0"/>
+      <outcome id="pre:outcometext:7215649" result="0"/>
+      <outcome id="pre:outcometext:7318509" result="0"/>
+      <outcome id="pre:outcometext:7854595" result="0"/>
+      <outcome id="pre:outcometext:8011789" result="0"/>
+      <outcome id="pre:outcometext:8126259" result="0"/>
+      <outcome id="pre:outcometext:8165859" result="0"/>
+      <outcome id="pre:outcometext:8320089" result="0"/>
+    </market>
+  </outcomes>
 </bet_settlement>
-

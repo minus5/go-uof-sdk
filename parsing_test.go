@@ -55,6 +55,14 @@ func TestBetSettlement(t *testing.T) {
 	assert.Equal(t, OutcomeResultVoid, bs.Markets[2].Outcomes[0].Result)
 	assert.Equal(t, OutcomeResultHalfLose, bs.Markets[2].Outcomes[1].Result)
 	assert.Equal(t, OutcomeResultHalfWin, bs.Markets[2].Outcomes[2].Result)
+
+	assert.Equal(t, OutcomeResultWinWithDeadHead, bs.Markets[3].Outcomes[0].Result)
+	assert.Equal(t, OutcomeResultWinWithDeadHead, bs.Markets[3].Outcomes[1].Result)
+	assert.Equal(t, OutcomeResultLose, bs.Markets[3].Outcomes[2].Result)
+
+	assert.Equal(t, 0.5, bs.Markets[3].Outcomes[0].DeadHeatFactor)
+	assert.Equal(t, 0.5, bs.Markets[3].Outcomes[1].DeadHeatFactor)
+	assert.Equal(t, 0.0, bs.Markets[3].Outcomes[2].DeadHeatFactor)
 }
 
 func TestBetStop(t *testing.T) {

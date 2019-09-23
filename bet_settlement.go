@@ -30,7 +30,7 @@ type BetSettlementMarket struct {
 type BetSettlementOutcome struct {
 	ID             int           `json:"id"`
 	Result         OutcomeResult `json:"result"`
-	DeadHeatFactor *float64      `xml:"dead_heat_factor,attr,omitempty" json:"deadHeatFactor,omitempty"`
+	DeadHeatFactor float64       `xml:"dead_heat_factor,attr,omitempty" json:"deadHeatFactor,omitempty"`
 }
 
 type RollbackBetSettlement struct {
@@ -87,16 +87,20 @@ func (t *BetSettlementOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 	type T BetSettlementOutcome
 	var overlay struct {
 		*T
-		ID         string   `xml:"id,attr" json:"urn"`
-		Result     *int     `xml:"result,attr" json:"result"`                              // May be one of 0, 1, -1
-		VoidFactor *float64 `xml:"void_factor,attr,omitempty" json:"voidFactor,omitempty"` // May be one of 0.5, 1
+		ID             string   `xml:"id,attr"`
+		Result         *int     `xml:"result,attr"`                // May be one of 0, 1, -1
+		VoidFactor     *float64 `xml:"void_factor,attr,omitempty"` // May be one of 0.5, 1
+		DeadHeatFactor *float64 `xml:"dead_heat_factor,attr,omitempty"`
 	}
 	overlay.T = (*T)(t)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
 	t.ID = toOutcomeID(overlay.ID)
-	t.Result = toResult(overlay.Result, overlay.VoidFactor)
+	t.Result = toResult(overlay.Result, overlay.VoidFactor, overlay.DeadHeatFactor)
+	if t.Result == OutcomeResultWinWithDeadHead && overlay.DeadHeatFactor != nil {
+		t.DeadHeatFactor = *overlay.DeadHeatFactor
+	}
 	return nil
 }
 
@@ -110,7 +114,7 @@ func (t *BetSettlementOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 // 1.0. If half of the bet on an outcome should be refunded void_factor is set
 // to 0.5.
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Bet+settlement
-func toResult(resultN *int, voidFactorN *float64) OutcomeResult {
+func toResult(resultN *int, voidFactorN *float64, deadHeatFactor *float64) OutcomeResult {
 	if resultN == nil {
 		return OutcomeResultUnknown
 	}
@@ -127,6 +131,9 @@ func toResult(resultN *int, voidFactorN *float64) OutcomeResult {
 		return OutcomeResultLose
 	}
 	if result == 1 && voidFactor == 0 {
+		if deadHeatFactor != nil && *deadHeatFactor > 0 {
+			return OutcomeResultWinWithDeadHead
+		}
 		return OutcomeResultWin
 	}
 	if result == 0 && voidFactor == 1 {

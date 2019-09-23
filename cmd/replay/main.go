@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -37,7 +38,7 @@ var (
 	bookmakerID  string
 	token        string
 	scenarioID   int
-	eventID      int
+	eventURN     uof.URN
 	sample       bool
 	speed        int
 	maxDelay     int
@@ -46,10 +47,12 @@ var (
 
 func init() {
 	var show bool
+	var event string
+
 	flag.IntVar(&speed, "speed", 100, "replay speed, speed times faster than in reality")
 	flag.IntVar(&maxDelay, "max-delay", 10, "maximum delay between messages in milliseconds (this is helpful especially in pre-match odds where delay can be even a few hours or more)")
 	flag.IntVar(&scenarioID, "scenario", 0, "scenario (1,2 or 3) to replay")
-	flag.IntVar(&eventID, "event", 0, "event to replay")
+	flag.StringVar(&event, "event", "", "event to replay")
 	flag.BoolVar(&sample, "sample", false, "replay sample events")
 	flag.BoolVar(&show, "show", false, "show interesting sample events and exit")
 	flag.StringVar(&outputFolder, "out", "./tmp", "output fodler location")
@@ -58,6 +61,12 @@ func init() {
 	if show {
 		showSampleEvents()
 		os.Exit(0)
+	}
+	if event != "" {
+		eventURN = uof.URN(event)
+		if id, err := strconv.Atoi(event); err == nil {
+			eventURN = uof.NewEventURN(id)
+		}
 	}
 	token = env(EnvToken)
 	bookmakerID = env(EnvBookmakerID)
@@ -122,8 +131,8 @@ func main() {
 func startReplay(sig context.Context) {
 	rpl, err := api.Replay(sig, token)
 	must(err)
-	if eventID > 0 {
-		must(rpl.StartEvent(uof.NewEventURN(eventID), speed, maxDelay))
+	if string(eventURN) != "" {
+		must(rpl.StartEvent(eventURN, speed, maxDelay))
 	}
 	if scenarioID > 0 {
 		must(rpl.StartScenario(scenarioID, speed, maxDelay))
