@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"time"
 
-	"github.com/minus5/svckit/log"
 	"github.com/minus5/svckit/signal"
 	"github.com/minus5/uof"
 	"github.com/minus5/uof/api"
@@ -26,7 +26,7 @@ const (
 func env(name string) string {
 	e, ok := os.LookupEnv(name)
 	if !ok {
-		log.Errorf("env %s not found", name)
+		log.Printf("env %s not found", name)
 	}
 	return e
 }
@@ -55,7 +55,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stg, err := api.Staging(token)
+	stg, err := api.Staging(sig, token)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,9 +77,9 @@ func main() {
 		pipe.Markets(stg, languages),
 		pipe.Fixture(stg, languages, preloadTo),
 		pipe.Player(stg, languages),
-		pipe.FileStore("./tmp"),
 		pipe.Recovery(stg, ps),
 		pipe.BetStop(),
+		pipe.FileStore("./tmp"),
 		pipe.Simple(logMessage),
 	)
 

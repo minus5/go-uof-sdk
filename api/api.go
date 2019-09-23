@@ -3,12 +3,14 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"text/template"
+	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/minus5/uof"
 )
 
@@ -17,25 +19,30 @@ const (
 	productionServer = "api.betradar.com"
 )
 
+var RequestTimeout = 32 * time.Second
+
 type Api struct {
-	server string
-	token  string
+	server  string
+	token   string
+	exitSig context.Context
 }
 
 // Staging connects to the staging system
-func Staging(token string) (*Api, error) {
+func Staging(exitSig context.Context, token string) (*Api, error) {
 	a := &Api{
-		server: stagingServer,
-		token:  token,
+		server:  stagingServer,
+		token:   token,
+		exitSig: exitSig,
 	}
 	return a, a.Ping()
 }
 
 // Production connects to the production system
-func Production(token string) (*Api, error) {
+func Production(exitSig context.Context, token string) (*Api, error) {
 	a := &Api{
-		server: productionServer,
-		token:  token,
+		server:  productionServer,
+		token:   token,
+		exitSig: exitSig,
 	}
 	return a, a.Ping()
 }
@@ -94,63 +101,59 @@ func (a *Api) getAs(o interface{}, tpl string, p *params) error {
 	return nil
 }
 
-// http get request
+// make http get request
 func (a *Api) get(tpl string, p *params) ([]byte, error) {
+	return a.httpRequest(tpl, p, "GET")
+}
+
+// make http put request
+func (a *Api) put(tpl string, p *params) error {
+	_, err := a.httpRequest(tpl, p, "PUT")
+	return err
+}
+
+// make http post request
+func (a *Api) post(tpl string, p *params) error {
+	_, err := a.httpRequest(tpl, p, "POST")
+	return err
+}
+
+func (a *Api) httpRequest(tpl string, p *params, method string) ([]byte, error) {
 	path := runTemplate(tpl, p)
 	url := fmt.Sprintf("https://%s%s", a.server, path)
-	client := http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+
+	req, err := retryablehttp.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, uof.E("http.NewRequest", uof.ApiError{URL: url, Inner: err})
 	}
+	if a.exitSig != nil {
+		ctx, _ := context.WithTimeout(a.exitSig, RequestTimeout)
+		req = req.WithContext(ctx)
+	}
+
+	client := retryablehttp.NewClient()
+	client.Logger = nil
+	client.RetryWaitMin = 1 * time.Second
+	client.RetryWaitMax = 16 * time.Second
+	client.RetryMax = 4
 
 	req.Header.Set("x-access-token", a.token)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, uof.E("client.Do", uof.ApiError{URL: url, Inner: err})
 	}
+
 	defer resp.Body.Close()
 	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, uof.E("http read body", uof.ApiError{URL: url, Inner: err})
+		return nil, uof.E("http.Body", uof.ApiError{URL: url, Inner: err})
 	}
+
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		err := uof.E("http response", uof.ApiError{URL: url, StatusCode: resp.StatusCode, Response: string(buf)})
-		return nil, err
+		return nil, uof.E("http.StatusCode", uof.ApiError{URL: url, StatusCode: resp.StatusCode, Response: string(buf)})
 	}
+
 	return buf, nil
-}
-
-func (a *Api) put(tpl string, p *params) error {
-	return a.httpRequest(tpl, p, "PUT")
-}
-
-// http post request
-func (a *Api) post(tpl string, p *params) error {
-	return a.httpRequest(tpl, p, "POST")
-}
-
-func (a *Api) httpRequest(tpl string, p *params, method string) error {
-	path := runTemplate(tpl, p)
-	url := fmt.Sprintf("https://%s%s", a.server, path)
-	client := http.Client{}
-	req, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		return uof.E("http.NewRequest", uof.ApiError{URL: url, Inner: err})
-	}
-
-	req.Header.Set("x-access-token", a.token)
-	resp, err := client.Do(req)
-	if err != nil {
-		return uof.E("client.Do", uof.ApiError{URL: url, Inner: err})
-	}
-	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		defer resp.Body.Close()
-		buf, _ := ioutil.ReadAll(resp.Body)
-		return uof.E("http response", uof.ApiError{URL: url, StatusCode: resp.StatusCode, Response: string(buf)})
-	}
-
-	return nil
 }
 
 type params struct {

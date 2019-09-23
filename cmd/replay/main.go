@@ -1,16 +1,17 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/minus5/svckit/log"
 	"github.com/minus5/svckit/signal"
 	"github.com/minus5/uof"
 	"github.com/minus5/uof/api"
@@ -26,7 +27,7 @@ const (
 func env(name string) string {
 	val, ok := os.LookupEnv(name)
 	if !ok {
-		log.Errorf("env %s not found", name)
+		log.Printf("env %s not found", name)
 	}
 	return val
 }
@@ -77,9 +78,9 @@ func main() {
 	must(err)
 
 	languages := uof.Languages("en,de,hr")
-	stg, err := api.Staging(token)
+	stg, err := api.Staging(sig, token)
 	must(err)
-	startReplay()
+	startReplay(sig)
 	var zero time.Time
 
 	fmt.Printf("▶️")
@@ -105,8 +106,8 @@ func main() {
 	}
 }
 
-func startReplay() {
-	rpl, err := api.Replay(token)
+func startReplay(sig context.Context) {
+	rpl, err := api.Replay(sig, token)
 	must(err)
 	if eventID > 0 {
 		must(rpl.StartEvent(uof.NewEventURN(eventID), speed, maxDelay))

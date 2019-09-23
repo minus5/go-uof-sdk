@@ -28,7 +28,7 @@ func TestIntegration(t *testing.T) {
 		t.Skip("integration token not found")
 	}
 
-	a, err := Staging(token)
+	a, err := Staging(nil, token)
 	assert.NoError(t, err)
 
 	tests := []struct {
@@ -55,7 +55,7 @@ func TestBetCancelSeedData(t *testing.T) {
 		t.Skip("integration token not found")
 	}
 
-	a, err := Staging(token)
+	a, err := Staging(nil, token)
 	assert.NoError(t, err)
 
 	mm, err := a.Markets(uof.LangEN)

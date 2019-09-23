@@ -1,6 +1,10 @@
 package api
 
-import "github.com/minus5/uof"
+import (
+	"context"
+
+	"github.com/minus5/uof"
+)
 
 // replay api paths
 const (
@@ -12,11 +16,12 @@ const (
 )
 
 // Replay service for unified feed methods
-func Replay(token string) (*ReplayApi, error) {
+func Replay(exitSig context.Context, token string) (*ReplayApi, error) {
 	r := &ReplayApi{
 		api: &Api{
-			server: productionServer,
-			token:  token,
+			server:  productionServer,
+			token:   token,
+			exitSig: exitSig,
 		},
 	}
 	return r, r.Reset()
