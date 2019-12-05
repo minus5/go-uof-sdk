@@ -1,4 +1,4 @@
-module github.com/minus5/uof
+module github.com/minus5/go-uof-sdk
 
 go 1.13
 
