@@ -1,5 +1,5 @@
-# uof
-Betradar unified odds feed Go SDK
+# go-uof-sdk
+Betradar Unified Odds Feed Go SDK
 
 
 ### Why
@@ -12,6 +12,28 @@ SDK benefits over protocol/API
  * The SDK takes care of dynamic text markets and outright markets automatically, which requires some extra logic and lookups for someone not using the SDK.
  * The SDK handles initial connect and state, as well as recovery in case of a temporary disconnect. This needs to be handled manually by someone not using the SDK.
  * The SDK provides an up to date cache of each sport-events current status that is updated automatically.
+
+### Usage
+
+
+```Go
+    import uof "github.com/minus5/go-uof-sdk"
+    import "github.com/minus5/go-uof-sdk/sdk"
+    ...
+    myCallback := func progress(m *uof.Message) error {
+        ...
+        return nil
+    }
+
+	err := sdk.Run(ctx,
+		sdk.Credentials(bookmakerID, token),
+		sdk.Callback(myCallback),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+```
+
 
 
 
