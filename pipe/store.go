@@ -8,7 +8,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/minus5/uof"
+	uof "github.com/minus5/go-uof-sdk"
 )
 
 func FileStore(root string) stage {

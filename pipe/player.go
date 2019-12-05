@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minus5/uof"
+	uof "github.com/minus5/go-uof-sdk"
 )
 
 type playerApi interface {

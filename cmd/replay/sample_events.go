@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/minus5/uof"
+	uof "github.com/minus5/go-uof-sdk"
 )
 
 type sampleEvent struct {

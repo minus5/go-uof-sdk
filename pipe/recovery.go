@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minus5/uof"
+	uof "github.com/minus5/go-uof-sdk"
 )
 
 // on start recover all after timestamp or full

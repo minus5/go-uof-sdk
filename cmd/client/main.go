@@ -14,10 +14,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minus5/uof"
-	"github.com/minus5/uof/api"
-	"github.com/minus5/uof/pipe"
-	"github.com/minus5/uof/queue"
+	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk/api"
+	"github.com/minus5/go-uof-sdk/pipe"
+	"github.com/minus5/go-uof-sdk/queue"
 )
 
 const (
