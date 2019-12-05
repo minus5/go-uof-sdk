@@ -253,7 +253,7 @@ func (r *recovery) producersChangeMessage() *uof.Message {
 	return uof.NewProducersChangeMessage(psc)
 }
 
-func Recovery(api recoveryApi, producers uof.ProducersChange) stage {
+func Recovery(api recoveryApi, producers uof.ProducersChange) StageHandler {
 	r := newRecovery(api, producers)
 	return StageWithSubProcesses(r.loop)
 }

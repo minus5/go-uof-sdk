@@ -21,7 +21,7 @@ type player struct {
 	subProcs  *sync.WaitGroup
 }
 
-func Player(api playerApi, languages []uof.Lang) stage {
+func Player(api playerApi, languages []uof.Lang) StageHandler {
 	p := &player{
 		api:       api,
 		languages: languages,

@@ -27,9 +27,9 @@ const ConcurentApiCallsLimit = 16
 // Reference: https://blog.golang.org/pipelines
 
 type source func() (<-chan *uof.Message, <-chan error)
-type stage func(<-chan *uof.Message) (<-chan *uof.Message, <-chan error)
+type StageHandler func(<-chan *uof.Message) (<-chan *uof.Message, <-chan error)
 
-func Build(source source, stages ...stage) <-chan error {
+func Build(source source, stages ...StageHandler) <-chan error {
 	var errors []<-chan error
 	in, errc := source()
 	errors = append(errors, errc)
@@ -89,7 +89,7 @@ func mergeErrors(errors []<-chan error) <-chan error {
 type stageFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error)
 type stageWithDrainFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup
 
-func Stage(looper stageFunc) stage {
+func Stage(looper stageFunc) StageHandler {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)
@@ -107,7 +107,7 @@ func Stage(looper stageFunc) stage {
 	}
 }
 
-func StageWithSubProcesses(looper stageWithDrainFunc) stage {
+func StageWithSubProcesses(looper stageWithDrainFunc) StageHandler {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)
@@ -163,7 +163,7 @@ func StageWithSubProcesses(looper stageWithDrainFunc) stage {
 	}
 }
 
-func Simple(each func(m *uof.Message) error) stage {
+func Simple(each func(m *uof.Message) error) StageHandler {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)

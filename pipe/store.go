@@ -11,7 +11,7 @@ import (
 	uof "github.com/minus5/go-uof-sdk"
 )
 
-func FileStore(root string) stage {
+func FileStore(root string) StageHandler {
 	return Stage(func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
 		var wg sync.WaitGroup
 		for m := range in {
