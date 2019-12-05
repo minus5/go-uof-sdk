@@ -3,7 +3,9 @@ Betradar Unified Odds Feed Go SDK
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GoDoc](https://godoc.org/github.com/minus5/go-uof-sdk?status.svg)](https://godoc.org/github.com/minus5/go-uof-sdk) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/minus5/go-uof-sdk)](https://goreportcard.com/report/github.com/minus5/go-uof-sdk)
 [![Build Status](https://travis-ci.com/minus5/go-uof-sdk.svg)](https://travis-ci.com/minus5/go-uof-sdk)
+[![Coverage Status](https://coveralls.io/repos/github/minus5/go-uof-sdk/badge.svg?branch=master)](https://coveralls.io/github/minus5/go-uof-sdk?branch=master)
 
   
 
