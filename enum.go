@@ -133,12 +133,24 @@ func (u URN) Type() int8 {
 	return URNTypeUnknown
 }
 
+func (u URN) Empty() bool {
+	return string(u) == ""
+}
+
 func NewEventURN(eventID int) URN {
 	return URN(fmt.Sprintf("%s%d", srMatch, eventID))
 }
 
 func (u URN) String() string {
 	return string(u)
+}
+
+func (u *URN) Parse(s string) {
+	r := URN(s)
+	if id, err := strconv.Atoi(s); err == nil {
+		r = NewEventURN(id)
+	}
+	*u = r
 }
 
 const NoURN = URN("")
