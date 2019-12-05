@@ -1,6 +1,8 @@
 # go-uof-sdk
 Betradar Unified Odds Feed Go SDK
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GoDoc](https://godoc.org/github.com/minus5/go-uof-sdk?status.svg)](https://godoc.org/github.com/minus5/go-uof-sdk) 
 
 ### Why
 
@@ -34,7 +36,8 @@ SDK benefits over protocol/API
 	}
 ```
 
-
+For sample staging client see cmd/client.
+For sample replay see cmd/replay.
 
 
 ### Staging environment weekend downtime
