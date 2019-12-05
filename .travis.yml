@@ -1,0 +1,9 @@
+go_import_path: github.com/minus5/go-uof-sdk
+language: go
+
+os:
+    - linux
+    - osx
+go:
+    - 1.12.x
+    - 1.13.x
