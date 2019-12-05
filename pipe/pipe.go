@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 )
 
 // Number of concurent api calls of one type. For example: no more than x

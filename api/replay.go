@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 )
 
 // replay api paths

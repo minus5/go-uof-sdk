@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 )
 
 type marketsApi interface {

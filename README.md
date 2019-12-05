@@ -17,7 +17,7 @@ SDK benefits over protocol/API
 
 
 ```Go
-    import uof "github.com/minus5/go-uof-sdk"
+    import "github.com/minus5/go-uof-sdk"
     import "github.com/minus5/go-uof-sdk/sdk"
     ...
     myCallback := func progress(m *uof.Message) error {

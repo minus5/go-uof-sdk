@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 )
 
 const (

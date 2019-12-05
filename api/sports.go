@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"time"
 
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 )
 
 const (

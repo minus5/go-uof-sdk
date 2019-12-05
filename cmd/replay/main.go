@@ -12,7 +12,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 	"github.com/minus5/go-uof-sdk/api"
 	"github.com/minus5/go-uof-sdk/pipe"
 	"github.com/minus5/go-uof-sdk/sdk"

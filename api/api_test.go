@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 	"github.com/stretchr/testify/assert"
 )
 

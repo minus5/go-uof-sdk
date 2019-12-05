@@ -5,7 +5,7 @@ import (
 	"math"
 	"sort"
 
-	uof "github.com/minus5/go-uof-sdk"
+	"github.com/minus5/go-uof-sdk"
 )
 
 func marketGroups() map[string][]int {
