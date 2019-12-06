@@ -90,14 +90,6 @@ func (r *recovery) log(err error) {
 	}
 }
 
-func (r *recovery) requestRecoveryForAll() {
-	for _, p := range r.producers {
-		if p.status == uof.ProducerStatusInRecovery {
-			r.requestRecovery(p)
-		}
-	}
-}
-
 func (r *recovery) cancelSubProcs() {
 	for _, p := range r.producers {
 		if c := p.recoveryRequestCancel; c != nil {

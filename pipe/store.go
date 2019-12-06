@@ -56,13 +56,6 @@ func filename(m *uof.Message) string {
 	return fmt.Sprintf("/other/%13d-%s", m.ReceivedAt, m.Type)
 }
 
-func emptyDir(root string) error {
-	if err := os.RemoveAll(root); err != nil {
-		return err
-	}
-	return os.MkdirAll(root, os.ModePerm)
-}
-
 func save(filename string, buf []byte) error {
 	dir, _ := path.Split(filename)
 	err := os.MkdirAll(dir, os.ModePerm)
