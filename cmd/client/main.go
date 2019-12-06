@@ -63,13 +63,17 @@ func main() {
 	go debugHTTP()
 
 	preloadTo := time.Now().Add(24 * time.Hour)
+
 	timestamp := uof.CurrentTimestamp() - 5*60*1000 // -5 minutes
+	var pc uof.ProducersChange
+	pc.Add(uof.ProducerPrematch, timestamp)
+	pc.Add(uof.ProducerLiveOdds, timestamp)
 
 	err := sdk.Run(exitSignal(),
 		sdk.Credentials(bookmakerID, token),
 		sdk.Staging(),
-		sdk.RecoveryFrom(timestamp),
-		sdk.PreloadFixturesTo(preloadTo),
+		sdk.Recovery(pc),
+		sdk.Fixtures(preloadTo),
 		sdk.Languages(uof.Languages("en,de,hr")),
 		sdk.Pipe(pipe.FileStore("./tmp")),
 		sdk.Callback(logMessage),

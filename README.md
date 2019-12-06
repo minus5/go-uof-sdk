@@ -41,13 +41,25 @@ SDK benefits over protocol/API
 	}
 ```
 
-For sample staging client see cmd/client.
-For sample replay see cmd/replay.
+For sample staging client see cmd/client.  
+For sample replay see cmd/replay.  
+
+These examples require two env variables to be set:  
+```shell
+export UOF_BOOKMAKER_ID=...  
+export UOF_TOKEN=...  
+```
 
 
-### Staging environment weekend downtime
+
+### Notes    
+
+
+* Staging environment weekend downtime:
 
 The integration environment is available 24/5, Monday to Friday.  
 During the weekend there will be some planned 2 hour disconnections at fixed times:  
 Saturday: 14:00 - 16:00 UTC and 20:00 - 22:00 UTC  
 Sunday: 00:00 - 02:00 UTC and 13:00 - 15:00 UTC  
+
+

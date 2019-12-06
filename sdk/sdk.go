@@ -13,23 +13,24 @@ import (
 var defaultLanuages = uof.Languages("en,de")
 
 type Config struct {
-	BookmakerID       string
-	Token             string
-	Staging           bool
-	Languages         []uof.Lang
-	FixturesPreloadTo time.Time
-	RecoveryFrom      int
-	Stages            []pipe.StageHandler
-	Replay            func(*api.ReplayApi) error
+	BookmakerID string
+	Token       string
+	Staging     bool
+	Languages   []uof.Lang
+	Fixtures    time.Time
+	Recovery    []uof.ProducerChange
+	Stages      []pipe.StageHandler
+	Replay      func(*api.ReplayApi) error
 }
 
-// Option is a function on the options for a connection.
-type Option func(*Config) error
+// Option sets attributes on the Config.
+type Option func(*Config)
 
-// Run starts uof connector
-// Call to run blocks until stopped by context, or error occured.
+// Run starts uof connector.
+//
+// Call to Run blocks until stopped by context, or error occured.
 // Order in wich options are set is not important.
-// Credentials and one Callback or Pipe are functional minimum.
+// Credentials and one of Callback or Pipe are functional minimum.
 func Run(ctx context.Context, options ...Option) error {
 	c := config(options...)
 	qc, apiConn, err := connect(ctx, c)
@@ -48,16 +49,12 @@ func Run(ctx context.Context, options ...Option) error {
 
 	stages := []pipe.StageHandler{
 		pipe.Markets(apiConn, c.Languages),
-		pipe.Fixture(apiConn, c.Languages, c.FixturesPreloadTo),
+		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
 		pipe.Player(apiConn, c.Languages),
 		pipe.BetStop(),
 	}
-	if c.RecoveryFrom > 0 {
-		// TODO: what producers
-		var ps uof.ProducersChange
-		ps.Add(uof.ProducerPrematch, c.RecoveryFrom)
-		ps.Add(uof.ProducerLiveOdds, c.RecoveryFrom)
-		stages = append(stages, pipe.Recovery(apiConn, ps))
+	if len(c.Recovery) > 0 {
+		stages = append(stages, pipe.Recovery(apiConn, c.Recovery))
 	}
 	stages = append(stages, c.Stages...)
 
@@ -83,12 +80,14 @@ func config(options ...Option) Config {
 	for _, o := range options {
 		o(c)
 	}
+	// defaults
 	if len(c.Languages) == 0 {
 		c.Languages = defaultLanuages
 	}
 	return *c
 }
 
+// TODO: pojednostavi ovo
 func connect(ctx context.Context, c Config) (*queue.Connection, *api.Api, error) {
 	if c.Replay != nil {
 		conn, err := queue.DialReplay(ctx, c.BookmakerID, c.Token)
@@ -127,68 +126,79 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.Api, error)
 
 // Credentials for establishing connection to the uof queue and api.
 func Credentials(bookmakerID, token string) Option {
-	return func(c *Config) error {
+	return func(c *Config) {
 		c.BookmakerID = bookmakerID
 		c.Token = token
-		return nil
+	}
+}
+
+// Languages for api calls.
+//
+// Statefull messages (markets, players, fixtures) will be served in all this
+// languages. Each language requires separate call to api. If not specified
+// `defaultLanguages` will be used.
+func Languages(langs []uof.Lang) Option {
+	return func(c *Config) {
+		c.Languages = langs
 	}
 }
 
 // Staging forces use of staging environment instead of production.
 func Staging() Option {
-	return func(c *Config) error {
+	return func(c *Config) {
 		c.Staging = true
-		return nil
-	}
-}
-
-// Languages for api calls.
-// All api calls will be made for all the languages specified here.
-// If not specified defaultLanguages will be used.
-func Languages(langs []uof.Lang) Option {
-	return func(c *Config) error {
-		c.Languages = langs
-		return nil
-	}
-}
-
-// Pipe sets chan handler for all messages.
-// Can be called multiple times.
-func Pipe(s pipe.StageHandler) Option {
-	return func(c *Config) error {
-		c.Stages = append(c.Stages, s)
-		return nil
-	}
-}
-
-// Callback sets handler for all messages.
-// If returns error will break the pipe and force exit from sdk.Run.
-// Can be called multiple times.
-func Callback(cb func(m *uof.Message) error) Option {
-	return func(c *Config) error {
-		c.Stages = append(c.Stages, pipe.Simple(cb))
-		return nil
 	}
 }
 
 // Replay forces use of replay environment.
 // Callback will be called to start replay after establishing connection.
 func Replay(cb func(*api.ReplayApi) error) Option {
-	return func(c *Config) error {
+	return func(c *Config) {
 		c.Replay = cb
-		return nil
 	}
 }
 
-func RecoveryFrom(ts int) Option {
-	return func(c *Config) error {
-		c.RecoveryFrom = ts
-		return nil
+// Pipe sets chan handler for all messages.
+// Can be called multiple times.
+func Pipe(s pipe.StageHandler) Option {
+	return func(c *Config) {
+		c.Stages = append(c.Stages, s)
 	}
 }
-func PreloadFixturesTo(to time.Time) Option {
-	return func(c *Config) error {
-		c.FixturesPreloadTo = to
-		return nil
+
+// Callback sets handler for all messages.
+//
+// If returns error will break the pipe and force exit from sdk.Run.
+// Can be called multiple times.
+func Callback(cb func(m *uof.Message) error) Option {
+	return func(c *Config) {
+		c.Stages = append(c.Stages, pipe.Simple(cb))
+	}
+}
+
+// Recovery starts recovery for each producer
+//
+// It is responsibility of SDK consumer to track the last timestamp of the
+// successfuly consumed message for each producer. On startup this timestamp is
+// sent here and SDK will request recovery; get all the messages after that ts.
+//
+// Ref: https://docs.betradar.com/display/BD/UOF+-+Recovery+using+API
+func Recovery(pc []uof.ProducerChange) Option {
+	return func(c *Config) {
+		c.Recovery = pc
+	}
+}
+
+// Fixtures gets pre-match fixtures at start-up.
+//
+// It gets fixture for all matches which starts before `to` time.
+// There is a special endpoint to get almost all fixtures before initiating
+// recovery. This endpoint is designed to significantly reduce the number of API
+// calls required during recovery.
+//
+// Ref: https://docs.betradar.com/display/BD/UOF+-+Fixtures+in+the+API
+func Fixtures(to time.Time) Option {
+	return func(c *Config) {
+		c.Fixtures = to
 	}
 }
