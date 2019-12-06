@@ -33,7 +33,7 @@ func TestRecoveryTimestamp(t *testing.T) {
 		aliveTimestamp: cs,
 	}
 	assert.Equal(t, cs, rp.recoveryTimestamp())
-	rp.aliveTimestamp = cs - rp.producer.RecoveryWindow() + 1
+	rp.aliveTimestamp = cs - rp.producer.RecoveryWindow() + 10
 	assert.Equal(t, rp.aliveTimestamp, rp.recoveryTimestamp())
 	rp.aliveTimestamp = cs - rp.producer.RecoveryWindow()
 	assert.Equal(t, int(0), rp.recoveryTimestamp())
