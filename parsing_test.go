@@ -92,7 +92,7 @@ func TestFixtureChange(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 1234, fc.EventID)
 	assert.Nil(t, fc.ChangeType)
-	assert.Equal(t, "2017-11-19T17:00:00+01:00", fc.Schedule().Format(time.RFC3339))
+	assert.Equal(t, "2017-11-19T16:00:00Z", fc.Schedule().UTC().Format(time.RFC3339))
 
 	buf = []byte(`<fixture_change event_id="sr:match:1234" change_type="5" product="3"/>`)
 	err = xml.Unmarshal(buf, fc)
