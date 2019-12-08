@@ -226,3 +226,23 @@ func TestUIDWithLang(t *testing.T) {
 		assert.Equal(t, d.uid, UIDWithLang(d.id, d.lang))
 	}
 }
+
+func TestNewMessage(t *testing.T) {
+	m := NewConnnectionMessage(ConnectionStatusUp)
+	assert.True(t, m.Is(MessageTypeConnection))
+
+	m = NewPlayerMessage(LangEN, nil)
+	assert.True(t, m.Is(MessageTypePlayer))
+
+	m = NewMarketsMessage(LangEN, nil)
+	assert.True(t, m.Is(MessageTypeMarkets))
+
+	m = NewProducersChangeMessage(nil)
+	assert.True(t, m.Is(MessageTypeProducersChange))
+
+	m = NewFixtureMessage(LangEN, Fixture{})
+	assert.True(t, m.Is(MessageTypeFixture))
+
+	m.NewFixtureMessage(LangEN, Fixture{})
+	assert.True(t, m.Is(MessageTypeFixture))
+}

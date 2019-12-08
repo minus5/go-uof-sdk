@@ -9,11 +9,13 @@ import (
 )
 
 func TestError(t *testing.T) {
-	ae := ApiError{URL: "url", Inner: fmt.Errorf("get failed")}
+	inner := fmt.Errorf("get failed")
+	ae := ApiError{URL: "url", Inner: inner}
+	assert.Equal(t, inner, ae.Unwrap())
+
 	e := E("api", ae)
 	var err error
 	err = e
-	//assert.True(t, errors.Is(e, ApiError))
 
 	var s string
 	var ae2 ApiError
@@ -27,5 +29,11 @@ func TestError(t *testing.T) {
 		s = e2.Error()
 	}
 	assert.Equal(t, "uof error op: api, inner: uof api error url: url, inner: get failed", s)
+}
 
+func TestInnerError(t *testing.T) {
+	inner := fmt.Errorf("some inner error")
+	ue := Notice("operation", inner)
+	err := ue.Unwrap()
+	assert.Equal(t, inner, err)
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"io/ioutil"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -85,12 +86,13 @@ func TestBetStop(t *testing.T) {
 }
 
 func TestFixtureChange(t *testing.T) {
-	buf := []byte(`<fixture_change event_id="sr:match:1234" product="3"/>`)
+	buf := []byte(`<fixture_change event_id="sr:match:1234" product="3" start_time="1511107200000"/>`)
 	fc := &FixtureChange{}
 	err := xml.Unmarshal(buf, fc)
 	assert.Nil(t, err)
 	assert.Equal(t, 1234, fc.EventID)
 	assert.Nil(t, fc.ChangeType)
+	assert.Equal(t, "2017-11-19T17:00:00+01:00", fc.Schedule().Format(time.RFC3339))
 
 	buf = []byte(`<fixture_change event_id="sr:match:1234" change_type="5" product="3"/>`)
 	err = xml.Unmarshal(buf, fc)
@@ -146,6 +148,10 @@ func TestMarkets(t *testing.T) {
 	assert.Len(t, m.Groups, 0)
 	assert.Len(t, m.Outcomes, 3)
 	//testu.PP(ms)
+
+	assert.Equal(t, &ms.Markets[4], ms.Markets.Find(575))
+	assert.Len(t, ms.Markets.Groups(), 5)
+
 }
 
 func TestPlayer(t *testing.T) {
