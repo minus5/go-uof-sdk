@@ -25,7 +25,7 @@ type fixture struct {
 	sync.Mutex
 }
 
-func Fixture(api fixtureApi, languages []uof.Lang, preloadTo time.Time) StageHandler {
+func Fixture(api fixtureApi, languages []uof.Lang, preloadTo time.Time) InnerStage {
 	f := &fixture{
 		api:       api,
 		languages: languages,

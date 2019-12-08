@@ -24,7 +24,7 @@ type markets struct {
 }
 
 // getting all markets on the start
-func Markets(api marketsApi, languages []uof.Lang) StageHandler {
+func Markets(api marketsApi, languages []uof.Lang) InnerStage {
 	var wg sync.WaitGroup
 	m := &markets{
 		api:       api,

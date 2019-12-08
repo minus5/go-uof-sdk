@@ -26,7 +26,7 @@ type betStop struct {
 // event messages we have only market ids. To allow client not to need to know
 // the list of all markets to make connection between groups and ids we are here
 // adding to the bet stop message those ids.
-func BetStop() StageHandler {
+func BetStop() InnerStage {
 	b := betStop{
 		marketGroups: marketGroups(),
 	}

@@ -19,7 +19,7 @@ type Config struct {
 	Languages   []uof.Lang
 	Fixtures    time.Time
 	Recovery    []uof.ProducerChange
-	Stages      []pipe.StageHandler
+	Stages      []pipe.InnerStage
 	Replay      func(*api.ReplayApi) error
 	Env         uof.Environment
 }
@@ -48,7 +48,7 @@ func Run(ctx context.Context, options ...Option) error {
 		}
 	}
 
-	stages := []pipe.StageHandler{
+	stages := []pipe.InnerStage{
 		pipe.Markets(apiConn, c.Languages),
 		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
 		pipe.Player(apiConn, c.Languages),
@@ -137,11 +137,22 @@ func Replay(cb func(*api.ReplayApi) error) Option {
 	}
 }
 
-// Pipe sets chan handler for all messages.
+// Consumer sets chan consumer of the SDK messages stream.
+//
+// Consumer should range over `in` chan and handle all messages.
+// In chan will be closed on SDK tear down.
+// If the consumer returns an error it is handled as fatal. Immediately closes SDK connection.
 // Can be called multiple times.
-func Pipe(s pipe.StageHandler) Option {
+func Consumer(consumer pipe.ConsumerStage) Option {
 	return func(c *Config) {
-		c.Stages = append(c.Stages, s)
+		c.Stages = append(c.Stages, pipe.Consumer(consumer))
+	}
+}
+
+// BufferedConsumer same as consumer but with buffered `in` chan of size `buffer`.
+func BufferedConsumer(consumer pipe.ConsumerStage, buffer int) Option {
+	return func(c *Config) {
+		c.Stages = append(c.Stages, pipe.BufferedConsumer(consumer, buffer))
 	}
 }
 

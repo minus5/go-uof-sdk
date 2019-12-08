@@ -11,7 +11,7 @@ import (
 	"github.com/minus5/go-uof-sdk"
 )
 
-func FileStore(root string) StageHandler {
+func InnerFileStore(root string) InnerStage {
 	return Stage(func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
 		var wg sync.WaitGroup
 		for m := range in {
@@ -27,6 +27,18 @@ func FileStore(root string) StageHandler {
 		}
 		wg.Wait()
 	})
+}
+
+func FileStore(root string) ConsumerStage {
+	return func(in <-chan *uof.Message) error {
+		for m := range in {
+			fn := root + "/" + filename(m)
+			if err := save(fn, m.Marshal()); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 }
 
 // filename returns unique filename for the message

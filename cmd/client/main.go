@@ -75,15 +75,23 @@ func main() {
 		sdk.Recovery(pc),
 		sdk.Fixtures(preloadTo),
 		sdk.Languages(uof.Languages("en,de,hr")),
-		sdk.Pipe(pipe.FileStore("./tmp")),
-		sdk.Callback(logMessage),
+		sdk.BufferedConsumer(pipe.FileStore("./tmp"), 1024),
+		sdk.Consumer(logMessages),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func logMessage(m *uof.Message) error {
+// consumer of incomming messages
+func logMessages(in <-chan *uof.Message) error {
+	for m := range in {
+		logMessage(m)
+	}
+	return nil
+}
+
+func logMessage(m *uof.Message) {
 	switch m.Type {
 	case uof.MessageTypeConnection:
 		fmt.Printf("%-25s status: %s\n", m.Type, m.Connection.Status)
@@ -115,5 +123,4 @@ func logMessage(m *uof.Message) error {
 		}
 		fmt.Printf("%-25s %s\n", m.Type, b)
 	}
-	return nil
 }

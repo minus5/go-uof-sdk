@@ -86,7 +86,7 @@ func main() {
 	err := sdk.Run(exitSignal(),
 		sdk.Credentials(bookmakerID, token),
 		sdk.Languages(uof.Languages("en,de,hr")),
-		sdk.Pipe(pipe.FileStore(outputFolder)),
+		sdk.BufferedConsumer(pipe.FileStore(outputFolder), 1024),
 		sdk.Callback(progress),
 		sdk.Replay(startReplay),
 	)

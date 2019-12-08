@@ -26,10 +26,13 @@ const ConcurentApiCallsLimit = 16
 // the sink or consumer.
 // Reference: https://blog.golang.org/pipelines
 
-type source func() (<-chan *uof.Message, <-chan error)
-type StageHandler func(<-chan *uof.Message) (<-chan *uof.Message, <-chan error)
+type sourceStage func() (<-chan *uof.Message, <-chan error)
+type InnerStage func(<-chan *uof.Message) (<-chan *uof.Message, <-chan error)
+type ConsumerStage func(in <-chan *uof.Message) error
+type stageFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error)
+type stageWithDrainFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup
 
-func Build(source source, stages ...StageHandler) <-chan error {
+func Build(source sourceStage, stages ...InnerStage) <-chan error {
 	var errors []<-chan error
 	in, errc := source()
 	errors = append(errors, errc)
@@ -86,10 +89,41 @@ func mergeErrors(errors []<-chan error) <-chan error {
 	return out
 }
 
-type stageFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error)
-type stageWithDrainFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup
+func Consumer(consumer ConsumerStage) InnerStage {
+	return BufferedConsumer(consumer, 0)
+}
 
-func Stage(looper stageFunc) StageHandler {
+func BufferedConsumer(consumer ConsumerStage, buffer int) InnerStage {
+	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
+		out := make(chan *uof.Message)
+		looperIn := make(chan *uof.Message, buffer)
+		errc := make(chan error, 1)
+
+		go func() { // tee in to out na looperIn
+			defer close(out)
+			defer close(looperIn)
+			for m := range in {
+				looperIn <- m
+				out <- m
+			}
+		}()
+
+		go func() {
+			defer close(errc)
+
+			if err := consumer(looperIn); err != nil {
+				errc <- err
+			}
+			go func() { // for unclean exit; drain this chan
+				for range looperIn {
+				}
+			}()
+		}()
+		return out, errc
+	}
+}
+
+func Stage(looper stageFunc) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)
@@ -107,7 +141,7 @@ func Stage(looper stageFunc) StageHandler {
 	}
 }
 
-func StageWithSubProcesses(looper stageWithDrainFunc) StageHandler {
+func StageWithSubProcesses(looper stageWithDrainFunc) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)
@@ -163,7 +197,7 @@ func StageWithSubProcesses(looper stageWithDrainFunc) StageHandler {
 	}
 }
 
-func Simple(each func(m *uof.Message) error) StageHandler {
+func Simple(each func(m *uof.Message) error) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
 		errc := make(chan error)
