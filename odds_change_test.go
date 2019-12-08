@@ -26,6 +26,8 @@ func TestOddsChange(t *testing.T) {
 		{"urn", testOddsChangeURN},
 		{"specifier", testOddsChangeSpecifiers},
 		{"marketStatus", testOddsChangeMarketStatus},
+		{"eachPlayer", testEachPlayer},
+		{"eachVariantMerket", testEachVariantMarket},
 	}
 	for _, s := range tests {
 		t.Run(s.name, func(t *testing.T) { s.f(t, oc) })
@@ -143,4 +145,23 @@ func TestSpecifiersParsing(t *testing.T) {
 		}
 	}
 
+}
+
+func testEachPlayer(t *testing.T, oc *OddsChange) {
+	playerIDs := make(map[int]struct{})
+	oc.EachPlayer(func(id int) {
+		playerIDs[id] = struct{}{}
+	})
+	assert.Len(t, playerIDs, 41)
+	assert.Contains(t, playerIDs, 1234)
+	assert.Contains(t, playerIDs, 1104383)
+}
+
+func testEachVariantMarket(t *testing.T, oc *OddsChange) {
+	variant := make(map[int]string)
+	oc.EachVariantMarket(func(id int, spec string) {
+		variant[id] = spec
+	})
+	assert.Len(t, variant, 1)
+	assert.Equal(t, "sr:point_range:76+", variant[145])
 }
