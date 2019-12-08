@@ -23,6 +23,8 @@ type Header struct {
 }
 
 type Body struct {
+	// queue message types
+	// Ref: https://docs.betradar.com/display/BD/UOF+-+Messages
 	Alive                 *Alive                 `json:"alive,omitempty"`
 	BetCancel             *BetCancel             `json:"betCancel,omitempty"`
 	RollbackBetSettlement *RollbackBetSettlement `json:"rollbackBetSettlement,omitempty"`
@@ -32,11 +34,13 @@ type Body struct {
 	FixtureChange         *FixtureChange         `json:"fixtureChange,omitempty"`
 	BetSettlement         *BetSettlement         `json:"betSettlement,omitempty"`
 	BetStop               *BetStop               `json:"betStop,omitempty"`
-	Fixture               *Fixture               `json:"fixture,omitempty"`
-	Markets               MarketDescriptions     `json:"markets,omitempty"`
-	Player                *Player                `json:"player,omitempty"`
-	Connection            *Connection            `json:"connection,omitempty"`
-	Producers             ProducersChange        `json:"producerChange,omitempty"`
+	// api response message types
+	Fixture *Fixture           `json:"fixture,omitempty"`
+	Markets MarketDescriptions `json:"markets,omitempty"`
+	Player  *Player            `json:"player,omitempty"`
+	// sdk status message types
+	Connection *Connection     `json:"connection,omitempty"`
+	Producers  ProducersChange `json:"producerChange,omitempty"`
 }
 
 type Message struct {
