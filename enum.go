@@ -468,3 +468,11 @@ func (p *MessagePriority) Parse(priority string) {
 	}()
 	*p = v
 }
+
+type Environment int8
+
+const (
+	Production Environment = iota
+	Staging
+	Replay
+)

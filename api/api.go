@@ -27,6 +27,20 @@ type Api struct {
 	exitSig context.Context
 }
 
+// Dial connect to the staging or production api environment
+func Dial(ctx context.Context, env uof.Environment, token string) (*Api, error) {
+	switch env {
+	case uof.Replay:
+		return Staging(ctx, token)
+	case uof.Staging:
+		return Staging(ctx, token)
+	case uof.Production:
+		return Production(ctx, token)
+	default:
+		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
+	}
+}
+
 // Staging connects to the staging system
 func Staging(exitSig context.Context, token string) (*Api, error) {
 	a := &Api{
@@ -127,7 +141,8 @@ func (a *Api) httpRequest(tpl string, p *params, method string) ([]byte, error) 
 		return nil, uof.E("http.NewRequest", uof.ApiError{URL: url, Inner: err})
 	}
 	if a.exitSig != nil {
-		ctx, _ := context.WithTimeout(a.exitSig, RequestTimeout)
+		ctx, cancel := context.WithTimeout(a.exitSig, RequestTimeout)
+		defer cancel()
 		req = req.WithContext(ctx)
 	}
 
@@ -183,5 +198,5 @@ func runTemplate(def string, p *params) string {
 	if err := tpl.Execute(buf, p); err != nil {
 		panic(err)
 	}
-	return string(buf.Bytes())
+	return buf.String()
 }

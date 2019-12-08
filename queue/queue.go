@@ -22,8 +22,22 @@ const (
 	bindingKeyAll    = "#"
 )
 
+// Dial connects to the queue chosen by environment
+func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (*Connection, error) {
+	switch env {
+	case uof.Replay:
+		return DialReplay(ctx, bookmakerID, token)
+	case uof.Staging:
+		return DialStaging(ctx, bookmakerID, token)
+	case uof.Production:
+		return DialProduction(ctx, bookmakerID, token)
+	default:
+		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
+	}
+}
+
 // Dial connects to the production queue
-func Dial(ctx context.Context, bookmakerID, token string) (*Connection, error) {
+func DialProduction(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, productionServer, bookmakerID, token)
 }
 

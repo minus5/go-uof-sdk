@@ -21,6 +21,7 @@ type Config struct {
 	Recovery    []uof.ProducerChange
 	Stages      []pipe.StageHandler
 	Replay      func(*api.ReplayApi) error
+	Env         uof.Environment
 }
 
 // Option sets attributes on the Config.
@@ -76,48 +77,24 @@ func firstErr(errc <-chan error) error {
 }
 
 func config(options ...Option) Config {
-	c := &Config{}
+	// defaults
+	c := &Config{
+		Languages: defaultLanuages,
+		Env:       uof.Production,
+	}
 	for _, o := range options {
 		o(c)
-	}
-	// defaults
-	if len(c.Languages) == 0 {
-		c.Languages = defaultLanuages
 	}
 	return *c
 }
 
-// TODO: pojednostavi ovo
+// connect to the queue and api
 func connect(ctx context.Context, c Config) (*queue.Connection, *api.Api, error) {
-	if c.Replay != nil {
-		conn, err := queue.DialReplay(ctx, c.BookmakerID, c.Token)
-		if err != nil {
-			return nil, nil, err
-		}
-		stg, err := api.Staging(ctx, c.Token)
-		if err != nil {
-			return nil, nil, err
-		}
-		return conn, stg, nil
-	}
-
-	if c.Staging {
-		conn, err := queue.DialStaging(ctx, c.BookmakerID, c.Token)
-		if err != nil {
-			return nil, nil, err
-		}
-		stg, err := api.Staging(ctx, c.Token)
-		if err != nil {
-			return nil, nil, err
-		}
-		return conn, stg, nil
-	}
-
-	conn, err := queue.Dial(ctx, c.BookmakerID, c.Token)
+	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token)
 	if err != nil {
 		return nil, nil, err
 	}
-	stg, err := api.Production(ctx, c.Token)
+	stg, err := api.Dial(ctx, c.Env, c.Token)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -146,6 +123,7 @@ func Languages(langs []uof.Lang) Option {
 // Staging forces use of staging environment instead of production.
 func Staging() Option {
 	return func(c *Config) {
+		c.Env = uof.Staging
 		c.Staging = true
 	}
 }
@@ -154,6 +132,7 @@ func Staging() Option {
 // Callback will be called to start replay after establishing connection.
 func Replay(cb func(*api.ReplayApi) error) Option {
 	return func(c *Config) {
+		c.Env = uof.Replay
 		c.Replay = cb
 	}
 }
