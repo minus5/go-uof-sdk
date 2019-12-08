@@ -1,5 +1,5 @@
 # go-uof-sdk
-Betradar spUnified Odds Feed Go SDK
+Betradar Unified Odds Feed Go SDK
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GoDoc](https://godoc.org/github.com/minus5/go-uof-sdk?status.svg)](https://godoc.org/github.com/minus5/go-uof-sdk) 
