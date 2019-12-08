@@ -1,11 +1,11 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/minus5/go-uof-sdk"
 	"github.com/stretchr/testify/assert"
@@ -28,7 +28,7 @@ func TestIntegration(t *testing.T) {
 		t.Skip("integration token not found")
 	}
 
-	a, err := Staging(nil, token)
+	a, err := Staging(context.TODO(), token)
 	assert.NoError(t, err)
 
 	tests := []struct {
@@ -55,7 +55,7 @@ func TestBetCancelSeedData(t *testing.T) {
 		t.Skip("integration token not found")
 	}
 
-	a, err := Staging(nil, token)
+	a, err := Staging(context.TODO(), token)
 	assert.NoError(t, err)
 
 	mm, err := a.Markets(uof.LangEN)
@@ -100,16 +100,4 @@ func testPlayer(t *testing.T, a *Api) {
 	p, err := a.Player(lang, 947)
 	assert.NoError(t, err)
 	assert.Equal(t, "Lee Barnard", p.FullName)
-}
-
-var scheduleFormat = "02.01.2006 15:04"
-
-func testFixtures(t *testing.T, a *Api) {
-	out, errc := a.Fixtures(uof.LangEN, time.Now().Add(1*24*time.Hour))
-	i := 1
-	for f := range out {
-		fmt.Printf("\t%6d %s - %s %s\n", i, f.Home.Name, f.Away.Name, f.Scheduled.Format(scheduleFormat))
-		i++
-	}
-	assert.NoError(t, <-errc)
 }
