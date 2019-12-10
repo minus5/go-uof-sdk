@@ -14,8 +14,7 @@ func TestError(t *testing.T) {
 	assert.Equal(t, inner, ae.Unwrap())
 
 	e := E("api", ae)
-	var err error
-	err = e
+	err := error(e)
 
 	var s string
 	var ae2 ApiError
