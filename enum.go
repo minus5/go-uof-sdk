@@ -255,6 +255,10 @@ func hash32(s string) int {
 	return int(h.Sum32())
 }
 
+func Hash(s string) int {
+	return hash32(s)
+}
+
 type EventReporting int8
 
 const (
