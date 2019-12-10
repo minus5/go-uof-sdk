@@ -90,7 +90,7 @@ func testOddsChangeMarketStatus(t *testing.T, oc *OddsChange) {
 
 func testOddsChangeURN(t *testing.T, oc *OddsChange) {
 	assert.Equal(t, 123, oc.EventURN.ID())
-	assert.Equal(t, URNTypeMatch, oc.EventURN.Type())
+	//assert.Equal(t, URNTypeMatch, oc.EventURN.Type())
 }
 
 func testOddsChangeSpecifiers(t *testing.T, oc *OddsChange) {
@@ -164,4 +164,14 @@ func testEachVariantMarket(t *testing.T, oc *OddsChange) {
 	})
 	assert.Len(t, variant, 1)
 	assert.Equal(t, "sr:point_range:76+", variant[145])
+}
+
+func TestNilMethodCalls(t *testing.T) {
+	var oc *OddsChange
+
+	assert.NotPanics(t, func() {
+		oc.EachVariantMarket(func(int, string) {})
+		oc.EachPlayer(func(int) {})
+	})
+
 }

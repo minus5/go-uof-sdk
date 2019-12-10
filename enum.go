@@ -104,6 +104,18 @@ func (u URN) ID() int {
 	return int(i)
 }
 
+/*
+const (
+	URNTypeMatch int8 = iota
+	URNTypeStage
+	URNTypeTournament
+	URNTypeSimpleTournament
+	URNTypeSeason
+	URNTypeDraw
+	URNTypeLottery
+	URNTypePlayer
+	URNTypeUnknown = int8(-1)
+)
 func (u URN) Type() int8 {
 	if u == "" {
 		return URNTypeUnknown
@@ -132,6 +144,7 @@ func (u URN) Type() int8 {
 	}
 	return URNTypeUnknown
 }
+*/
 
 func (u URN) Empty() bool {
 	return string(u) == ""
@@ -154,18 +167,6 @@ func (u *URN) Parse(s string) {
 }
 
 const NoURN = URN("")
-
-const (
-	URNTypeMatch int8 = iota
-	URNTypeStage
-	URNTypeTournament
-	URNTypeSimpleTournament
-	URNTypeSeason
-	URNTypeDraw
-	URNTypeLottery
-	URNTypePlayer
-	URNTypeUnknown = int8(-1)
-)
 
 // EventID tries to generate unique id for all types of events. Most comon are
 // those with prefix sr:match for them we reserve positive id-s. All others got

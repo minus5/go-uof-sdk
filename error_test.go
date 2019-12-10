@@ -29,6 +29,9 @@ func TestError(t *testing.T) {
 		s = e2.Error()
 	}
 	assert.Equal(t, "uof error op: api, inner: uof api error url: url, inner: get failed", s)
+
+	ae = ApiError{URL: "url", Inner: inner, StatusCode: 422, Response: "tee"}
+	assert.Equal(t, "uof api error url: url, status code: 422, response: tee, inner: get failed", ae.Error())
 }
 
 func TestInnerError(t *testing.T) {
@@ -36,4 +39,6 @@ func TestInnerError(t *testing.T) {
 	ue := Notice("operation", inner)
 	err := ue.Unwrap()
 	assert.Equal(t, inner, err)
+
+	assert.Equal(t, "NOTICE uof error op: operation, inner: some inner error", ue.Error())
 }

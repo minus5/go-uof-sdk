@@ -109,6 +109,15 @@ func TestMessageParseRoutingKeys(t *testing.T) {
 		assert.Equal(t, d.rm.EventID, rm.EventID)
 		assert.Equal(t, LangNone, rm.Lang)
 	}
+
+	_, err := NewQueueMessage("...", nil)
+	assert.Error(t, err)
+
+	_, err = NewQueueMessage("hi.-.live.unknown.4.sr:match.11784628", nil)
+	assert.Error(t, err)
+
+	_, err = NewQueueMessage("hi.-.live.odds_change.4.sr:match.pero", nil)
+	assert.Error(t, err)
 }
 
 func TestMessageTypeParse(t *testing.T) {

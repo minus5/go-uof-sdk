@@ -66,6 +66,17 @@ func TestBetSettlement(t *testing.T) {
 	assert.Equal(t, 0.0, bs.Markets[3].Outcomes[2].DeadHeatFactor)
 }
 
+func TestRollbackBetSettlement(t *testing.T) {
+	buf := []byte(`<rollback_bet_settlement event_id="sr:match:299321" timestamp="1236" product="1">
+	<market id="47"/>
+ </rollback_bet_settlement>`)
+	rbs := &RollbackBetSettlement{}
+	err := xml.Unmarshal(buf, rbs)
+	assert.Nil(t, err)
+	assert.Len(t, rbs.Markets, 1)
+	assert.Equal(t, 47, rbs.Markets[0].ID)
+}
+
 func TestBetStop(t *testing.T) {
 	buf := []byte(`<bet_stop timestamp="12345" product="3" event_id="sr:match:471123" groups="all"/>`)
 
@@ -194,4 +205,90 @@ func TestFixture(t *testing.T) {
 	assert.Equal(t, 2953, f.Home.ID)
 	assert.Equal(t, 33, f.Away.ID)
 	//testu.PP(f)
+}
+
+func TestBetSettlementToResult(t *testing.T) {
+	data := []struct {
+		result         int
+		voidFactor     float64
+		deadHeatFactor float64
+		outcomeResult  OutcomeResult
+	}{
+		{0, 0, 0, OutcomeResultLose},
+		{1, 0, 0, OutcomeResultWin},
+		{0, 1, 0, OutcomeResultVoid},
+		{1, 0.5, 0, OutcomeResultHalfWin},
+		{0, 0.5, 0, OutcomeResultHalfLose},
+		{1, 0, 1, OutcomeResultWinWithDeadHead},
+		// wrong inputs
+		{-1, 0, 0, OutcomeResultUnknown},
+		{2, 0, 0, OutcomeResultUnknown},
+	}
+
+	for _, d := range data {
+		r := toResult(&d.result, &d.voidFactor, &d.deadHeatFactor)
+		assert.Equal(t, d.outcomeResult, r)
+	}
+
+	r := toResult(nil, nil, nil)
+	assert.Equal(t, OutcomeResultUnknown, r)
+}
+
+func TestBetStopToMarketStatus(t *testing.T) {
+	data := []struct {
+		in  int
+		out MarketStatus
+	}{
+		{0, MarketStatusInactive},
+		{1, MarketStatusActive},
+		{-1, MarketStatusSuspended},
+		{-2, MarketStatusHandedOver},
+		{-3, MarketStatusSettled},
+		{-4, MarketStatusCancelled},
+		// wrong inputs
+		{-5, MarketStatusInactive},
+		{2, MarketStatusInactive},
+	}
+
+	for _, d := range data {
+		assert.Equal(t, d.out, toMarketStatus(&d.in))
+	}
+	assert.Equal(t, MarketStatusSuspended, toMarketStatus(nil))
+}
+
+func TestToOutcomeType(t *testing.T) {
+	data := []struct {
+		in  string
+		out OutcomeType
+	}{
+		{"", OutcomeTypeDefault},
+		{"player", OutcomeTypePlayer},
+		{"competitor", OutcomeTypeCompetitor},
+		{"competitors", OutcomeTypeCompetitors},
+		{"free_text", OutcomeTypeFreeText},
+		// wrong inputs
+		{"pero", OutcomeTypeUnknown},
+	}
+
+	for _, d := range data {
+		assert.Equal(t, d.out, toOutcomeType(d.in))
+	}
+}
+
+func TestToSpecifierType(t *testing.T) {
+	data := []struct {
+		in  string
+		out SpecifierType
+	}{
+		{"string", SpecifierTypeString},
+		{"integer", SpecifierTypeInteger},
+		{"decimal", SpecifierTypeDecimal},
+		{"variable_text", SpecifierTypeVariableText},
+		// wrong inputs
+		{"pero", SpecifierTypeUnknown},
+	}
+
+	for _, d := range data {
+		assert.Equal(t, d.out, toSpecifierType(d.in))
+	}
 }
