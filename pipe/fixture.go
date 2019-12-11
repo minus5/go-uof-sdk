@@ -35,7 +35,7 @@ func Fixture(api fixtureApi, languages []uof.Lang, preloadTo time.Time) InnerSta
 		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
 		preloadTo: preloadTo,
 	}
-	return StageWithSubProcesses(f.loop)
+	return StageWithSubProcessesSync(f.loop)
 }
 
 // Na sto sve pazim ovdje:
@@ -84,7 +84,7 @@ func (f *fixture) preloadLoop(in <-chan *uof.Message) []uof.URN {
 		select {
 		case m, ok := <-in:
 			if !ok {
-				return nil
+				return urns
 			}
 			f.out <- m
 			if u := f.eventURN(m); u != uof.NoURN {

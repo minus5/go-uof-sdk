@@ -197,6 +197,25 @@ func StageWithSubProcesses(looper stageWithDrainFunc) InnerStage {
 	}
 }
 
+func StageWithSubProcessesSync(looper stageWithDrainFunc) InnerStage {
+	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
+		out := make(chan *uof.Message)
+		errc := make(chan error)
+
+		go func() {
+			defer close(out)
+			defer close(errc)
+
+			// looper has to range over in chan until it is closed
+			subProcs := looper(in, out, errc)
+			subProcs.Wait()
+
+		}()
+
+		return out, errc
+	}
+}
+
 func Simple(each func(m *uof.Message) error) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)

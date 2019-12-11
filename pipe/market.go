@@ -33,7 +33,7 @@ func Markets(api marketsApi, languages []uof.Lang) InnerStage {
 		subProcs:  &wg,
 		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
 	}
-	return StageWithSubProcesses(m.loop)
+	return StageWithSubProcessesSync(m.loop)
 }
 
 func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {

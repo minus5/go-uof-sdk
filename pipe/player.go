@@ -29,7 +29,7 @@ func Player(api playerApi, languages []uof.Lang) InnerStage {
 		subProcs:  &sync.WaitGroup{},
 		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
 	}
-	return StageWithSubProcesses(p.loop)
+	return StageWithSubProcessesSync(p.loop)
 }
 
 func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {
