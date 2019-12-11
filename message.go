@@ -193,6 +193,21 @@ func (m *Message) unpack() error {
 	return nil
 }
 
+func NewApiMessage(lang Lang, typ MessageType, body []byte) (*Message, error) {
+	m := &Message{
+		Header: Header{
+			Type:       typ,
+			Lang:       lang,
+			ReceivedAt: uniqTimestamp(),
+		},
+		Raw: body,
+	}
+	if err := m.unpack(); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func NewMarketsMessage(lang Lang, ms MarketDescriptions) *Message {
 	m := &Message{
 		Header: Header{

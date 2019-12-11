@@ -16,10 +16,16 @@ func TestBetCancel(t *testing.T) {
 	bc := &BetCancel{}
 	err = xml.Unmarshal(buf, bc)
 	assert.Nil(t, err)
-
 	assert.Equal(t, 18941600, bc.EventID)
 	assert.Equal(t, 62, bc.Markets[0].ID)
 	assert.Equal(t, 2296512168, bc.Markets[0].LineID)
+
+	// use message entry point
+	m, err := NewQueueMessage("hi.pre.-.bet_cancel.1.sr:match.1234.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeBetCancel))
+	assert.NotNil(t, m.BetCancel)
+	assert.Equal(t, bc, m.BetCancel)
 }
 
 func TestRollbackBetCancel(t *testing.T) {
@@ -33,6 +39,12 @@ func TestRollbackBetCancel(t *testing.T) {
 	assert.Equal(t, 4444, bc.EventID)
 	assert.Equal(t, 48, bc.Markets[0].ID)
 	assert.Equal(t, 2701050930, bc.Markets[0].LineID)
+
+	m, err := NewQueueMessage("hi.pre.-.rollback_bet_cancel.1.sr:match.1234.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeRollbackBetCancel))
+	assert.NotNil(t, m.RollbackBetCancel)
+	assert.Equal(t, bc, m.RollbackBetCancel)
 }
 
 func TestBetSettlement(t *testing.T) {
@@ -64,6 +76,13 @@ func TestBetSettlement(t *testing.T) {
 	assert.Equal(t, 0.5, bs.Markets[3].Outcomes[0].DeadHeatFactor)
 	assert.Equal(t, 0.5, bs.Markets[3].Outcomes[1].DeadHeatFactor)
 	assert.Equal(t, 0.0, bs.Markets[3].Outcomes[2].DeadHeatFactor)
+
+	m, err := NewQueueMessage("hi.pre.-.bet_settlement.1.sr:match.1234.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeBetSettlement))
+	assert.NotNil(t, m.BetSettlement)
+	assert.Equal(t, bs, m.BetSettlement)
+
 }
 
 func TestRollbackBetSettlement(t *testing.T) {
@@ -75,25 +94,37 @@ func TestRollbackBetSettlement(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, rbs.Markets, 1)
 	assert.Equal(t, 47, rbs.Markets[0].ID)
+
+	m, err := NewQueueMessage("hi.pre.-.rollback_bet_settlement.1.sr:match.1234.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeRollbackBetSettlement))
+	assert.NotNil(t, m.RollbackBetSettlement)
+	assert.Equal(t, rbs, m.RollbackBetSettlement)
 }
 
 func TestBetStop(t *testing.T) {
 	buf := []byte(`<bet_stop timestamp="12345" product="3" event_id="sr:match:471123" groups="all"/>`)
 
-	bc := &BetStop{}
-	err := xml.Unmarshal(buf, bc)
+	bs := &BetStop{}
+	err := xml.Unmarshal(buf, bs)
 	assert.Nil(t, err)
 
-	assert.Equal(t, 471123, bc.EventID)
-	assert.Equal(t, MarketStatusSuspended, bc.Status)
-	assert.Equal(t, []string(nil), bc.Groups)
-	assert.Len(t, bc.Groups, 0)
+	assert.Equal(t, 471123, bs.EventID)
+	assert.Equal(t, MarketStatusSuspended, bs.Status)
+	assert.Equal(t, []string(nil), bs.Groups)
+	assert.Len(t, bs.Groups, 0)
 
 	buf = []byte(`<bet_stop timestamp="12345" product="3" event_id="sr:match:471123" groups="10_min|180s"/>`)
-	bc = &BetStop{}
-	err = xml.Unmarshal(buf, bc)
+	bs = &BetStop{}
+	err = xml.Unmarshal(buf, bs)
 	assert.Nil(t, err)
-	assert.Len(t, bc.Groups, 2)
+	assert.Len(t, bs.Groups, 2)
+
+	m, err := NewQueueMessage("hi.pre.-.bet_stop.1.sr:match.1234.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeBetStop))
+	assert.NotNil(t, m.BetStop)
+	assert.Equal(t, bs, m.BetStop)
 }
 
 func TestFixtureChange(t *testing.T) {
@@ -105,10 +136,31 @@ func TestFixtureChange(t *testing.T) {
 	assert.Nil(t, fc.ChangeType)
 	assert.Equal(t, "2017-11-19T16:00:00Z", fc.Schedule().UTC().Format(time.RFC3339))
 
+	fc2 := &FixtureChange{}
 	buf = []byte(`<fixture_change event_id="sr:match:1234" change_type="5" product="3"/>`)
-	err = xml.Unmarshal(buf, fc)
+	err = xml.Unmarshal(buf, fc2)
 	assert.Nil(t, err)
-	assert.Equal(t, FixtureChangeTypeCoverage, *fc.ChangeType)
+	assert.Equal(t, FixtureChangeTypeCoverage, *fc2.ChangeType)
+
+	m, err := NewQueueMessage("hi.pre.-.fixture_change.1.sr:match.1234.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeFixtureChange))
+	assert.NotNil(t, m.FixtureChange)
+	assert.Equal(t, fc2, m.FixtureChange)
+}
+
+func TestSnaphotComplete(t *testing.T) {
+	buf := []byte(`<snapshot_complete request_id="1234" timestamp="1234578" product="3"/>`)
+	sc := &SnapshotComplete{}
+	err := xml.Unmarshal(buf, sc)
+	assert.Nil(t, err)
+	assert.Equal(t, Producer(3), sc.Producer)
+
+	m, err := NewQueueMessage("-.-.-.snapshot_complete.-.-.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeSnapshotComplete))
+	assert.NotNil(t, m.SnapshotComplete)
+	assert.Equal(t, sc, m.SnapshotComplete)
 }
 
 func TestMarkets(t *testing.T) {
@@ -163,6 +215,9 @@ func TestMarkets(t *testing.T) {
 	assert.Equal(t, &ms.Markets[4], ms.Markets.Find(575))
 	assert.Len(t, ms.Markets.Groups(), 5)
 
+	msg, err := NewApiMessage(LangEN, MessageTypeMarkets, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, ms.Markets, msg.Markets)
 }
 
 func TestPlayer(t *testing.T) {
@@ -178,7 +233,10 @@ func TestPlayer(t *testing.T) {
 	assert.Equal(t, Male, p.Gender)
 	assert.Equal(t, "forward", p.Type)
 	assert.Equal(t, "1984-07-18", p.DateOfBirth.Format(apiDateFormat))
-	//testu.PP(p)
+
+	msg, err := NewApiMessage(LangEN, MessageTypePlayer, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, p, *msg.Player)
 }
 
 func TestFixture(t *testing.T) {
@@ -204,7 +262,21 @@ func TestFixture(t *testing.T) {
 
 	assert.Equal(t, 2953, f.Home.ID)
 	assert.Equal(t, 33, f.Away.ID)
-	//testu.PP(f)
+
+	msg, err := NewApiMessage(LangEN, MessageTypeFixture, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, f, *msg.Fixture)
+}
+
+func TestFixutreWithPlayers(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/fixture-2.xml")
+	assert.Nil(t, err)
+
+	msg, err := NewApiMessage(LangEN, MessageTypeFixture, buf)
+	assert.NoError(t, err)
+	assert.Len(t, msg.Fixture.Competitors[0].Players, 2)
+	assert.Len(t, msg.Fixture.Competitors[1].Players, 2)
+	assert.Equal(t, "Goldhoff, George", msg.Fixture.Competitors[1].Players[0].Name)
 }
 
 func TestBetSettlementToResult(t *testing.T) {

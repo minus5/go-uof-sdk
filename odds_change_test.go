@@ -33,7 +33,11 @@ func TestOddsChange(t *testing.T) {
 		t.Run(s.name, func(t *testing.T) { s.f(t, oc) })
 	}
 
-	//testu.PP(oc)
+	m, err := NewQueueMessage("hi.pre.-.odds_change.1.sr:match.1234.-", buf)
+	assert.NoError(t, err)
+	assert.True(t, m.Is(MessageTypeOddsChange))
+	assert.NotNil(t, m.OddsChange)
+	assert.Equal(t, oc, m.OddsChange)
 }
 
 func testOddsChangeUnmarshal(t *testing.T, oc *OddsChange) {

@@ -199,7 +199,6 @@ func TestUID(t *testing.T) {
 			},
 			0x7fffffffffffff29,
 		},
-
 		{
 			Message{
 				Header: Header{
@@ -211,6 +210,14 @@ func TestUID(t *testing.T) {
 				},
 			},
 			-0x1232c,
+		},
+		{
+			Message{
+				Header: Header{
+					Type: MessageTypeAlive,
+				},
+			},
+			0,
 		},
 	}
 
@@ -254,4 +261,35 @@ func TestNewMessage(t *testing.T) {
 
 	m.NewFixtureMessage(LangEN, Fixture{})
 	assert.True(t, m.Is(MessageTypeFixture))
+}
+
+func TestUnpackFail(t *testing.T) {
+	// void_reason below whould be int value
+	buf := []byte(`<bet_cancel end_time="1564598513000" event_id="sr:match:18941600" product="1" start_time="1564597838000" timestamp="1564602448841">
+	<market name="1st half - 1st goal" id="62" void_reason="int"/>
+	</bet_cancel>`)
+
+	_, err := NewQueueMessage("hi.pre.-.bet_cancel.1.sr:match.1234.-", buf)
+	assert.Error(t, err)
+	assert.Equal(t, `NOTICE uof error op: message.unpack, inner: strconv.ParseInt: parsing "int": invalid syntax`, err.Error())
+
+	// height should be int
+	buf = []byte(`
+	<player_profile>
+    	<player height="int" />
+	</player_profile>
+	`)
+	_, err = NewApiMessage(LangEN, MessageTypePlayer, buf)
+	assert.Error(t, err)
+	assert.Equal(t, `NOTICE uof error op: message.unpack, inner: strconv.ParseInt: parsing "int": invalid syntax`, err.Error())
+
+	var m Message
+	err = m.Unmarshal(nil)
+	assert.Error(t, err)
+
+	m.Raw = []byte{}
+	m.Type = -1
+	err = m.unpack()
+	assert.Error(t, err)
+	assert.Equal(t, `NOTICE uof error op: message.unpack, inner: unknown message type -1`, err.Error())
 }
