@@ -2,6 +2,7 @@ package uof
 
 import "strings"
 
+// Lang is used to identify language
 type Lang int8
 
 var languages = []struct {
@@ -55,6 +56,7 @@ var languages = []struct {
 	{"it", LangIT, "Italian"},
 }
 
+// Languages short code
 const (
 	LangNone Lang = iota
 	LangSQI       // Albanian
@@ -131,6 +133,7 @@ func (l Lang) String() string {
 	return l.Code()
 }
 
+// Code returns short code for language
 func (l Lang) Code() string {
 	for _, v := range languages {
 		if v.value == l {
@@ -140,6 +143,7 @@ func (l Lang) Code() string {
 	return ""
 }
 
+// Name returns language name
 func (l Lang) Name() string {
 	for _, v := range languages {
 		if v.value == l {

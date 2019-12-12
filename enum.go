@@ -7,8 +7,10 @@ import (
 	"strings"
 )
 
+// Producer type
 type Producer int8
 
+// Producer values
 const (
 	ProducerUnknown  Producer = 0
 	ProducerLiveOdds Producer = 1
@@ -41,6 +43,7 @@ func (p Producer) String() string {
 	return p.Code()
 }
 
+// Name returns Producer name
 func (p Producer) Name() string {
 	for _, d := range producers {
 		if p == d.id {
@@ -50,6 +53,7 @@ func (p Producer) Name() string {
 	return InvalidName
 }
 
+// Description returns Producer description
 func (p Producer) Description() string {
 	for _, d := range producers {
 		if p == d.id {
@@ -59,6 +63,7 @@ func (p Producer) Description() string {
 	return InvalidName
 }
 
+// Code returnd Producer code
 func (p Producer) Code() string {
 	for _, d := range producers {
 		if p == d.id {
@@ -84,14 +89,17 @@ func (p Producer) Prematch() bool {
 	return p == 3
 }
 
+// sr values
 const (
 	InvalidName = "?"
 	srMatch     = "sr:match:"
 	srPlayer    = "sr:player:"
 )
 
+// URN type
 type URN string
 
+// ID URN return
 func (u URN) ID() int {
 	if u == "" {
 		return 0
@@ -146,18 +154,22 @@ func (u URN) Type() int8 {
 }
 */
 
+// Empty string check
 func (u URN) Empty() bool {
 	return string(u) == ""
 }
 
+// NewEventURN return new URN
 func NewEventURN(eventID int) URN {
 	return URN(fmt.Sprintf("%s%d", srMatch, eventID))
 }
 
+// String URN returns string
 func (u URN) String() string {
 	return string(u)
 }
 
+// Parse *URN parse
 func (u *URN) Parse(s string) {
 	r := URN(s)
 	if id, err := strconv.Atoi(s); err == nil {
@@ -166,6 +178,7 @@ func (u *URN) Parse(s string) {
 	*u = r
 }
 
+// NoURN if empty
 const NoURN = URN("")
 
 // EventID tries to generate unique id for all types of events. Most comon are
@@ -255,21 +268,25 @@ func hash32(s string) int {
 	return int(h.Sum32())
 }
 
+// Hash return
 func Hash(s string) int {
 	return hash32(s)
 }
 
+// EventReporting type
 type EventReporting int8
 
+// EventReporting values
 const (
 	EventReportingNotAvailable EventReporting = 0
 	EventReportingActive       EventReporting = 1
 	EventReportingSuspended    EventReporting = -1
 )
 
-// Values must match the pattern [0-9]+:[0-9]+|[0-9]+
+// ClockTime values must match the pattern [0-9]+:[0-9]+|[0-9]+
 type ClockTime string
 
+// Minute return
 func (c *ClockTime) Minute() string {
 	p := strings.Split(string(*c), ":")
 	if len(p) > 0 {
@@ -278,10 +295,12 @@ func (c *ClockTime) Minute() string {
 	return ""
 }
 
+// String *ClockTime return
 func (c *ClockTime) String() string {
 	return string(*c)
 }
 
+// PtrVal *ClockTime
 func (c *ClockTime) PtrVal() *string {
 	if c == nil {
 		return nil
@@ -290,7 +309,7 @@ func (c *ClockTime) PtrVal() *string {
 	return &v
 }
 
-// The change_type attribute (if present), describes what type of change that
+// FixtureChangeType change_type attribute (if present), describes what type of change that
 // caused the message to be sent. In general, best practices are to always
 // re-fetch the updated fixture from the API and not solely rely on the
 // change_type and the message content. This is because multiple different
@@ -298,6 +317,7 @@ func (c *ClockTime) PtrVal() *string {
 // May be one of 1, 2, 3, 4, 5
 type FixtureChangeType int8
 
+// FixtureChangeType values
 const (
 	// This is a new match/event that has been just added.
 	FixtureChangeTypeNew FixtureChangeType = 1
@@ -313,8 +333,10 @@ const (
 	FixtureChangeTypeCoverage FixtureChangeType = 5
 )
 
+// MessageType type
 type MessageType int8
 
+// MessageType values
 const (
 	MessageTypeUnknown MessageType = -1
 )
@@ -387,6 +409,7 @@ var messageTypeNames = []string{
 	"producer_change",
 }
 
+// Parse *MessageType
 func (m *MessageType) Parse(name string) {
 	v := MessageTypeUnknown
 	for i, n := range messageTypeNames {
@@ -407,6 +430,7 @@ func (m MessageType) String() string {
 	return InvalidName
 }
 
+// Kind what kind of Message it is
 func (m MessageType) Kind() MessageKind {
 	if m < 32 {
 		return MessageKindEvent
@@ -417,14 +441,17 @@ func (m MessageType) Kind() MessageKind {
 	return MessageKindSystem
 }
 
+// MessageKind type
 type MessageKind int8
 
+// MessageKind type values
 const (
 	MessageKindEvent MessageKind = iota
 	MessageKindLexicon
 	MessageKindSystem
 )
 
+// MessageScope type
 type MessageScope int8
 
 // Scope of the message
@@ -436,6 +463,7 @@ const (
 	MessageScopeSystem // system scope messages, like alive, product down
 )
 
+// Parse *MessageScope
 func (s *MessageScope) Parse(prematchInterest, liveInterest string) {
 	v := func() MessageScope {
 		if prematchInterest == "pre" {
@@ -455,13 +483,16 @@ func (s *MessageScope) Parse(prematchInterest, liveInterest string) {
 	*s = v
 }
 
+// MessagePriority type
 type MessagePriority int8
 
+// MessagePriority values
 const (
 	MessagePriorityLow MessagePriority = iota
 	MessagePriorityHigh
 )
 
+// Parse *MessagePriority
 func (p *MessagePriority) Parse(priority string) {
 	v := func() MessagePriority {
 		switch priority {
@@ -474,8 +505,10 @@ func (p *MessagePriority) Parse(priority string) {
 	*p = v
 }
 
+// Environment type
 type Environment int8
 
+// Environment values (production, staging, replay...)
 const (
 	Production Environment = iota
 	Staging

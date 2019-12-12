@@ -6,12 +6,13 @@ import (
 	"time"
 )
 
+// FixtureRsp response
 type FixtureRsp struct {
 	Fixture     Fixture   `xml:"fixture" json:"fixture"`
 	GeneratedAt time.Time `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
 }
 
-// Fixtures describe static or semi-static information about matches and races.
+// Fixture describe static or semi-static information about matches and races.
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Fixtures+in+the+API
 type Fixture struct {
 	ID                 int       `xml:"-" json:"id"`
@@ -54,22 +55,27 @@ type Fixture struct {
 
 }
 
+// Tournament structure
 type Tournament struct {
 	ID   int    `json:"id"`
 	Name string `xml:"name,attr" json:"name"`
 }
 
+// Sport structure
 type Sport struct {
 	ID   int    `json:"id"`
 	Name string `xml:"name,attr" json:"name"`
 }
 
+// Category structure
+// CountryCode is the three-letter ISO country-code
 type Category struct {
 	ID          int    `json:"id"`
 	Name        string `xml:"name,attr" json:"name"`
 	CountryCode string `xml:"country_code,attr,omitempty" json:"countryCode,omitempty"`
 }
 
+// Competitor structure
 type Competitor struct {
 	ID           int                `json:"id"`
 	Qualifier    string             `xml:"qualifier,attr,omitempty" json:"qualifier,omitempty"`
@@ -82,6 +88,7 @@ type Competitor struct {
 	//ReferenceIDs CompetitorReferenceIDs `xml:"reference_ids,omitempty" json:"referenceIDs,omitempty"`
 }
 
+// CompetitorPlayer structure
 type CompetitorPlayer struct {
 	ID           int    `json:"id"`
 	Name         string `xml:"name,attr" json:"name"`
@@ -89,6 +96,7 @@ type CompetitorPlayer struct {
 	Nationality  string `xml:"nationality,attr,omitempty" json:"nationality,omitempty"`
 }
 
+// Venue represent where the event is taking place
 type Venue struct {
 	ID             int    `json:"id"`
 	Name           string `xml:"name,attr" json:"name"`
@@ -99,21 +107,26 @@ type Venue struct {
 	MapCoordinates string `xml:"map_coordinates,attr,omitempty" json:"mapCoordinates,omitempty"`
 }
 
+// TvChannel list of TV channels
 type TvChannel struct {
 	Name string `xml:"name,attr" json:"name"`
 	// seams to be always zero
 	// StartTime time.Time `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
 }
 
+// StreamingChannel details about streaming offering
 type StreamingChannel struct {
 	ID   int    `xml:"id,attr" json:"id"`
 	Name string `xml:"name,attr" json:"name"`
 }
+
+// ProductInfoLink links to various pages within Betradar’s hosted solution offering for particular event
 type ProductInfoLink struct {
 	Name string `xml:"name,attr" json:"name"`
 	Ref  string `xml:"ref,attr" json:"ref"`
 }
 
+// Round tournament info
 type Round struct {
 	ID                  int    `xml:"betradar_id,attr,omitempty" json:"id,omitempty"`
 	Type                string `xml:"type,attr,omitempty" json:"type,omitempty"`
@@ -127,6 +140,7 @@ type Round struct {
 	OtherMatchID        string `xml:"other_match_id,attr,omitempty" json:"otherMatchID,omitempty"`
 }
 
+// Season list structure
 type Season struct {
 	ID        int       `json:"id"`
 	StartDate string    `xml:"start_date,attr" json:"startDate"`
@@ -154,6 +168,7 @@ type Season struct {
 // 	ChangedAt time.Time `xml:"changed_at,attr" json:"changedAt"`
 // }
 
+// ProductInfo lists additional information about the fixture found inside the product_info attribute
 type ProductInfo struct {
 	Streaming            []StreamingChannel `xml:"streaming>channel,omitempty" json:"streaming,omitempty"`
 	IsInLiveScore        string             `xml:"is_in_live_score,omitempty" json:"isInLiveScore,omitempty"`
@@ -163,6 +178,7 @@ type ProductInfo struct {
 	Links                []ProductInfoLink  `xml:"links>link,omitempty" json:"links,omitempty"`
 }
 
+// UnmarshalXML *Fixture data
 func (t *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Fixture
 	var overlay struct {
@@ -195,6 +211,7 @@ func (t *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// UnmarshalXML *Sport data
 func (t *Sport) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Sport
 	var overlay struct {
@@ -209,6 +226,7 @@ func (t *Sport) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// UnmarshalXML *Category data
 func (t *Category) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Category
 	var overlay struct {
@@ -223,6 +241,7 @@ func (t *Category) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// UnmarshalXML *Season data
 func (t *Season) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Season
 	var overlay struct {
@@ -237,6 +256,7 @@ func (t *Season) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// UnmarshalXML *Venue data
 func (t *Venue) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Venue
 	var overlay struct {
@@ -251,6 +271,7 @@ func (t *Venue) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// UnmarshalXML *Competitor data
 func (t *Competitor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Competitor
 	var overlay struct {
@@ -265,6 +286,7 @@ func (t *Competitor) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 	return nil
 }
 
+// UnmarshalXML *CompetitorPlayer data
 func (t *CompetitorPlayer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T CompetitorPlayer
 	var overlay struct {
@@ -280,7 +302,7 @@ func (t *CompetitorPlayer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) 
 }
 
 // PP pretty prints fixure row
-func (f *Fixture) PP() string {
-	name := fmt.Sprintf("%s - %s", f.Home.Name, f.Away.Name)
-	return fmt.Sprintf("%-90s %12s %15s", name, f.Scheduled.Format("02.01. 15:04"), f.Status)
+func (t *Fixture) PP() string {
+	name := fmt.Sprintf("%s - %s", t.Home.Name, t.Away.Name)
+	return fmt.Sprintf("%-90s %12s %15s", name, t.Scheduled.Format("02.01. 15:04"), t.Status)
 }

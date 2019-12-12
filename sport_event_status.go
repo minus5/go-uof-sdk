@@ -1,5 +1,6 @@
 package uof
 
+// SportEventStatus is used for odds change messages
 // The element "sport_event_status" is provided in the odds_change message.
 // Status is the only required attribute for this element, and this attribute
 // describes the current status of the sport-event itself (not started, live,
@@ -9,8 +10,22 @@ package uof
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Sport+event+status
 type SportEventStatus struct {
 	// High-level generic status of the match.
+	// Format/Values:
+	//		0 (not started)
+	//		1 (live)
+	//		2 (suspend)
+	//		3 (ended)
+	//		4 (closed)
+	// Other states are available in the API, but will not appear in the odds_change message:
+	// 		5 (cancelled)
+	//		6 (delayed)
+	//		7 (interrupted)
+	//		8 (postponed)
+	//		9 (abandoned)
 	Status EventStatus `xml:"status,attr" json:"status"`
 	// Does Betradar have a scout watching the game.
+	// Format/Values - active (1), suspended (-1)
+	//				 - not available (0) - only when status=live or suspended
 	Reporting *EventReporting `xml:"reporting,attr,omitempty" json:"reporting,omitempty"`
 	// Current score for the home team.
 	HomeScore *int `xml:"home_score,attr,omitempty" json:"homeScore,omitempty"`
@@ -69,6 +84,7 @@ type SportEventStatus struct {
 	Statistics   *Statistics   `xml:"statistics,omitempty" json:"statistics,omitempty"`
 }
 
+// Clock element
 // The sport_event_status may contain a clock element. This clock element
 // includes various clock/time attributes that are sports specific.
 type Clock struct {
@@ -91,6 +107,11 @@ type Clock struct {
 	Stopped *bool `xml:"stopped,attr,omitempty" json:"stopped,omitempty"`
 }
 
+// PeriodScore lists the individual period score for a match
+// Period is a generic name for sport-specific equivalent, eg:
+// - in soccer the 1st half, 2nd half, overtime and penalties are periods
+// - periods in basketball are quarters
+// - in tennis sets
 type PeriodScore struct {
 	// The match status of an event gives an indication of which context the
 	// current match is in. Complete list available at:
@@ -106,19 +127,26 @@ type PeriodScore struct {
 	AwayScore *int `xml:"away_score,attr" json:"awayScore"`
 }
 
+// Result represents match score
 type Result struct {
 	MatchStatusCode *int `xml:"match_status_code,attr" json:"matchStatusCode"`
 	HomeScore       *int `xml:"home_score,attr" json:"homeScore"`
 	AwayScore       *int `xml:"away_score,attr" json:"awayScore"`
 }
 
+// Statistics lists most common stats as counters
 type Statistics struct {
-	YellowCards    *StatisticsScore `xml:"yellow_cards,omitempty" json:"yellowCards,omitempty"`
-	RedCards       *StatisticsScore `xml:"red_cards,omitempty" json:"redCards,omitempty"`
+	// Number of yellow cards for the team (home or away)
+	YellowCards *StatisticsScore `xml:"yellow_cards,omitempty" json:"yellowCards,omitempty"`
+	// Number of red cards for the team (home or away)
+	RedCards *StatisticsScore `xml:"red_cards,omitempty" json:"redCards,omitempty"`
+	// Number of red cards as a result of a previous yellow card for the team (home or away)
 	YellowRedCards *StatisticsScore `xml:"yellow_red_cards,omitempty" json:"yellowRedCards,omitempty"`
-	Corners        *StatisticsScore `xml:"corners,omitempty" json:"corners,omitempty"`
+	// Number of corners for the team
+	Corners *StatisticsScore `xml:"corners,omitempty" json:"corners,omitempty"`
 }
 
+// StatisticsScore lists score for home and away team
 type StatisticsScore struct {
 	Home int `xml:"home,attr" json:"home"`
 	Away int `xml:"away,attr" json:"away"`

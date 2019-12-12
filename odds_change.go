@@ -30,7 +30,7 @@ type OddsChange struct {
 	RequestID                *int                      `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
 }
 
-// Provided by the prematch odds producer only, and contains a few
+// OddsGenerationProperties provided by the prematch odds producer only, and contains a few
 // key-parameters that can be used in a client’s own special odds model, or
 // even offer spread betting bets based on it.
 type OddsGenerationProperties struct {
@@ -63,10 +63,13 @@ type Market struct {
 	// and typically is the start-time of the event the market refers to.
 	NextBetstop *int `json:"nextBetstop,omitempty"`
 }
+
+// MarketMetadata is used to access market metadata values
 type MarketMetadata struct {
 	NextBetstop *int `xml:"next_betstop,attr,omitempty" json:"nextBetstop,omitempty"`
 }
 
+// Outcome describes an outcome for a particular market
 type Outcome struct {
 	ID            int      `json:"id"`
 	PlayerID      int      `json:"playerID"`
@@ -76,8 +79,8 @@ type Outcome struct {
 	Team          *Team    `xml:"team,attr,omitempty" json:"team,omitempty"`
 }
 
-// UnmarshalXML
-func (t *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+// UnmarshalXML *OddsChange
+func (o *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T OddsChange
 	var overlay struct {
 		*T
@@ -87,19 +90,20 @@ func (t *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 			BetstopReason *int     `xml:"betstop_reason,attr,omitempty"`
 		} `xml:"odds,omitempty"`
 	}
-	overlay.T = (*T)(t)
+	overlay.T = (*T)(o)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
 	if overlay.Odds != nil {
-		t.BettingStatus = overlay.Odds.BettingStatus
-		t.BetstopReason = overlay.Odds.BetstopReason
-		t.Markets = overlay.Odds.Markets
+		o.BettingStatus = overlay.Odds.BettingStatus
+		o.BetstopReason = overlay.Odds.BetstopReason
+		o.Markets = overlay.Odds.Markets
 	}
-	t.EventID = t.EventURN.EventID()
+	o.EventID = o.EventURN.EventID()
 	return nil
 }
 
+// UnmarshalXML *Market
 // Custom unmarshaling reasons:
 //  * To cover the case that: 'The default value is active if status is not present.'
 //  * To convert Specifiers and ExtendedSpecifiers fileds which are
@@ -133,6 +137,7 @@ func (t *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
+// UnmarshalXML *Outcome
 func (t *Outcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Outcome
 	var overlay struct {
@@ -148,8 +153,9 @@ func (t *Outcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
-func (m Market) VariantSpecifier() string {
-	for k, v := range m.Specifiers {
+// VariantSpecifier separated list for the market
+func (t Market) VariantSpecifier() string {
+	for k, v := range t.Specifiers {
 		if k == "variant" {
 			return v
 		}
@@ -196,6 +202,7 @@ func toOutcomeID(id string) int {
 	return hash32(id)
 }
 
+// EachPlayer return playerID
 func (o *OddsChange) EachPlayer(handler func(int)) {
 	if o == nil {
 		return
@@ -209,6 +216,7 @@ func (o *OddsChange) EachPlayer(handler func(int)) {
 	}
 }
 
+// EachVariantMarket returns VariantSpecifier
 func (o *OddsChange) EachVariantMarket(handler func(int, string)) {
 	if o == nil {
 		return

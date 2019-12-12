@@ -2,7 +2,7 @@ package uof
 
 import "encoding/xml"
 
-// A bet_cancel message is sent when a bet made on a particular market needs to
+// BetCancel - a bet_cancel message is sent when a bet made on a particular market needs to
 // be cancelled and refunded due to an error (which is different to a
 // bet-settlement/refund).
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Bet+cancel
@@ -23,13 +23,14 @@ type BetCancel struct {
 	Markets      []BetCancelMarket `xml:"market" json:"market"`
 }
 
+// BetCancelMarket structure
 type BetCancelMarket struct {
 	ID         int  `xml:"id,attr" json:"id"`
 	LineID     int  `json:"lineID"`
 	VoidReason *int `xml:"void_reason,attr,omitempty" json:"voidReason,omitempty"`
 }
 
-// A Rollback_bet_cancel message is sent when a previous bet cancel should be
+// RollbackBetCancel - a Rollback_bet_cancel message is sent when a previous bet cancel should be
 // undone (if possible). This may happen, for example, if a Betradar operator
 // mistakenly cancels the wrong market (resulting in a bet_cancel being sent)
 // during the game; before realizing the mistake.
@@ -44,7 +45,7 @@ type RollbackBetCancel struct {
 	Markets   []BetCancelMarket `xml:"market" json:"market"`
 }
 
-// UnmarshalXML
+// UnmarshalXML *BetCancel
 func (t *BetCancel) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T BetCancel
 	var overlay struct {
@@ -58,7 +59,7 @@ func (t *BetCancel) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return nil
 }
 
-// UnmarshalXML
+// UnmarshalXML *BetCancelMarket
 func (t *BetCancelMarket) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T BetCancelMarket
 	var overlay struct {
@@ -74,7 +75,7 @@ func (t *BetCancelMarket) UnmarshalXML(d *xml.Decoder, start xml.StartElement) e
 	return nil
 }
 
-// UnmarshalXML
+// UnmarshalXML *RollbackBetCancel
 func (t *RollbackBetCancel) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T RollbackBetCancel
 	var overlay struct {

@@ -2,6 +2,7 @@ package uof
 
 import "encoding/xml"
 
+// BetSettlement information
 type BetSettlement struct {
 	EventID   int      `json:"eventID"`
 	EventURN  URN      `xml:"event_id,attr" json:"eventURN"`
@@ -15,6 +16,7 @@ type BetSettlement struct {
 	Markets   []BetSettlementMarket `xml:"outcomes>market" json:"outcomes"`
 }
 
+// BetSettlementMarket information
 type BetSettlementMarket struct {
 	ID     int `xml:"id,attr" json:"id"`
 	LineID int `json:"lineID"`
@@ -27,12 +29,14 @@ type BetSettlementMarket struct {
 	Outcomes   []BetSettlementOutcome `xml:"outcome" json:"outcome"`
 }
 
+// BetSettlementOutcome information
 type BetSettlementOutcome struct {
 	ID             int           `json:"id"`
 	Result         OutcomeResult `json:"result"`
 	DeadHeatFactor float64       `json:"deadHeatFactor,omitempty"`
 }
 
+// RollbackBetSettlement information
 type RollbackBetSettlement struct {
 	EventID   int               `json:"eventID"`
 	EventURN  URN               `xml:"event_id,attr" json:"eventURN"`
@@ -42,6 +46,7 @@ type RollbackBetSettlement struct {
 	Markets   []BetCancelMarket `xml:"market" json:"market"`
 }
 
+// UnmarshalXML *BetSettlement
 func (t *BetSettlement) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T BetSettlement
 	var overlay struct {
@@ -55,6 +60,7 @@ func (t *BetSettlement) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 	return nil
 }
 
+// UnmarshalXML *RollbackBetSettlement
 func (t *RollbackBetSettlement) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T RollbackBetSettlement
 	var overlay struct {
@@ -68,6 +74,7 @@ func (t *RollbackBetSettlement) UnmarshalXML(d *xml.Decoder, start xml.StartElem
 	return nil
 }
 
+// UnmarshalXML *BetSettlementMarket
 func (t *BetSettlementMarket) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T BetSettlementMarket
 	var overlay struct {
@@ -83,6 +90,7 @@ func (t *BetSettlementMarket) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 	return nil
 }
 
+// UnmarshalXML *BetSettlementOutcome
 func (t *BetSettlementOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T BetSettlementOutcome
 	var overlay struct {

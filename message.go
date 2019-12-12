@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// Header common for message
 type Header struct {
 	Type       MessageType     `json:"type,omitempty"`
 	Scope      MessageScope    `json:"scope,omitempty"`
@@ -22,9 +23,10 @@ type Header struct {
 	ReceivedAt int             `json:"receivedAt,omitempty"`
 }
 
+// Body represent deatils about each individual message types
+// queue message types
+// Ref: https://docs.betradar.com/display/BD/UOF+-+Messages
 type Body struct {
-	// queue message types
-	// Ref: https://docs.betradar.com/display/BD/UOF+-+Messages
 	Alive                 *Alive                 `json:"alive,omitempty"`
 	BetCancel             *BetCancel             `json:"betCancel,omitempty"`
 	RollbackBetSettlement *RollbackBetSettlement `json:"rollbackBetSettlement,omitempty"`
@@ -43,6 +45,7 @@ type Body struct {
 	Producers  ProducersChange `json:"producerChange,omitempty"`
 }
 
+// Message struct
 type Message struct {
 	Header `json:",inline"`
 	Raw    []byte `json:"-"`
@@ -61,7 +64,7 @@ func init() {
 		defer mu.Unlock()
 		ts := CurrentTimestamp()
 		if ts <= lastTs {
-			ts += 1
+			ts++
 		}
 		lastTs = ts
 		return ts
@@ -76,6 +79,7 @@ func timeToTimestamp(t time.Time) int {
 	return int(t.UnixNano()) / 1e6
 }
 
+// NewQueueMessage in ampq
 func NewQueueMessage(routingKey string, body []byte) (*Message, error) {
 	r := &Message{
 		Header: Header{ReceivedAt: uniqTimestamp()},
@@ -193,7 +197,8 @@ func (m *Message) unpack() error {
 	return nil
 }
 
-func NewApiMessage(lang Lang, typ MessageType, body []byte) (*Message, error) {
+// NewAPIMessage contains data regarding API changes
+func NewAPIMessage(lang Lang, typ MessageType, body []byte) (*Message, error) {
 	m := &Message{
 		Header: Header{
 			Type:       typ,
@@ -208,6 +213,7 @@ func NewApiMessage(lang Lang, typ MessageType, body []byte) (*Message, error) {
 	return m, nil
 }
 
+// NewMarketsMessage contains data regarding Market changes
 func NewMarketsMessage(lang Lang, ms MarketDescriptions) *Message {
 	m := &Message{
 		Header: Header{
@@ -220,6 +226,7 @@ func NewMarketsMessage(lang Lang, ms MarketDescriptions) *Message {
 	return m
 }
 
+// NewPlayerMessage contains data regarding Player changes
 func NewPlayerMessage(lang Lang, player *Player) *Message {
 	return &Message{
 		Header: Header{
@@ -231,6 +238,7 @@ func NewPlayerMessage(lang Lang, player *Player) *Message {
 	}
 }
 
+// NewConnnectionMessage contains data regarding connection change
 func NewConnnectionMessage(status ConnectionStatus) *Message {
 	ts := uniqTimestamp()
 	return &Message{
@@ -248,6 +256,7 @@ func NewConnnectionMessage(status ConnectionStatus) *Message {
 	}
 }
 
+// NewProducersChangeMessage contains data regarding connection change
 func NewProducersChangeMessage(pc ProducersChange) *Message {
 	return &Message{
 		Header: Header{
@@ -259,6 +268,7 @@ func NewProducersChangeMessage(pc ProducersChange) *Message {
 	}
 }
 
+// NewFixtureMessage contains data regarding Fixture change
 func NewFixtureMessage(lang Lang, x Fixture) *Message {
 	return &Message{
 		Header: Header{
@@ -272,6 +282,7 @@ func NewFixtureMessage(lang Lang, x Fixture) *Message {
 	}
 }
 
+// NewFixtureMessage return
 func (m *Message) NewFixtureMessage(lang Lang, f Fixture) *Message {
 	c := &Message{
 		Header: m.Header,
@@ -284,6 +295,7 @@ func (m *Message) NewFixtureMessage(lang Lang, f Fixture) *Message {
 
 const separator = byte(10)
 
+// Marshal function
 func (m Message) Marshal() []byte {
 	if m.Raw == nil {
 		buf, _ := json.Marshal(m)
@@ -294,6 +306,7 @@ func (m Message) Marshal() []byte {
 	return append(buf, m.Raw...)
 }
 
+// Unmarshal function
 func (m *Message) Unmarshal(buf []byte) error {
 	parts := bytes.SplitN(buf, []byte{separator}, 2)
 	if err := json.Unmarshal(parts[0], m); err != nil {
@@ -322,6 +335,7 @@ func (m *Message) UID() int {
 	return 0
 }
 
+// UIDWithLang returns id, lang
 func UIDWithLang(id int, lang Lang) int {
 	if id >= 0 {
 		return (id << 8) | int(lang)
@@ -329,6 +343,7 @@ func UIDWithLang(id int, lang Lang) int {
 	return -((-id << 8) | int(lang))
 }
 
+// Is message mt
 func (m *Message) Is(mt MessageType) bool {
 	return m.Type == mt
 }

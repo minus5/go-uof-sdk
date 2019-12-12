@@ -5,11 +5,13 @@ import (
 	"time"
 )
 
+// PlayerProfile represents profile of a player
 type PlayerProfile struct {
 	Player      Player    `xml:"player" json:"player"`
 	GeneratedAt time.Time `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
 }
 
+// Player profile
 type Player struct {
 	ID           int       `xml:"id,attr" json:"id"`
 	Type         string    `xml:"type,attr,omitempty" json:"type,omitempty"`
@@ -25,6 +27,7 @@ type Player struct {
 	Gender       Gender    `xml:"gender,attr,omitempty" json:"gender,omitempty"`
 }
 
+// UnmarshalXML returns Player values
 func (t *Player) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Player
 	var overlay struct {

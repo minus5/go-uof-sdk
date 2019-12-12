@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//You will receive a fixture change when you book a match, and also when/if the
+// FixtureChange will receive a fixture change when you book a match, and also when/if the
 // match is added to the live odds program.
 // A fixture_change message is sent when a Betradar system has made a fixture
 // change it deems is important. These are typically changes that affect events
@@ -26,19 +26,21 @@ type FixtureChange struct {
 	NextLiveTime *int               `xml:"next_live_time,attr,omitempty" json:"nextLiveTime,omitempty"`
 }
 
-func (t *FixtureChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+// UnmarshalXML *FixtureChange
+func (fc *FixtureChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T FixtureChange
 	var overlay struct {
 		*T
 	}
-	overlay.T = (*T)(t)
+	overlay.T = (*T)(fc)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.EventID = t.EventURN.EventID()
+	fc.EventID = fc.EventURN.EventID()
 	return nil
 }
 
+// Schedule specific change will start
 func (fc *FixtureChange) Schedule() *time.Time {
 	if fc.StartTime == nil {
 		return nil

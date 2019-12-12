@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Markets betradar api response
+// MarketsRsp is Markets betradar api response
 type MarketsRsp struct {
 	Markets MarketDescriptions `xml:"market,omitempty" json:"markets,omitempty"`
 	// unused
@@ -13,8 +13,10 @@ type MarketsRsp struct {
 	//Location     string   `xml:"location,attr,omitempty" json:"location,omitempty"`
 }
 
+// MarketDescriptions type
 type MarketDescriptions []MarketDescription
 
+// Find MarketDescriptions
 func (md MarketDescriptions) Find(id int) *MarketDescription {
 	for _, m := range md {
 		if m.ID == id {
@@ -24,6 +26,7 @@ func (md MarketDescriptions) Find(id int) *MarketDescription {
 	return nil
 }
 
+// Groups market
 func (md MarketDescriptions) Groups() map[string][]int {
 	marketGroups := make(map[string][]int)
 	for _, m := range md {
@@ -36,6 +39,7 @@ func (md MarketDescriptions) Groups() map[string][]int {
 	return marketGroups
 }
 
+// MarketDescription is a template language that can be used to describe the actual market
 type MarketDescription struct {
 	ID                     int               `xml:"id,attr" json:"id"`
 	VariantID              int               `json:"variantID,omitempty"`
@@ -51,18 +55,21 @@ type MarketDescription struct {
 	//Mappings               []Mapping         `xml:"mappings>mapping,omitempty" json:"mappings,omitempty"`
 }
 
+// MarketOutcome is a template language that can be used to describe the actual outcome
 type MarketOutcome struct {
 	ID          int    `json:"id"`
 	Name        string `xml:"name,attr" json:"name,omitempty"`
 	Description string `xml:"description,attr,omitempty" json:"description,omitempty"`
 }
 
+// MarketSpecifier data
 type MarketSpecifier struct {
 	Type        SpecifierType `json:"type"`
 	Name        string        `xml:"name,attr" json:"name,omitempty"`
 	Description string        `xml:"description,attr,omitempty" json:"description,omitempty"`
 }
 
+// MarketAttribute data
 type MarketAttribute struct {
 	Name        string `xml:"name,attr" json:"name,omitempty"`
 	Description string `xml:"description,attr" json:"description,omitempty"`
@@ -85,6 +92,7 @@ type MarketAttribute struct {
 // 	ProductOutcomeName string `xml:"product_outcome_name,attr,omitempty" json:"productOutcomeName,omitempty"`
 // }
 
+// UnmarshalXML *MarketDescription
 func (t *MarketDescription) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T MarketDescription
 	var overlay struct {
@@ -102,6 +110,7 @@ func (t *MarketDescription) UnmarshalXML(d *xml.Decoder, start xml.StartElement)
 	return nil
 }
 
+// UnmarshalXML *MarketOutcome
 func (t *MarketOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T MarketOutcome
 	var overlay struct {
@@ -116,6 +125,7 @@ func (t *MarketOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 	return nil
 }
 
+// UnmarshalXML *MarketSpecifier
 func (t *MarketSpecifier) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T MarketSpecifier
 	var overlay struct {

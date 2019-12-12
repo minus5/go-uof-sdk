@@ -1,6 +1,6 @@
 package uof
 
-// The default value is active if status is not present.
+// MarketStatus default value is active if status is not present.
 type MarketStatus int8
 
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Market+status
@@ -44,10 +44,12 @@ const (
 	MarketStatusCancelled MarketStatus = -4
 )
 
+// Val returns Market status
 func (m MarketStatus) Val() int8 {
 	return int8(m)
 }
 
+// PtrVal MarketStatus returns
 func (m *MarketStatus) PtrVal() *int8 {
 	if m == nil {
 		return nil
@@ -56,8 +58,10 @@ func (m *MarketStatus) PtrVal() *int8 {
 	return &v
 }
 
+// CashoutStatus type
 type CashoutStatus int8
 
+// CashoutStatus values
 const (
 	// available for cashout
 	CashoutStatusAvailable CashoutStatus = 1
@@ -67,6 +71,7 @@ const (
 	CashoutStatusClosed CashoutStatus = -2
 )
 
+// PtrVal CashoutStatus return
 func (s *CashoutStatus) PtrVal() *int8 {
 	if s == nil {
 		return nil
@@ -75,13 +80,16 @@ func (s *CashoutStatus) PtrVal() *int8 {
 	return &v
 }
 
+// Team type
 type Team int8
 
+// Team values
 const (
 	TeamHome Team = 1
 	TeamAway Team = 2
 )
 
+// PtrVal Team return
 func (t *Team) PtrVal() *int8 {
 	if t == nil {
 		return nil
@@ -90,8 +98,10 @@ func (t *Team) PtrVal() *int8 {
 	return &v
 }
 
+// EventStatus type
 type EventStatus int8
 
+// Event status values
 const (
 	EventStatusNotStarted EventStatus = 0
 	EventStatusLive       EventStatus = 1
@@ -108,10 +118,12 @@ const (
 	EventStatusAbandoned   EventStatus = 9
 )
 
+// Val return
 func (s EventStatus) Val() int8 {
 	return int8(s)
 }
 
+// PtrVal EventStatus return
 func (s *EventStatus) PtrVal() *int8 {
 	if s == nil {
 		return nil
@@ -120,8 +132,10 @@ func (s *EventStatus) PtrVal() *int8 {
 	return &v
 }
 
+// OutcomeResult type
 type OutcomeResult int8
 
+// OutcomeResult values
 const (
 	OutcomeResultUnknown         OutcomeResult = 0
 	OutcomeResultLose            OutcomeResult = 1
@@ -132,8 +146,10 @@ const (
 	OutcomeResultWinWithDeadHead OutcomeResult = 6
 )
 
+// OutcomeType type
 type OutcomeType int8
 
+// OutcomeType values
 const (
 	OutcomeTypeDefault OutcomeType = iota
 	OutcomeTypePlayer
@@ -143,8 +159,10 @@ const (
 	OutcomeTypeUnknown OutcomeType = -1
 )
 
+// SpecifierType type
 type SpecifierType int8
 
+// SpecifierType values
 const (
 	SpecifierTypeString SpecifierType = iota
 	SpecifierTypeInteger
@@ -153,8 +171,10 @@ const (
 	SpecifierTypeUnknown SpecifierType = -1
 )
 
+// Gender type
 type Gender int8
 
+// Gender values
 const (
 	GenderUnknown Gender = iota
 	Male

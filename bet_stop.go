@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 )
 
-// The bet_stop message is an optimized signal to indicate that all, or a set of
+// BetStop - The bet_stop message is an optimized signal to indicate that all, or a set of
 // markets should be instantly suspended (continue to display odds, but don't
 // accept tickets). The same effect can also be achieved by sending an
 // odds_change message that lists all the affected markets and moves them to
@@ -26,6 +26,7 @@ type BetStop struct {
 	MarketIDs []int        `json:"marketsIDs"`
 }
 
+// UnmarshalXML *BetStop
 func (t *BetStop) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T BetStop
 	var overlay struct {
