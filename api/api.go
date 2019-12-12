@@ -138,7 +138,7 @@ func (a *Api) httpRequest(tpl string, p *params, method string) ([]byte, error) 
 
 	req, err := retryablehttp.NewRequest(method, url, nil)
 	if err != nil {
-		return nil, uof.E("http.NewRequest", uof.ApiError{URL: url, Inner: err})
+		return nil, uof.E("http.NewRequest", uof.APIError{URL: url, Inner: err})
 	}
 	if a.exitSig != nil {
 		ctx, cancel := context.WithTimeout(a.exitSig, RequestTimeout)
@@ -155,17 +155,17 @@ func (a *Api) httpRequest(tpl string, p *params, method string) ([]byte, error) 
 	req.Header.Set("x-access-token", a.token)
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, uof.E("client.Do", uof.ApiError{URL: url, Inner: err})
+		return nil, uof.E("client.Do", uof.APIError{URL: url, Inner: err})
 	}
 
 	defer resp.Body.Close()
 	buf, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, uof.E("http.Body", uof.ApiError{URL: url, Inner: err})
+		return nil, uof.E("http.Body", uof.APIError{URL: url, Inner: err})
 	}
 
 	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
-		return nil, uof.E("http.StatusCode", uof.ApiError{URL: url, StatusCode: resp.StatusCode, Response: string(buf)})
+		return nil, uof.E("http.StatusCode", uof.APIError{URL: url, StatusCode: resp.StatusCode, Response: string(buf)})
 	}
 
 	return buf, nil
