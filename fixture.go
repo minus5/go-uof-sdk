@@ -2,6 +2,7 @@ package uof
 
 import (
 	"encoding/xml"
+	"fmt"
 	"time"
 )
 
@@ -276,4 +277,10 @@ func (t *CompetitorPlayer) UnmarshalXML(d *xml.Decoder, start xml.StartElement) 
 	}
 	t.ID = overlay.URN.ID()
 	return nil
+}
+
+// PP pretty prints fixure row
+func (f *Fixture) PP() string {
+	name := fmt.Sprintf("%s - %s", f.Home.Name, f.Away.Name)
+	return fmt.Sprintf("%-90s %12s %15s", name, f.Scheduled.Format("02.01. 15:04"), f.Status)
 }

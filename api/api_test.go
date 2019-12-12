@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/minus5/go-uof-sdk"
 	"github.com/stretchr/testify/assert"
@@ -39,7 +40,7 @@ func TestIntegration(t *testing.T) {
 		{"marketVariant", testMarketVariant},
 		{"fixture", testFixture},
 		{"player", testPlayer},
-		//{"fixtures", testFixtures},
+		{"fixtures", testFixtures},
 	}
 	for _, s := range tests {
 		t.Run(s.name, func(t *testing.T) { s.f(t, a) })
@@ -100,4 +101,20 @@ func testPlayer(t *testing.T, a *Api) {
 	p, err := a.Player(lang, 947)
 	assert.NoError(t, err)
 	assert.Equal(t, "Lee Barnard", p.FullName)
+}
+
+func testFixtures(t *testing.T, a *Api) {
+	lang := uof.LangEN
+	to := time.Now() //.Add(24*3*time.Hour)
+	in, errc := a.Fixtures(lang, to)
+	for f := range in {
+		if testing.Verbose() {
+			fmt.Printf("\t%s\n", f.PP())
+		}
+	}
+	go func() {
+		for err := range errc {
+			panic(err)
+		}
+	}()
 }
