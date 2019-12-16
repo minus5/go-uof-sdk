@@ -19,16 +19,18 @@ const (
 	productionServer = "api.betradar.com"
 )
 
+// RequestTimeout timeout in seconds
 var RequestTimeout = 32 * time.Second
 
-type Api struct {
+// API struct
+type API struct {
 	server  string
 	token   string
 	exitSig context.Context
 }
 
 // Dial connect to the staging or production api environment
-func Dial(ctx context.Context, env uof.Environment, token string) (*Api, error) {
+func Dial(ctx context.Context, env uof.Environment, token string) (*API, error) {
 	switch env {
 	case uof.Replay:
 		return Staging(ctx, token)
@@ -42,8 +44,8 @@ func Dial(ctx context.Context, env uof.Environment, token string) (*Api, error) 
 }
 
 // Staging connects to the staging system
-func Staging(exitSig context.Context, token string) (*Api, error) {
-	a := &Api{
+func Staging(exitSig context.Context, token string) (*API, error) {
+	a := &API{
 		server:  stagingServer,
 		token:   token,
 		exitSig: exitSig,
@@ -52,8 +54,8 @@ func Staging(exitSig context.Context, token string) (*Api, error) {
 }
 
 // Production connects to the production system
-func Production(exitSig context.Context, token string) (*Api, error) {
-	a := &Api{
+func Production(exitSig context.Context, token string) (*API, error) {
+	a := &API{
 		server:  productionServer,
 		token:   token,
 		exitSig: exitSig,
@@ -67,7 +69,8 @@ const (
 	ping         = "/v1/users/whoami.xml"
 )
 
-func (a *Api) RequestRecovery(producer uof.Producer, timestamp int, requestID int) error {
+// RequestRecovery starts recovery process
+func (a *API) RequestRecovery(producer uof.Producer, timestamp int, requestID int) error {
 	if timestamp <= 0 {
 		return a.RequestFullOddsRecovery(producer, requestID)
 	}
@@ -76,35 +79,36 @@ func (a *Api) RequestRecovery(producer uof.Producer, timestamp int, requestID in
 
 // RequestRecoverySinceTimestamp does recovery of odds and stateful messages
 // over the feed since after timestamp. Subscribes client to feed messages.
-func (a *Api) RequestRecoverySinceTimestamp(producer uof.Producer, timestamp int, requestID int) error {
+func (a *API) RequestRecoverySinceTimestamp(producer uof.Producer, timestamp int, requestID int) error {
 	return a.post(recovery, &params{Producer: producer, Timestamp: timestamp, RequestID: requestID})
 }
 
 // RequestFullOddsRecovery does recovery of odds over the feed. Subscribes
 // client to feed messages.
-func (a *Api) RequestFullOddsRecovery(producer uof.Producer, requestID int) error {
+func (a *API) RequestFullOddsRecovery(producer uof.Producer, requestID int) error {
 	return a.post(fullRecovery, &params{Producer: producer, RequestID: requestID})
 }
 
 // // RecoverSportEvent requests to resend all odds for all markets for a sport
 // // event.
-// func (a *Api) RecoverSportEvent(product, eventID string) error {
+// func (a *API) RecoverSportEvent(product, eventID string) error {
 // 	return a.post(fmt.Sprintf("/v1/%s/events/%s/initiate_request", product, eventID))
 // }
 
 // // RecoverStatefulForSportEvent requests to resend all stateful-messages
 // // (BetSettlement, RollbackBetSettlement, BetCancel, UndoBetCancel) for a sport
 // // event.
-// func (a *Api) RecoverStatefulForSportEvent(product, eventID string) error {
+// func (a *API) RecoverStatefulForSportEvent(product, eventID string) error {
 // 	return a.post(fmt.Sprintf("/v1/%s/stateful_messages/events/%s/initiate_request", product, eventID))
 // }
 
-func (a *Api) Ping() error {
+// Ping request
+func (a *API) Ping() error {
 	_, err := a.get(ping, nil)
 	return err
 }
 
-func (a *Api) getAs(o interface{}, tpl string, p *params) error {
+func (a *API) getAs(o interface{}, tpl string, p *params) error {
 	buf, err := a.get(tpl, p)
 	if err != nil {
 		return err
@@ -116,23 +120,23 @@ func (a *Api) getAs(o interface{}, tpl string, p *params) error {
 }
 
 // make http get request
-func (a *Api) get(tpl string, p *params) ([]byte, error) {
+func (a *API) get(tpl string, p *params) ([]byte, error) {
 	return a.httpRequest(tpl, p, "GET")
 }
 
 // make http put request
-func (a *Api) put(tpl string, p *params) error {
+func (a *API) put(tpl string, p *params) error {
 	_, err := a.httpRequest(tpl, p, "PUT")
 	return err
 }
 
 // make http post request
-func (a *Api) post(tpl string, p *params) error {
+func (a *API) post(tpl string, p *params) error {
 	_, err := a.httpRequest(tpl, p, "POST")
 	return err
 }
 
-func (a *Api) httpRequest(tpl string, p *params, method string) ([]byte, error) {
+func (a *API) httpRequest(tpl string, p *params, method string) ([]byte, error) {
 	path := runTemplate(tpl, p)
 	url := fmt.Sprintf("https://%s%s", a.server, path)
 

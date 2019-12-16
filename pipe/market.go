@@ -8,13 +8,13 @@ import (
 	"github.com/minus5/go-uof-sdk"
 )
 
-type marketsApi interface {
+type marketsAPI interface {
 	Markets(lang uof.Lang) (uof.MarketDescriptions, error)
 	MarketVariant(lang uof.Lang, marketID int, variant string) (uof.MarketDescriptions, error)
 }
 
 type markets struct {
-	api       marketsApi
+	api       marketsAPI
 	languages []uof.Lang
 	em        *expireMap
 	errc      chan<- error
@@ -23,15 +23,15 @@ type markets struct {
 	subProcs  *sync.WaitGroup
 }
 
-// getting all markets on the start
-func Markets(api marketsApi, languages []uof.Lang) InnerStage {
+// Markets getting all markets on the start
+func Markets(api marketsAPI, languages []uof.Lang) InnerStage {
 	var wg sync.WaitGroup
 	m := &markets{
 		api:       api,
 		languages: languages,
 		em:        newExpireMap(24 * time.Hour),
 		subProcs:  &wg,
-		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
+		rateLimit: make(chan struct{}, ConcurentAPICallsLimit),
 	}
 	return StageWithSubProcessesSync(m.loop)
 }

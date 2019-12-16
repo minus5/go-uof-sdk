@@ -9,18 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type fixtureApiMock struct {
+type fixtureAPIMock struct {
 	preloadTo time.Time
 	eventURN  uof.URN
 	//requests map[int]struct{}
 	sync.Mutex
 }
 
-func (m *fixtureApiMock) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
+func (m *fixtureAPIMock) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
 	m.eventURN = eventURN
 	return &uof.Fixture{}, nil
 }
-func (m *fixtureApiMock) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error) {
+func (m *fixtureAPIMock) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error) {
 	m.preloadTo = to
 	out := make(chan uof.Fixture)
 	errc := make(chan error)
@@ -32,7 +32,7 @@ func (m *fixtureApiMock) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixtu
 }
 
 func TestFixturePipe(t *testing.T) {
-	a := &fixtureApiMock{}
+	a := &fixtureAPIMock{}
 	preloadTo := time.Now().Add(time.Hour)
 	f := Fixture(a, []uof.Lang{uof.LangEN, uof.LangDE}, preloadTo)
 	assert.NotNil(t, f)

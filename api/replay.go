@@ -16,9 +16,9 @@ const (
 )
 
 // Replay service for unified feed methods
-func Replay(exitSig context.Context, token string) (*ReplayApi, error) {
-	r := &ReplayApi{
-		api: &Api{
+func Replay(exitSig context.Context, token string) (*ReplayAPI, error) {
+	r := &ReplayAPI{
+		api: &API{
 			server:  productionServer,
 			token:   token,
 			exitSig: exitSig,
@@ -27,11 +27,12 @@ func Replay(exitSig context.Context, token string) (*ReplayApi, error) {
 	return r, r.Reset()
 }
 
-type ReplayApi struct {
-	api *Api
+// ReplayAPI type
+type ReplayAPI struct {
+	api *API
 }
 
-// Start replay of the scenario from replay queue. Your current playlist will be
+// StartScenario start replay of the scenario from replay queue. Your current playlist will be
 // wiped, and populated with events from specified scenario. Events are played
 // in the order they were played in reality. Parameters 'speed' and 'max_delay'
 // specify the speed of replay and what should be the maximum delay between
@@ -41,12 +42,12 @@ type ReplayApi struct {
 // be reduced to exactly 10 seconds/10 000 ms (this is helpful especially in
 // pre-match odds where delay can be even a few hours or more). If player is
 // already in play, nothing will happen.
-func (r *ReplayApi) StartScenario(scenarioID, speed, maxDelay int) error {
+func (r *ReplayAPI) StartScenario(scenarioID, speed, maxDelay int) error {
 	return r.api.post(startScenario, &params{ScenarioID: scenarioID, Speed: speed, MaxDelay: maxDelay})
 }
 
 // StartEvent starts replay of a single event.
-func (r *ReplayApi) StartEvent(eventURN uof.URN, speed, maxDelay int) error {
+func (r *ReplayAPI) StartEvent(eventURN uof.URN, speed, maxDelay int) error {
 	if err := r.Reset(); err != nil {
 		return err
 	}
@@ -56,12 +57,12 @@ func (r *ReplayApi) StartEvent(eventURN uof.URN, speed, maxDelay int) error {
 	return r.Play(speed, maxDelay)
 }
 
-// Adds to the end of the replay queue.
-func (r *ReplayApi) Add(eventURN uof.URN) error {
+// Add to the end of the replay queue.
+func (r *ReplayAPI) Add(eventURN uof.URN) error {
 	return r.api.put(replayAdd, &params{EventURN: eventURN})
 }
 
-// Start replay the events from replay queue. Events are played in the order
+// Play start replay the events from replay queue. Events are played in the order
 // they were played in reality. Parameters 'speed' and 'max_delay' specify the
 // speed of replay and what should be the maximum delay between messages.
 // Default values for these are speed = 10 and max_delay = 10000. This means
@@ -70,18 +71,18 @@ func (r *ReplayApi) Add(eventURN uof.URN) error {
 // reduced to exactly 10 seconds/10 000 ms (this is helpful especially in
 // pre-match odds where delay can be even a few hours or more). If player is
 // already in play, nothing will happen.
-func (r *ReplayApi) Play(speed, maxDelay int) error {
+func (r *ReplayAPI) Play(speed, maxDelay int) error {
 	return r.api.post(replayPlay, &params{Speed: speed, MaxDelay: maxDelay})
 }
 
 // Stop the player if it is currently playing. If player is already stopped,
 // nothing will happen.
-func (r *ReplayApi) Stop() error {
+func (r *ReplayAPI) Stop() error {
 	return r.api.post(replayStop, nil)
 }
 
-// Stop the player if it is currently playing and clear the replay queue. If
+// Reset stops the player if it is currently playing and clear the replay queue. If
 // player is already stopped, the queue is cleared.
-func (r *ReplayApi) Reset() error {
+func (r *ReplayAPI) Reset() error {
 	return r.api.post(replayReset, nil)
 }

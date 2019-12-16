@@ -7,9 +7,10 @@ import (
 	"github.com/minus5/go-uof-sdk"
 )
 
-// Number of concurent api calls of one type. For example: no more than x
+// ConcurentAPICallsLimit is the number of concurent api calls of one type.
+// For example: no more than x
 // running Player api calls in any point in time.
-const ConcurentApiCallsLimit = 16
+const ConcurentAPICallsLimit = 16
 
 // What is a pipeline?
 // There's no formal definition of a pipeline in Go; it's just one of many kinds
@@ -27,11 +28,17 @@ const ConcurentApiCallsLimit = 16
 // Reference: https://blog.golang.org/pipelines
 
 type sourceStage func() (<-chan *uof.Message, <-chan error)
+
+// InnerStage type
 type InnerStage func(<-chan *uof.Message) (<-chan *uof.Message, <-chan error)
+
+// ConsumerStage type
 type ConsumerStage func(in <-chan *uof.Message) error
+
 type stageFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error)
 type stageWithDrainFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup
 
+// Build stage pipeline
 func Build(source sourceStage, stages ...InnerStage) <-chan error {
 	var errors []<-chan error
 	in, errc := source()
@@ -89,10 +96,12 @@ func mergeErrors(errors []<-chan error) <-chan error {
 	return out
 }
 
+// Consumer pipe
 func Consumer(consumer ConsumerStage) InnerStage {
 	return BufferedConsumer(consumer, 0)
 }
 
+// BufferedConsumer on stage
 func BufferedConsumer(consumer ConsumerStage, buffer int) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
@@ -123,6 +132,7 @@ func BufferedConsumer(consumer ConsumerStage, buffer int) InnerStage {
 	}
 }
 
+// Stage channel
 func Stage(looper stageFunc) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
@@ -141,6 +151,7 @@ func Stage(looper stageFunc) InnerStage {
 	}
 }
 
+// StageWithSubProcesses looper
 func StageWithSubProcesses(looper stageWithDrainFunc) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
@@ -197,6 +208,7 @@ func StageWithSubProcesses(looper stageWithDrainFunc) InnerStage {
 	}
 }
 
+// StageWithSubProcessesSync for stages sync
 func StageWithSubProcessesSync(looper stageWithDrainFunc) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)
@@ -216,6 +228,7 @@ func StageWithSubProcessesSync(looper stageWithDrainFunc) InnerStage {
 	}
 }
 
+// Simple function
 func Simple(each func(m *uof.Message) error) InnerStage {
 	return func(in <-chan *uof.Message) (<-chan *uof.Message, <-chan error) {
 		out := make(chan *uof.Message)

@@ -12,6 +12,7 @@ import (
 
 var defaultLanuages = uof.Languages("en,de")
 
+// Config definition
 type Config struct {
 	BookmakerID string
 	Token       string
@@ -20,7 +21,7 @@ type Config struct {
 	Fixtures    time.Time
 	Recovery    []uof.ProducerChange
 	Stages      []pipe.InnerStage
-	Replay      func(*api.ReplayApi) error
+	Replay      func(*api.ReplayAPI) error
 	Env         uof.Environment
 }
 
@@ -89,7 +90,7 @@ func config(options ...Option) Config {
 }
 
 // connect to the queue and api
-func connect(ctx context.Context, c Config) (*queue.Connection, *api.Api, error) {
+func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error) {
 	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token)
 	if err != nil {
 		return nil, nil, err
@@ -130,7 +131,7 @@ func Staging() Option {
 
 // Replay forces use of replay environment.
 // Callback will be called to start replay after establishing connection.
-func Replay(cb func(*api.ReplayApi) error) Option {
+func Replay(cb func(*api.ReplayAPI) error) Option {
 	return func(c *Config) {
 		c.Env = uof.Replay
 		c.Replay = cb

@@ -1,5 +1,4 @@
 // Package queue implements connection to the Betradar amqp queue
-
 // You cannot create your own queues. Instead you have to request a server-named
 // queue (empty queue name in the request). Passive, Exclusive, Non-durable.
 // Reference: https://docs.betradar.com/display/BD/UOF+-+Messages
@@ -36,7 +35,7 @@ func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (
 	}
 }
 
-// Dial connects to the production queue
+// DialProduction dial connects to the production queue
 func DialProduction(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, productionServer, bookmakerID, token)
 }
@@ -51,12 +50,14 @@ func DialReplay(ctx context.Context, bookmakerID, token string) (*Connection, er
 	return dial(ctx, replayServer, bookmakerID, token)
 }
 
+// Connection params
 type Connection struct {
 	msgs   <-chan amqp.Delivery
 	errs   <-chan *amqp.Error
 	reDial func() (*Connection, error)
 }
 
+// Listen for connection
 func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
 	out := make(chan *uof.Message)
 	errc := make(chan error)

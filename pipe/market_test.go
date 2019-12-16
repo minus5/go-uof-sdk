@@ -9,16 +9,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type marketsApiMock struct {
+type marketsAPIMock struct {
 	requests map[string]struct{}
 	sync.Mutex
 }
 
-func (m *marketsApiMock) Markets(lang uof.Lang) (uof.MarketDescriptions, error) {
+func (m *marketsAPIMock) Markets(lang uof.Lang) (uof.MarketDescriptions, error) {
 	return nil, nil
 }
 
-func (m *marketsApiMock) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.MarketDescriptions, error) {
+func (m *marketsAPIMock) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.MarketDescriptions, error) {
 	m.Lock()
 	defer m.Unlock()
 	m.requests[fmt.Sprintf("%s %d %s", lang, marketID, variant)] = struct{}{}
@@ -26,7 +26,7 @@ func (m *marketsApiMock) MarketVariant(lang uof.Lang, marketID int, variant stri
 }
 
 func TestMarketsPipe(t *testing.T) {
-	a := &marketsApiMock{requests: make(map[string]struct{})}
+	a := &marketsAPIMock{requests: make(map[string]struct{})}
 	ms := Markets(a, []uof.Lang{uof.LangEN, uof.LangDE})
 	assert.NotNil(t, ms)
 

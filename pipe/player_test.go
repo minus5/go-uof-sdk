@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type playerApiMock struct {
+type playerAPIMock struct {
 	requests map[int]struct{}
 	sync.Mutex
 }
 
-func (m *playerApiMock) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
+func (m *playerAPIMock) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
 	m.Lock()
 	defer m.Unlock()
 	m.requests[uof.UIDWithLang(playerID, lang)] = struct{}{}
@@ -22,7 +22,7 @@ func (m *playerApiMock) Player(lang uof.Lang, playerID int) (*uof.Player, error)
 }
 
 func TestPlayerPipe(t *testing.T) {
-	a := &playerApiMock{requests: make(map[int]struct{})}
+	a := &playerAPIMock{requests: make(map[int]struct{})}
 	p := Player(a, []uof.Lang{uof.LangEN, uof.LangDE})
 	assert.NotNil(t, p)
 

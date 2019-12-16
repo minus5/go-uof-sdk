@@ -55,18 +55,18 @@ func (p *recoveryProducer) recoveryTimestamp() int {
 }
 
 type recovery struct {
-	api       recoveryApi
+	api       recoveryAPI
 	requestID int
 	producers []*recoveryProducer
 	errc      chan<- error
 	subProcs  *sync.WaitGroup
 }
 
-type recoveryApi interface {
+type recoveryAPI interface {
 	RequestRecovery(producer uof.Producer, timestamp int, requestID int) error
 }
 
-func newRecovery(api recoveryApi, producers uof.ProducersChange) *recovery {
+func newRecovery(api recoveryAPI, producers uof.ProducersChange) *recovery {
 	r := &recovery{
 		api:      api,
 		subProcs: &sync.WaitGroup{},
@@ -245,7 +245,8 @@ func (r *recovery) producersChangeMessage() *uof.Message {
 	return uof.NewProducersChangeMessage(psc)
 }
 
-func Recovery(api recoveryApi, producers uof.ProducersChange) InnerStage {
+// Recovery for the producer
+func Recovery(api recoveryAPI, producers uof.ProducersChange) InnerStage {
 	r := newRecovery(api, producers)
 	return StageWithSubProcesses(r.loop)
 }

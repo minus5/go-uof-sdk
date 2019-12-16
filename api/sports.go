@@ -17,23 +17,25 @@ const (
 )
 
 // Markets all currently available markets for a language
-func (a *Api) Markets(lang uof.Lang) (uof.MarketDescriptions, error) {
+func (a *API) Markets(lang uof.Lang) (uof.MarketDescriptions, error) {
 	var mr marketsRsp
 	return mr.Markets, a.getAs(&mr, pathMarkets, &params{Lang: lang})
 }
 
-func (a *Api) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.MarketDescriptions, error) {
+// MarketVariant params
+func (a *API) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.MarketDescriptions, error) {
 	var mr marketsRsp
 	return mr.Markets, a.getAs(&mr, pathMarketVariant, &params{Lang: lang, MarketID: marketID, Variant: variant})
 }
 
 // Fixture lists the fixture for a specified sport event
-func (a *Api) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
+func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
 	var fr fixtureRsp
 	return &fr.Fixture, a.getAs(&fr, pathFixture, &params{Lang: lang, EventURN: eventURN})
 }
 
-func (a *Api) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
+// Player params
+func (a *API) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
 	var pr playerRsp
 	return &pr.Player, a.getAs(&pr, pathPlayer, &params{Lang: lang, PlayerID: playerID})
 }
@@ -61,7 +63,7 @@ type scheduleRsp struct {
 }
 
 // Fixtures gets all the fixtures with schedule before to
-func (a *Api) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error) {
+func (a *API) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error) {
 	errc := make(chan error, 1)
 	out := make(chan uof.Fixture)
 	go func() {

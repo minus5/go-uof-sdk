@@ -11,6 +11,7 @@ import (
 	"github.com/minus5/go-uof-sdk"
 )
 
+// InnerFileStore save
 func InnerFileStore(root string) InnerStage {
 	return Stage(func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) {
 		var wg sync.WaitGroup
@@ -29,6 +30,7 @@ func InnerFileStore(root string) InnerStage {
 	})
 }
 
+// FileStore saves to disk
 func FileStore(root string) ConsumerStage {
 	return func(in <-chan *uof.Message) error {
 		for m := range in {

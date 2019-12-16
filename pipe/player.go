@@ -7,12 +7,12 @@ import (
 	"github.com/minus5/go-uof-sdk"
 )
 
-type playerApi interface {
+type playerAPI interface {
 	Player(lang uof.Lang, playerID int) (*uof.Player, error)
 }
 
 type player struct {
-	api       playerApi
+	api       playerAPI
 	em        *expireMap
 	languages []uof.Lang // suported languages
 	errc      chan<- error
@@ -21,13 +21,14 @@ type player struct {
 	subProcs  *sync.WaitGroup
 }
 
-func Player(api playerApi, languages []uof.Lang) InnerStage {
+// Player pipe
+func Player(api playerAPI, languages []uof.Lang) InnerStage {
 	p := &player{
 		api:       api,
 		languages: languages,
 		em:        newExpireMap(time.Hour),
 		subProcs:  &sync.WaitGroup{},
-		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
+		rateLimit: make(chan struct{}, ConcurentAPICallsLimit),
 	}
 	return StageWithSubProcessesSync(p.loop)
 }
