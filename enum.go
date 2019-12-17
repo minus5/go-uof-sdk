@@ -175,21 +175,12 @@ const NoURN = URN("")
 //            http://sdk.sportradar.com/content/unifiedfeedsdk/net/doc/html/e1f73019-73cd-c9f8-0d58-7fe25800abf2.htm
 // List of currently existing event types is taken from the combo box in the
 // integration control page. From method "Fixture for a specified sport event".
+//nolint:gocyclo //accepting complexity of 23
 func (u URN) EventID() int {
-	if u == "" {
+	id, prefix := u.split()
+	if id == 0 {
 		return 0
 	}
-	p := strings.Split(string(u), ":")
-	if len(p) != 3 {
-		return 0
-	}
-	i, err := strconv.ParseUint(p[2], 10, 64)
-	if err != nil {
-		return 0
-	}
-	id := int(i)
-
-	prefix := p[0] + ":" + p[1]
 
 	suffixID := func(suffix int8) int {
 		return -(id<<8 | int(suffix))
@@ -206,7 +197,6 @@ func (u URN) EventID() int {
 		return suffixID(3)
 	case "sr:simple_tournament":
 		return suffixID(4)
-
 	case "test:match":
 		return suffixID(15)
 	case "vf:match":
@@ -237,9 +227,28 @@ func (u URN) EventID() int {
 		return suffixID(28)
 	case "wns:draw":
 		return suffixID(29)
+	default:
+		return 0
 	}
+}
 
-	return 0
+// splits urn into id and prefix
+func (u URN) split() (int, string) {
+	if u == "" {
+		return 0, ""
+	}
+	p := strings.Split(string(u), ":")
+	if len(p) != 3 {
+		return 0, ""
+	}
+	i, err := strconv.ParseUint(p[2], 10, 64)
+	if err != nil {
+		return 0, ""
+	}
+	id := int(i)
+	prefix := p[0] + ":" + p[1]
+
+	return id, prefix
 }
 
 func toLineID(specifiers string) int {
