@@ -68,7 +68,7 @@ func (s *markets) getAll() {
 
 func (s *markets) variantMarket(marketID int, variant string) {
 	if strings.HasPrefix(variant, "pre:playerprops") {
-		// TODO it is not working for this type of variant markets
+		// TODO: it is not working for this type of variant markets
 		return
 	}
 	s.subProcs.Add(len(s.languages))

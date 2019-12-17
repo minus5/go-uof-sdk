@@ -63,7 +63,7 @@ func TestRecoveryStateMachine(t *testing.T) {
 	recoveryRequestPrematch := <-m.calls
 	recoveryRequestLive := <-m.calls
 	if recoveryRequestPrematch.producer == uof.ProducerLiveOdds {
-		// reorder because order is not garanteed (called in goroutines)
+		// reorder because order is not guaranteed (called in goroutines)
 		recoveryRequestPrematch, recoveryRequestLive = recoveryRequestLive, recoveryRequestPrematch
 	}
 	// prematch producer request
@@ -129,7 +129,7 @@ func TestRecoveryRequests(t *testing.T) {
 	recoveryRequestPrematch := <-m.calls
 	recoveryRequestLive := <-m.calls
 	if recoveryRequestPrematch.producer == uof.ProducerLiveOdds {
-		// order is not garanteed
+		// order is not guaranteed
 		recoveryRequestPrematch, recoveryRequestLive = recoveryRequestLive, recoveryRequestPrematch
 	}
 	assert.Equal(t, uof.ProducerPrematch, recoveryRequestPrematch.producer)

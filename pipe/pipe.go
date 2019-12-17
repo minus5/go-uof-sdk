@@ -33,7 +33,7 @@ type stageFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<-
 type stageWithDrainFunc func(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup
 
 func Build(source sourceStage, stages ...InnerStage) <-chan error {
-	var errors []<-chan error
+	errors := make([]<-chan error, 0, len(stages)+2)
 	in, errc := source()
 	errors = append(errors, errc)
 

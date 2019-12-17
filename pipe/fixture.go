@@ -15,7 +15,6 @@ type fixtureApi interface {
 type fixture struct {
 	api       fixtureApi
 	languages []uof.Lang // suported languages
-	//requests  map[string]time.Time // last sucessful request time
 	em        *expireMap
 	errc      chan<- error
 	out       chan<- *uof.Message

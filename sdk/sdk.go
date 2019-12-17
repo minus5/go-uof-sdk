@@ -15,13 +15,13 @@ var defaultLanuages = uof.Languages("en,de")
 type Config struct {
 	BookmakerID string
 	Token       string
-	Staging     bool
-	Languages   []uof.Lang
 	Fixtures    time.Time
 	Recovery    []uof.ProducerChange
 	Stages      []pipe.InnerStage
 	Replay      func(*api.ReplayApi) error
 	Env         uof.Environment
+	Staging     bool
+	Languages   []uof.Lang
 }
 
 // Option sets attributes on the Config.
@@ -29,8 +29,8 @@ type Option func(*Config)
 
 // Run starts uof connector.
 //
-// Call to Run blocks until stopped by context, or error occured.
-// Order in wich options are set is not important.
+// Call to Run blocks until stopped by context, or error occurred.
+// Order in which options are set is not important.
 // Credentials and one of Callback or Pipe are functional minimum.
 func Run(ctx context.Context, options ...Option) error {
 	c := config(options...)
@@ -169,7 +169,7 @@ func Callback(cb func(m *uof.Message) error) Option {
 // Recovery starts recovery for each producer
 //
 // It is responsibility of SDK consumer to track the last timestamp of the
-// successfuly consumed message for each producer. On startup this timestamp is
+// successfully consumed message for each producer. On startup this timestamp is
 // sent here and SDK will request recovery; get all the messages after that ts.
 //
 // Ref: https://docs.betradar.com/display/BD/UOF+-+Recovery+using+API

@@ -1,0 +1,21 @@
+# example configurations: https://github.com/golangci/golangci-lint
+
+linters:
+  enable:
+    #- golint
+    - misspell
+    - gocyclo
+    - maligned
+    - prealloc
+    #- godox 
+  fast: true
+
+linters-settings:
+  gocyclo:
+    # minimal code complexity to report, 30 by default (but we recommend 10-20)
+    min-complexity: 20
+  gocognit:
+    # minimal code complexity to report, 30 by default (but we recommend 10-20)
+    min-complexity: 20
+
+  

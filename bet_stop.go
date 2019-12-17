@@ -18,12 +18,12 @@ import (
 type BetStop struct {
 	EventID   int          `json:"eventID"`
 	EventURN  URN          `xml:"event_id,attr" json:"eventURN"`
-	Producer  Producer     `xml:"product,attr" json:"producer"`
 	Timestamp int          `xml:"timestamp,attr" json:"timestamp"`
 	RequestID *int         `xml:"request_id,attr,omitempty" json:"requestID,omitempty"`
-	Status    MarketStatus `json:"status,omitempty"`
 	Groups    []string     `json:"groups"`
 	MarketIDs []int        `json:"marketsIDs"`
+	Producer  Producer     `xml:"product,attr" json:"producer"`
+	Status    MarketStatus `json:"status,omitempty"`
 }
 
 func (t *BetStop) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {

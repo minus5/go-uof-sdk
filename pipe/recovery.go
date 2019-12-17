@@ -12,10 +12,10 @@ import (
 // on start recover all after timestamp or full
 // on reconnect recover all after timestamp
 // on alive with subscribed = 0, revocer that producer with last valid ts
-// TODO counting on number of requests per period
+// TODO: counting on number of requests per period
 
 // Recovery requests limits: https://docs.betradar.com/display/BD/UOF+-+Access+restrictions+for+odds+recovery
-// Recovery sequence expalined: https://docs.betradar.com/display/BD/UOF+-+Recovery+using+API
+// Recovery sequence explained: https://docs.betradar.com/display/BD/UOF+-+Recovery+using+API
 
 // A client should always store the last successfully received alive message (or
 // its timestamp) from each producer. In case of a disconnection, recovery since

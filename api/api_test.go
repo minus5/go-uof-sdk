@@ -19,7 +19,7 @@ func TestTemplate(t *testing.T) {
 
 const EnvToken = "UOF_TOKEN"
 
-// this test depends on UOF_TOKEN enviroment variable
+// this test depends on UOF_TOKEN environment variable
 // to be set to the staging access token
 // run it as:
 //    UOF_TOKEN=my-token go test -v

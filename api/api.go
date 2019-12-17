@@ -176,17 +176,17 @@ type params struct {
 	ScenarioID         int
 	Speed              int
 	MaxDelay           int
-	UseReplayTimestamp bool
-	Lang               uof.Lang
 	PlayerID           int
 	MarketID           int
 	Variant            string
-	IncludeMappings    bool
-	Producer           uof.Producer
 	Timestamp          int
 	RequestID          int
 	Start              int
 	Limit              int
+	IncludeMappings    bool
+	UseReplayTimestamp bool
+	Lang               uof.Lang
+	Producer           uof.Producer
 }
 
 func runTemplate(def string, p *params) string {

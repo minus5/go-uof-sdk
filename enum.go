@@ -174,7 +174,7 @@ const NoURN = URN("")
 // Reference: https://docs.betradar.com/display/BD/MG+-+Entities
 //            http://sdk.sportradar.com/content/unifiedfeedsdk/net/doc/html/e1f73019-73cd-c9f8-0d58-7fe25800abf2.htm
 // List of currently existing event types is taken from the combo box in the
-// integration controll page. From method "Fixture for a specified sport event".
+// integration control page. From method "Fixture for a specified sport event".
 func (u URN) EventID() int {
 	if u == "" {
 		return 0
@@ -251,7 +251,7 @@ func toLineID(specifiers string) int {
 
 func hash32(s string) int {
 	h := fnv.New32a()
-	h.Write([]byte(s))
+	_, _ = h.Write([]byte(s))
 	return int(h.Sum32())
 }
 

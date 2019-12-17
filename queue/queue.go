@@ -159,7 +159,7 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 	go func() {
 		<-ctx.Done()
 		// cleanup on exit
-		chnl.Cancel(consumerTag, true)
+		_ = chnl.Cancel(consumerTag, true)
 		conn.Close()
 	}()
 
