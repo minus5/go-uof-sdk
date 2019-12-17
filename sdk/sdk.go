@@ -179,7 +179,7 @@ func Recovery(pc []uof.ProducerChange) Option {
 	}
 }
 
-// Fixtures gets pre-match fixtures at start-up.
+// Fixtures gets live and pre-match fixtures at start-up.
 //
 // It gets fixture for all matches which starts before `to` time.
 // There is a special endpoint to get almost all fixtures before initiating
