@@ -77,6 +77,15 @@ func TestBetSettlement(t *testing.T) {
 	assert.Equal(t, 0.5, bs.Markets[3].Outcomes[1].DeadHeatFactor)
 	assert.Equal(t, 0.0, bs.Markets[3].Outcomes[2].DeadHeatFactor)
 
+	m4 := bs.Markets[4]
+	assert.Equal(t, 10077, m4.Outcomes[0].ID)
+	assert.Equal(t, 10077, m4.Outcomes[0].PlayerID)
+	assert.Equal(t, 38560, m4.Outcomes[1].ID)
+	assert.Equal(t, 38560, m4.Outcomes[1].PlayerID)
+	for _, o := range m4.Outcomes {
+		assert.Equal(t, o.PlayerID, o.ID)
+	}
+
 	m, err := NewQueueMessage("hi.pre.-.bet_settlement.1.sr:match.1234.-", buf)
 	assert.NoError(t, err)
 	assert.True(t, m.Is(MessageTypeBetSettlement))

@@ -49,5 +49,12 @@
       <outcome id="pre:outcometext:8165859" result="0"/>
       <outcome id="pre:outcometext:8320089" result="0"/>
     </market>
+    <market id="40" specifiers="type=live">
+      <outcome id="sr:player:10077" result="0"/>
+      <outcome id="sr:player:38560" result="0"/>
+      <outcome id="sr:player:44864" result="0"/>
+      <outcome id="sr:player:158243" result="0"/>
+      <outcome id="sr:player:249437" result="1"/>
+    </market>
   </outcomes>
 </bet_settlement>

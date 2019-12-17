@@ -29,6 +29,7 @@ type BetSettlementMarket struct {
 
 type BetSettlementOutcome struct {
 	ID             int           `json:"id"`
+	PlayerID       int           `json:"playerID"`
 	Result         OutcomeResult `json:"result"`
 	DeadHeatFactor float64       `json:"deadHeatFactor,omitempty"`
 }
@@ -97,6 +98,7 @@ func (t *BetSettlementOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 		return err
 	}
 	t.ID = toOutcomeID(overlay.ID)
+	t.PlayerID = toPlayerID(overlay.ID)
 	t.Result = toResult(overlay.Result, overlay.VoidFactor, overlay.DeadHeatFactor)
 	if t.Result == OutcomeResultWinWithDeadHead && overlay.DeadHeatFactor != nil {
 		t.DeadHeatFactor = *overlay.DeadHeatFactor
