@@ -34,7 +34,7 @@ func TestIntegration(t *testing.T) {
 
 	tests := []struct {
 		name string
-		f    func(t *testing.T, a *Api)
+		f    func(t *testing.T, a *API)
 	}{
 		{"markets", testMarkets},
 		{"marketVariant", testMarketVariant},
@@ -67,7 +67,7 @@ func TestBetCancelSeedData(t *testing.T) {
 	fmt.Printf("bet cancel seed data: \n%s\n", buf)
 }
 
-func testMarkets(t *testing.T, a *Api) {
+func testMarkets(t *testing.T, a *API) {
 	lang := uof.LangEN
 	mm, err := a.Markets(lang)
 	assert.Nil(t, err)
@@ -77,7 +77,7 @@ func testMarkets(t *testing.T, a *Api) {
 	assert.Equal(t, "1x2", m.Name)
 }
 
-func testMarketVariant(t *testing.T, a *Api) {
+func testMarketVariant(t *testing.T, a *API) {
 	lang := uof.LangEN
 	mm, err := a.MarketVariant(lang, 241, "sr:exact_games:bestof:5")
 	assert.Nil(t, err)
@@ -89,21 +89,21 @@ func testMarketVariant(t *testing.T, a *Api) {
 	assert.Len(t, m.Outcomes, 3)
 }
 
-func testFixture(t *testing.T, a *Api) {
+func testFixture(t *testing.T, a *API) {
 	lang := uof.LangEN
 	f, err := a.Fixture(lang, "sr:match:8696826")
 	assert.Nil(t, err)
 	assert.Equal(t, "IK Oddevold", f.Home.Name)
 }
 
-func testPlayer(t *testing.T, a *Api) {
+func testPlayer(t *testing.T, a *API) {
 	lang := uof.LangEN
 	p, err := a.Player(lang, 947)
 	assert.NoError(t, err)
 	assert.Equal(t, "Lee Barnard", p.FullName)
 }
 
-func testFixtures(t *testing.T, a *Api) {
+func testFixtures(t *testing.T, a *API) {
 	lang := uof.LangEN
 	to := time.Now() //.Add(24*3*time.Hour)
 	in, errc := a.Fixtures(lang, to)

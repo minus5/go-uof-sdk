@@ -163,7 +163,7 @@ type ProductInfo struct {
 	Links                []ProductInfoLink  `xml:"links>link,omitempty" json:"links,omitempty"`
 }
 
-func (t *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (f *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Fixture
 	var overlay struct {
 		*T
@@ -174,22 +174,22 @@ func (t *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			Category Category `xml:"category"`
 		} `xml:"tournament,omitempty"`
 	}
-	overlay.T = (*T)(t)
+	overlay.T = (*T)(f)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.ID = overlay.URN.EventID()
-	t.Sport = overlay.Tournament.Sport
-	t.Category = overlay.Tournament.Category
-	t.Tournament.ID = overlay.Tournament.URN.ID()
-	t.Tournament.Name = overlay.Tournament.Name
+	f.ID = overlay.URN.EventID()
+	f.Sport = overlay.Tournament.Sport
+	f.Category = overlay.Tournament.Category
+	f.Tournament.ID = overlay.Tournament.URN.ID()
+	f.Tournament.Name = overlay.Tournament.Name
 
-	for _, c := range t.Competitors {
+	for _, c := range f.Competitors {
 		if c.Qualifier == "home" {
-			t.Home = c
+			f.Home = c
 		}
 		if c.Qualifier == "away" {
-			t.Away = c
+			f.Away = c
 		}
 	}
 	return nil

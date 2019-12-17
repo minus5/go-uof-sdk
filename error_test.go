@@ -10,14 +10,14 @@ import (
 
 func TestError(t *testing.T) {
 	inner := fmt.Errorf("get failed")
-	ae := ApiError{URL: "url", Inner: inner}
+	ae := APIError{URL: "url", Inner: inner}
 	assert.Equal(t, inner, ae.Unwrap())
 
 	e := E("api", ae)
 	err := error(e)
 
 	var s string
-	var ae2 ApiError
+	var ae2 APIError
 	if errors.As(err, &ae2) {
 		s = ae2.Error()
 	}
@@ -29,7 +29,7 @@ func TestError(t *testing.T) {
 	}
 	assert.Equal(t, "uof error op: api, inner: uof api error url: url, inner: get failed", s)
 
-	ae = ApiError{URL: "url", Inner: inner, StatusCode: 422, Response: "tee"}
+	ae = APIError{URL: "url", Inner: inner, StatusCode: 422, Response: "tee"}
 	assert.Equal(t, "uof api error url: url, status code: 422, response: tee, inner: get failed", ae.Error())
 }
 

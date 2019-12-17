@@ -77,7 +77,7 @@ type Outcome struct {
 }
 
 // UnmarshalXML
-func (t *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (o *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T OddsChange
 	var overlay struct {
 		*T
@@ -87,16 +87,16 @@ func (t *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 			BetstopReason *int     `xml:"betstop_reason,attr,omitempty"`
 		} `xml:"odds,omitempty"`
 	}
-	overlay.T = (*T)(t)
+	overlay.T = (*T)(o)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
 	if overlay.Odds != nil {
-		t.BettingStatus = overlay.Odds.BettingStatus
-		t.BetstopReason = overlay.Odds.BetstopReason
-		t.Markets = overlay.Odds.Markets
+		o.BettingStatus = overlay.Odds.BettingStatus
+		o.BetstopReason = overlay.Odds.BetstopReason
+		o.Markets = overlay.Odds.Markets
 	}
-	t.EventID = t.EventURN.EventID()
+	o.EventID = o.EventURN.EventID()
 	return nil
 }
 
@@ -106,7 +106,7 @@ func (t *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 //    lists of key value attributes encoded in string to the map.
 //  * To calculate LineID; market line is uniquely identified by both
 //    market id and line id
-func (t *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (m *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Market
 	var overlay struct {
 		*T
@@ -117,18 +117,18 @@ func (t *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			NextBetstop *int `xml:"next_betstop,attr,omitempty"`
 		} `xml:"market_metadata,omitempty"`
 	}
-	overlay.T = (*T)(t)
+	overlay.T = (*T)(m)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.Status = MarketStatusActive // default
+	m.Status = MarketStatusActive // default
 	if overlay.Status != nil {
-		t.Status = MarketStatus(*overlay.Status)
+		m.Status = MarketStatus(*overlay.Status)
 	}
-	t.Specifiers = toSpecifiers(overlay.Specifiers, overlay.ExtendedSpecifiers)
-	t.LineID = toLineID(overlay.Specifiers)
+	m.Specifiers = toSpecifiers(overlay.Specifiers, overlay.ExtendedSpecifiers)
+	m.LineID = toLineID(overlay.Specifiers)
 	if overlay.MarketMetadata != nil {
-		t.NextBetstop = overlay.MarketMetadata.NextBetstop
+		m.NextBetstop = overlay.MarketMetadata.NextBetstop
 	}
 	return nil
 }

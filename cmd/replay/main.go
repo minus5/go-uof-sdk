@@ -95,7 +95,7 @@ func main() {
 	}
 }
 
-func startReplay(rpl *api.ReplayApi) error {
+func startReplay(rpl *api.ReplayAPI) error {
 	if !eventURN.Empty() {
 		return rpl.StartEvent(eventURN, speed, maxDelay)
 	}

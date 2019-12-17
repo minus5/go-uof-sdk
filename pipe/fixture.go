@@ -7,13 +7,13 @@ import (
 	"github.com/minus5/go-uof-sdk"
 )
 
-type fixtureApi interface {
+type fixtureAPI interface {
 	Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error)
 	Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error)
 }
 
 type fixture struct {
-	api       fixtureApi
+	api       fixtureAPI
 	languages []uof.Lang // suported languages
 	em        *expireMap
 	errc      chan<- error
@@ -24,14 +24,14 @@ type fixture struct {
 	sync.Mutex
 }
 
-func Fixture(api fixtureApi, languages []uof.Lang, preloadTo time.Time) InnerStage {
+func Fixture(api fixtureAPI, languages []uof.Lang, preloadTo time.Time) InnerStage {
 	f := &fixture{
 		api:       api,
 		languages: languages,
 		em:        newExpireMap(time.Minute),
 		//requests:  make(map[string]time.Time),
 		subProcs:  &sync.WaitGroup{},
-		rateLimit: make(chan struct{}, ConcurentApiCallsLimit),
+		rateLimit: make(chan struct{}, ConcurentAPICallsLimit),
 		preloadTo: preloadTo,
 	}
 	return StageWithSubProcessesSync(f.loop)

@@ -13,11 +13,11 @@ type requestRecoveryParams struct {
 	requestID int
 }
 
-type recoveryApiMock struct {
+type recoveryAPIMock struct {
 	calls chan requestRecoveryParams
 }
 
-func (m *recoveryApiMock) RequestRecovery(producer uof.Producer, timestamp int, requestID int) error {
+func (m *recoveryAPIMock) RequestRecovery(producer uof.Producer, timestamp int, requestID int) error {
 	m.calls <- requestRecoveryParams{
 		producer:  producer,
 		timestamp: timestamp,
@@ -45,7 +45,7 @@ func TestRecoveryStateMachine(t *testing.T) {
 	var ps uof.ProducersChange
 	ps.Add(uof.ProducerPrematch, timestamp)
 	ps.Add(uof.ProducerLiveOdds, timestamp+1)
-	m := &recoveryApiMock{calls: make(chan requestRecoveryParams, 16)}
+	m := &recoveryAPIMock{calls: make(chan requestRecoveryParams, 16)}
 	r := newRecovery(m, ps)
 
 	// 0. initilay all producers are down
@@ -117,7 +117,7 @@ func TestRecoveryRequests(t *testing.T) {
 	ps.Add(uof.ProducerPrematch, timestamp)
 	ps.Add(uof.ProducerLiveOdds, timestamp+1)
 
-	m := &recoveryApiMock{calls: make(chan requestRecoveryParams, 16)}
+	m := &recoveryAPIMock{calls: make(chan requestRecoveryParams, 16)}
 	r := newRecovery(m, ps)
 	in := make(chan *uof.Message)
 	out := make(chan *uof.Message, 16)

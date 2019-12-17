@@ -16,9 +16,9 @@ const (
 )
 
 // Replay service for unified feed methods
-func Replay(exitSig context.Context, token string) (*ReplayApi, error) {
-	r := &ReplayApi{
-		api: &Api{
+func Replay(exitSig context.Context, token string) (*ReplayAPI, error) {
+	r := &ReplayAPI{
+		api: &API{
 			server:  productionServer,
 			token:   token,
 			exitSig: exitSig,
@@ -27,8 +27,8 @@ func Replay(exitSig context.Context, token string) (*ReplayApi, error) {
 	return r, r.Reset()
 }
 
-type ReplayApi struct {
-	api *Api
+type ReplayAPI struct {
+	api *API
 }
 
 // Start replay of the scenario from replay queue. Your current playlist will be
@@ -41,12 +41,12 @@ type ReplayApi struct {
 // be reduced to exactly 10 seconds/10 000 ms (this is helpful especially in
 // pre-match odds where delay can be even a few hours or more). If player is
 // already in play, nothing will happen.
-func (r *ReplayApi) StartScenario(scenarioID, speed, maxDelay int) error {
+func (r *ReplayAPI) StartScenario(scenarioID, speed, maxDelay int) error {
 	return r.api.post(startScenario, &params{ScenarioID: scenarioID, Speed: speed, MaxDelay: maxDelay})
 }
 
 // StartEvent starts replay of a single event.
-func (r *ReplayApi) StartEvent(eventURN uof.URN, speed, maxDelay int) error {
+func (r *ReplayAPI) StartEvent(eventURN uof.URN, speed, maxDelay int) error {
 	if err := r.Reset(); err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (r *ReplayApi) StartEvent(eventURN uof.URN, speed, maxDelay int) error {
 }
 
 // Adds to the end of the replay queue.
-func (r *ReplayApi) Add(eventURN uof.URN) error {
+func (r *ReplayAPI) Add(eventURN uof.URN) error {
 	return r.api.put(replayAdd, &params{EventURN: eventURN})
 }
 
@@ -70,18 +70,18 @@ func (r *ReplayApi) Add(eventURN uof.URN) error {
 // reduced to exactly 10 seconds/10 000 ms (this is helpful especially in
 // pre-match odds where delay can be even a few hours or more). If player is
 // already in play, nothing will happen.
-func (r *ReplayApi) Play(speed, maxDelay int) error {
+func (r *ReplayAPI) Play(speed, maxDelay int) error {
 	return r.api.post(replayPlay, &params{Speed: speed, MaxDelay: maxDelay})
 }
 
 // Stop the player if it is currently playing. If player is already stopped,
 // nothing will happen.
-func (r *ReplayApi) Stop() error {
+func (r *ReplayAPI) Stop() error {
 	return r.api.post(replayStop, nil)
 }
 
 // Stop the player if it is currently playing and clear the replay queue. If
 // player is already stopped, the queue is cleared.
-func (r *ReplayApi) Reset() error {
+func (r *ReplayAPI) Reset() error {
 	return r.api.post(replayReset, nil)
 }

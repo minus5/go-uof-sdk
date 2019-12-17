@@ -224,7 +224,7 @@ func TestMarkets(t *testing.T) {
 	assert.Equal(t, &ms.Markets[4], ms.Markets.Find(575))
 	assert.Len(t, ms.Markets.Groups(), 5)
 
-	msg, err := NewApiMessage(LangEN, MessageTypeMarkets, buf)
+	msg, err := NewAPIMessage(LangEN, MessageTypeMarkets, buf)
 	assert.NoError(t, err)
 	assert.Equal(t, ms.Markets, msg.Markets)
 }
@@ -243,7 +243,7 @@ func TestPlayer(t *testing.T) {
 	assert.Equal(t, "forward", p.Type)
 	assert.Equal(t, "1984-07-18", p.DateOfBirth.Format(apiDateFormat))
 
-	msg, err := NewApiMessage(LangEN, MessageTypePlayer, buf)
+	msg, err := NewAPIMessage(LangEN, MessageTypePlayer, buf)
 	assert.NoError(t, err)
 	assert.Equal(t, p, *msg.Player)
 }
@@ -273,7 +273,7 @@ func TestFixture(t *testing.T) {
 	assert.Equal(t, 2953, f.Home.ID)
 	assert.Equal(t, 33, f.Away.ID)
 
-	msg, err := NewApiMessage(LangEN, MessageTypeFixture, buf)
+	msg, err := NewAPIMessage(LangEN, MessageTypeFixture, buf)
 	assert.NoError(t, err)
 	assert.Equal(t, f, *msg.Fixture)
 }
@@ -282,7 +282,7 @@ func TestFixutreWithPlayers(t *testing.T) {
 	buf, err := ioutil.ReadFile("./testdata/fixture-2.xml")
 	assert.Nil(t, err)
 
-	msg, err := NewApiMessage(LangEN, MessageTypeFixture, buf)
+	msg, err := NewAPIMessage(LangEN, MessageTypeFixture, buf)
 	assert.NoError(t, err)
 	assert.Len(t, msg.Fixture.Competitors[0].Players, 2)
 	assert.Len(t, msg.Fixture.Competitors[1].Players, 2)

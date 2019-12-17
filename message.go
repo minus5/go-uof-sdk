@@ -61,7 +61,7 @@ func init() {
 		defer mu.Unlock()
 		ts := CurrentTimestamp()
 		if ts <= lastTs {
-			ts += 1
+			ts++
 		}
 		lastTs = ts
 		return ts
@@ -193,7 +193,7 @@ func (m *Message) unpack() error {
 	return nil
 }
 
-func NewApiMessage(lang Lang, typ MessageType, body []byte) (*Message, error) {
+func NewAPIMessage(lang Lang, typ MessageType, body []byte) (*Message, error) {
 	m := &Message{
 		Header: Header{
 			Type:       typ,

@@ -26,16 +26,16 @@ type FixtureChange struct {
 	NextLiveTime *int               `xml:"next_live_time,attr,omitempty" json:"nextLiveTime,omitempty"`
 }
 
-func (t *FixtureChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+func (fc *FixtureChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T FixtureChange
 	var overlay struct {
 		*T
 	}
-	overlay.T = (*T)(t)
+	overlay.T = (*T)(fc)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
-	t.EventID = t.EventURN.EventID()
+	fc.EventID = fc.EventURN.EventID()
 	return nil
 }
 

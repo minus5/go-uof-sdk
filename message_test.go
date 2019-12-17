@@ -279,7 +279,7 @@ func TestUnpackFail(t *testing.T) {
     	<player height="int" />
 	</player_profile>
 	`)
-	_, err = NewApiMessage(LangEN, MessageTypePlayer, buf)
+	_, err = NewAPIMessage(LangEN, MessageTypePlayer, buf)
 	assert.Error(t, err)
 	assert.Equal(t, `NOTICE uof error op: message.unpack, inner: strconv.ParseInt: parsing "int": invalid syntax`, err.Error())
 

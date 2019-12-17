@@ -27,14 +27,14 @@ func (e Error) Unwrap() error {
 	return e.Inner
 }
 
-type ApiError struct {
+type APIError struct {
 	URL        string
 	StatusCode int
 	Response   string
 	Inner      error
 }
 
-func (e ApiError) Error() string {
+func (e APIError) Error() string {
 	s := fmt.Sprintf("uof api error url: %s", e.URL)
 	if e.StatusCode != 0 {
 		s = fmt.Sprintf("%s, status code: %d", s, e.StatusCode)
@@ -49,7 +49,7 @@ func (e ApiError) Error() string {
 
 }
 
-func (e ApiError) Unwrap() error {
+func (e APIError) Unwrap() error {
 	return e.Inner
 }
 
