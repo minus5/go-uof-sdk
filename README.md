@@ -115,8 +115,26 @@ export UOF_BOOKMAKER_ID=...
 export UOF_TOKEN=...  
 ```
 
-### Notes    
+### Code linting
 
+This project uses [golangci-lint](https://github.com/golangci/golangci-lint) linter with config in [.golangci.yml](https://github.com/minus5/go-uof-sdk/blob/master/.golangci.yml).
+
+If you are using vscode add to your settings.json:
+```JSON
+"go.lintTool":"golangci-lint",
+"go.lintFlags": [
+  "--fast"
+]
+```
+
+or run it in terminal:
+```shell
+golangci-lint run ./...
+```
+
+The main difference with old golint is that we have disabled annoying warnings about not having a comment on exported (method|function|type|const) and package.
+
+### Notes
 
 * Staging environment weekend downtime:
 
