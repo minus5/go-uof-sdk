@@ -382,7 +382,7 @@ func TestConnectionStatus(t *testing.T) {
 	}{
 		{"down", ConnectionStatusDown},
 		{"up", ConnectionStatusUp},
-		// wrong inputs
+		// default
 		{"?", -1},
 	}
 
