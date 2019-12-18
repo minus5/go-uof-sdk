@@ -374,3 +374,20 @@ func TestToSpecifierType(t *testing.T) {
 		assert.Equal(t, d.out, toSpecifierType(d.in))
 	}
 }
+
+func TestConnectionStatus(t *testing.T) {
+	data := []struct {
+		in  string
+		out ConnectionStatus
+	}{
+		{"down", ConnectionStatusDown},
+		{"up", ConnectionStatusUp},
+		// wrong inputs
+		{"?", -1},
+	}
+
+	for _, d := range data {
+		assert.Equal(t, d.in, d.out.String())
+	}
+
+}
