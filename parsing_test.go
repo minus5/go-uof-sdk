@@ -224,6 +224,9 @@ func TestMarkets(t *testing.T) {
 	assert.Equal(t, &ms.Markets[4], ms.Markets.Find(575))
 	assert.Len(t, ms.Markets.Groups(), 5)
 
+	//test nil return
+	assert.Nil(t, nil, ms.Markets.Find(1111))
+
 	msg, err := NewAPIMessage(LangEN, MessageTypeMarkets, buf)
 	assert.NoError(t, err)
 	assert.Equal(t, ms.Markets, msg.Markets)
