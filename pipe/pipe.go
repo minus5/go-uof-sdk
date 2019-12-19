@@ -289,3 +289,10 @@ func (em *expireMap) insert(key int) {
 
 	em.m[key] = int(time.Now().UnixNano())
 }
+
+func (em *expireMap) remove(key int) {
+	em.Lock()
+	defer em.Unlock()
+
+	delete(em.m, key)
+}

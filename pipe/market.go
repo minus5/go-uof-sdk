@@ -43,7 +43,9 @@ func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 	for m := range in {
 		out <- m
 		if m.Is(uof.MessageTypeOddsChange) {
-			m.OddsChange.EachVariantMarket(s.variantMarket)
+			m.OddsChange.EachVariantMarket(func(marketID int, variant string) {
+				s.variantMarket(marketID, variant, m.ReceivedAt)
+			})
 		}
 	}
 	return s.subProcs
@@ -51,6 +53,7 @@ func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 
 func (s *markets) getAll() {
 	s.subProcs.Add(len(s.languages))
+	requestedAt := uof.CurrentTimestamp()
 
 	for _, lang := range s.languages {
 		go func(lang uof.Lang) {
@@ -61,12 +64,12 @@ func (s *markets) getAll() {
 				s.errc <- err
 				return
 			}
-			s.out <- uof.NewMarketsMessage(lang, ms)
+			s.out <- uof.NewMarketsMessage(lang, ms, requestedAt)
 		}(lang)
 	}
 }
 
-func (s *markets) variantMarket(marketID int, variant string) {
+func (s *markets) variantMarket(marketID int, variant string, requestedAt int) {
 	if strings.HasPrefix(variant, "pre:playerprops") {
 		// TODO: it is not working for this type of variant markets
 		return
@@ -89,7 +92,7 @@ func (s *markets) variantMarket(marketID int, variant string) {
 				s.errc <- err
 				return
 			}
-			s.out <- uof.NewMarketsMessage(lang, ms)
+			s.out <- uof.NewMarketsMessage(lang, ms, requestedAt)
 			s.em.insert(key)
 		}(lang)
 	}

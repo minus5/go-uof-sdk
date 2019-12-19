@@ -38,13 +38,15 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 	for m := range in {
 		out <- m
 		if m.Is(uof.MessageTypeOddsChange) {
-			m.OddsChange.EachPlayer(p.get)
+			m.OddsChange.EachPlayer(func(playerID int) {
+				p.get(playerID, m.ReceivedAt)
+			})
 		}
 	}
 	return p.subProcs
 }
 
-func (p *player) get(playerID int) {
+func (p *player) get(playerID, requestedAt int) {
 	p.subProcs.Add(len(p.languages))
 	for _, lang := range p.languages {
 		go func(lang uof.Lang) {
@@ -56,13 +58,14 @@ func (p *player) get(playerID int) {
 			if p.em.fresh(key) {
 				return
 			}
+			p.em.insert(key)
 			ap, err := p.api.Player(lang, playerID)
 			if err != nil {
+				p.em.remove(key)
 				p.errc <- err
 				return
 			}
-			p.out <- uof.NewPlayerMessage(lang, ap)
-			p.em.insert(key)
+			p.out <- uof.NewPlayerMessage(lang, ap, requestedAt)
 		}(lang)
 	}
 }

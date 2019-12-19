@@ -12,14 +12,15 @@ import (
 )
 
 type Header struct {
-	Type       MessageType     `json:"type,omitempty"`
-	Scope      MessageScope    `json:"scope,omitempty"`
-	Priority   MessagePriority `json:"priority,omitempty"`
-	Lang       Lang            `json:"lang,omitempty"`
-	SportID    int             `json:"sportID,omitempty"`
-	EventID    int             `json:"eventID,omitempty"`
-	EventURN   URN             `json:"eventURN,omitempty"`
-	ReceivedAt int             `json:"receivedAt,omitempty"`
+	Type        MessageType     `json:"type,omitempty"`
+	Scope       MessageScope    `json:"scope,omitempty"`
+	Priority    MessagePriority `json:"priority,omitempty"`
+	Lang        Lang            `json:"lang,omitempty"`
+	SportID     int             `json:"sportID,omitempty"`
+	EventID     int             `json:"eventID,omitempty"`
+	EventURN    URN             `json:"eventURN,omitempty"`
+	ReceivedAt  int             `json:"receivedAt,omitempty"`
+	RequestedAt int             `json:"requestedAt,omitempty"`
 }
 
 type Body struct {
@@ -208,24 +209,26 @@ func NewAPIMessage(lang Lang, typ MessageType, body []byte) (*Message, error) {
 	return m, nil
 }
 
-func NewMarketsMessage(lang Lang, ms MarketDescriptions) *Message {
+func NewMarketsMessage(lang Lang, ms MarketDescriptions, requestedAt int) *Message {
 	m := &Message{
 		Header: Header{
-			Type:       MessageTypeMarkets,
-			Lang:       lang,
-			ReceivedAt: uniqTimestamp(),
+			Type:        MessageTypeMarkets,
+			Lang:        lang,
+			ReceivedAt:  uniqTimestamp(),
+			RequestedAt: requestedAt,
 		},
 		Body: Body{Markets: ms},
 	}
 	return m
 }
 
-func NewPlayerMessage(lang Lang, player *Player) *Message {
+func NewPlayerMessage(lang Lang, player *Player, requestedAt int) *Message {
 	return &Message{
 		Header: Header{
-			Type:       MessageTypePlayer,
-			Lang:       lang,
-			ReceivedAt: uniqTimestamp(),
+			Type:        MessageTypePlayer,
+			Lang:        lang,
+			ReceivedAt:  uniqTimestamp(),
+			RequestedAt: requestedAt,
 		},
 		Body: Body{Player: player},
 	}
@@ -259,14 +262,15 @@ func NewProducersChangeMessage(pc ProducersChange) *Message {
 	}
 }
 
-func NewFixtureMessage(lang Lang, x Fixture) *Message {
+func NewFixtureMessage(lang Lang, x Fixture, requestedAt int) *Message {
 	return &Message{
 		Header: Header{
-			Type:       MessageTypeFixture,
-			EventURN:   x.URN,
-			EventID:    x.ID,
-			Lang:       lang,
-			ReceivedAt: uniqTimestamp(),
+			Type:        MessageTypeFixture,
+			EventURN:    x.URN,
+			EventID:     x.ID,
+			Lang:        lang,
+			ReceivedAt:  uniqTimestamp(),
+			RequestedAt: requestedAt,
 		},
 		Body: Body{Fixture: &x},
 	}

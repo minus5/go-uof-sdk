@@ -247,16 +247,16 @@ func TestNewMessage(t *testing.T) {
 	m := NewConnnectionMessage(ConnectionStatusUp)
 	assert.True(t, m.Is(MessageTypeConnection))
 
-	m = NewPlayerMessage(LangEN, nil)
+	m = NewPlayerMessage(LangEN, nil, 0)
 	assert.True(t, m.Is(MessageTypePlayer))
 
-	m = NewMarketsMessage(LangEN, nil)
+	m = NewMarketsMessage(LangEN, nil, 0)
 	assert.True(t, m.Is(MessageTypeMarkets))
 
 	m = NewProducersChangeMessage(nil)
 	assert.True(t, m.Is(MessageTypeProducersChange))
 
-	m = NewFixtureMessage(LangEN, Fixture{})
+	m = NewFixtureMessage(LangEN, Fixture{}, 0)
 	assert.True(t, m.Is(MessageTypeFixture))
 
 	m.NewFixtureMessage(LangEN, Fixture{})

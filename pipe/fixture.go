@@ -48,12 +48,12 @@ func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 	f.errc, f.out = errc, out
 
 	for _, u := range f.preloadLoop(in) {
-		f.getFixture(u)
+		f.getFixture(u, uof.CurrentTimestamp())
 	}
 	for m := range in {
 		out <- m
 		if u := f.eventURN(m); u != uof.NoURN {
-			f.getFixture(u)
+			f.getFixture(u, m.ReceivedAt)
 		}
 	}
 
@@ -106,7 +106,7 @@ func (f *fixture) preload() {
 			defer wg.Done()
 			in, errc := f.api.Fixtures(lang, f.preloadTo)
 			for x := range in {
-				f.out <- uof.NewFixtureMessage(lang, x)
+				f.out <- uof.NewFixtureMessage(lang, x, uof.CurrentTimestamp())
 				f.em.insert(uof.UIDWithLang(x.URN.EventID(), lang))
 			}
 			for err := range errc {
@@ -117,7 +117,7 @@ func (f *fixture) preload() {
 	wg.Wait()
 }
 
-func (f *fixture) getFixture(eventURN uof.URN) {
+func (f *fixture) getFixture(eventURN uof.URN, receivedAt int) {
 	f.subProcs.Add(len(f.languages))
 	for _, lang := range f.languages {
 		go func(lang uof.Lang) {
@@ -134,7 +134,7 @@ func (f *fixture) getFixture(eventURN uof.URN) {
 				f.errc <- err
 				return
 			}
-			f.out <- uof.NewFixtureMessage(lang, *x)
+			f.out <- uof.NewFixtureMessage(lang, *x, receivedAt)
 			f.em.insert(key)
 		}(lang)
 	}

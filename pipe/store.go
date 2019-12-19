@@ -52,18 +52,18 @@ func filename(m *uof.Message) string {
 	case uof.MessageKindLexicon:
 		switch m.Type {
 		case uof.MessageTypePlayer:
-			return fmt.Sprintf("/state/%s/players/%08d", m.Lang, m.Player.ID)
+			return fmt.Sprintf("/state/%s/players/%08d/%13d", m.Lang, m.Player.ID, m.RequestedAt)
 		case uof.MessageTypeMarkets:
 			if len(m.Markets) > 1 {
-				return fmt.Sprintf("/state/%s/markets/%s", m.Lang, m.Lang)
+				return fmt.Sprintf("/state/%s/markets/%s/%13d", m.Lang, m.Lang, m.RequestedAt)
 			}
 			s := m.Markets[0]
-			return fmt.Sprintf("/state/%s/markets/%08d-%08d", m.Lang, s.ID, s.VariantID)
+			return fmt.Sprintf("/state/%s/markets/%08d-%08d/%13d", m.Lang, s.ID, s.VariantID, m.RequestedAt)
 		case uof.MessageTypeFixture:
-			return fmt.Sprintf("/state/%s/fixtures/%08d", m.Lang, m.EventID)
+			return fmt.Sprintf("/state/%s/fixtures/%08d/%13d", m.Lang, m.EventID, m.RequestedAt)
 		}
 	case uof.MessageKindSystem:
-		return fmt.Sprintf("log/system/%13d-%s", m.ReceivedAt, m.Type)
+		return fmt.Sprintf("log/system/%13d-%s/%13d", m.ReceivedAt, m.Type, m.ReceivedAt)
 	}
 	return fmt.Sprintf("/other/%13d-%s", m.ReceivedAt, m.Type)
 }
