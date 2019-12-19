@@ -229,8 +229,8 @@ func TestMarkets(t *testing.T) {
 	assert.Equal(t, ms.Markets, msg.Markets)
 }
 
-func TestPlayer(t *testing.T) {
-	buf, err := ioutil.ReadFile("./testdata/player_profile.xml")
+func TestPlayerMale(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/player_profile_m.xml")
 	assert.Nil(t, err)
 
 	pp := &PlayerProfile{}
@@ -242,6 +242,44 @@ func TestPlayer(t *testing.T) {
 	assert.Equal(t, Male, p.Gender)
 	assert.Equal(t, "forward", p.Type)
 	assert.Equal(t, "1984-07-18", p.DateOfBirth.Format(apiDateFormat))
+
+	msg, err := NewAPIMessage(LangEN, MessageTypePlayer, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, p, *msg.Player)
+}
+
+func TestPlayerFemale(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/player_profile_f.xml")
+	assert.Nil(t, err)
+
+	pp := &PlayerProfile{}
+	err = xml.Unmarshal(buf, pp)
+	assert.Nil(t, err)
+
+	p := pp.Player
+	assert.Equal(t, 948, p.ID)
+	assert.Equal(t, Female, p.Gender)
+	assert.Equal(t, "forward", p.Type)
+	assert.Equal(t, "1989-09-19", p.DateOfBirth.Format(apiDateFormat))
+
+	msg, err := NewAPIMessage(LangEN, MessageTypePlayer, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, p, *msg.Player)
+}
+
+func TestPlayerUnknown(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/player_profile_u.xml")
+	assert.Nil(t, err)
+
+	pp := &PlayerProfile{}
+	err = xml.Unmarshal(buf, pp)
+	assert.Nil(t, err)
+
+	p := pp.Player
+	assert.Equal(t, 949, p.ID)
+	assert.Equal(t, GenderUnknown, p.Gender)
+	assert.Equal(t, "forward", p.Type)
+	assert.Equal(t, "1985-01-01", p.DateOfBirth.Format(apiDateFormat))
 
 	msg, err := NewAPIMessage(LangEN, MessageTypePlayer, buf)
 	assert.NoError(t, err)
