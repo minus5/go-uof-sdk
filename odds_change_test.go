@@ -138,6 +138,13 @@ func TestSpecifiersParsing(t *testing.T) {
 			specifiersMap:    map[string]string{"total": "1.5", "from": "1", "to": "15", "variant": "sr:exact_goals:4+"},
 			variantSpecifier: "sr:exact_goals:4+",
 		},
+
+		{
+			// ne pronalazim ispravan primjer kako bi specifier trebao izgledat za player=?, pa mi nije jasno koji prefix se trima
+			// odds_change.go:174
+			specifiers:    "player=Jack_Lee|from=5|to=10",
+			specifiersMap: map[string]string{"from": "5", "to": "10", "player": "Jack_Lee"},
+		},
 	}
 	for i, d := range data {
 		s := toSpecifiers(d.specifiers, d.extendedSpecifers)
