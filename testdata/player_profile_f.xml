@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<player_profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2019-09-05T13:14:18+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa-staging/unified/v1/xml/endpoints/unified/player_profile.xsd">
+    <player id="sr:player:948" name="Jessica, Lee" full_name="Lee Jessica" type="forward" date_of_birth="1989-09-19" nationality="England" country_code="ENG" height="167" weight="55" gender="female"/>
+</player_profile>

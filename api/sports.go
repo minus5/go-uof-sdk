@@ -96,7 +96,7 @@ func (a *API) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan 
 
 		// than all events which has scheduled before to
 		limit := 1000
-		for start := 0; true; start = start + limit {
+		for start := 0; true; start += limit {
 			buf, err := a.get(events, &params{Lang: lang, Start: start, Limit: limit})
 			if err != nil {
 				errc <- err
