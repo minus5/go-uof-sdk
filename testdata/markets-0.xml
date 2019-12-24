@@ -1,4 +1,4 @@
-{"t":129,"l":1}
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <market_descriptions response_code="OK">
   <market id="1" name="1x2" groups="all|score|regular_play">
     <outcomes>
@@ -57,5 +57,4 @@
       <outcome id="sr:goalscorer:fieldplayers_nogoal_owngoal_other:1335" name="other"/>
     </outcomes>
   </market>
-
 </market_descriptions>
