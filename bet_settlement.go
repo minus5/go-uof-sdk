@@ -16,8 +16,9 @@ type BetSettlement struct {
 }
 
 type BetSettlementMarket struct {
-	ID     int `xml:"id,attr" json:"id"`
-	LineID int `json:"lineID"`
+	ID         int               `xml:"id,attr" json:"id"`
+	LineID     int               `json:"lineID"`
+	Specifiers map[string]string `json:"specifiers,omitempty"`
 	// Describes the reason for voiding certain outcomes for a particular market.
 	// Only set if at least one of the outcomes have a void_factor. A list of void
 	// reasons can be found above this table or by using the API at
@@ -80,6 +81,7 @@ func (t *BetSettlementMarket) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
+	t.Specifiers = toSpecifiers(overlay.Specifiers, overlay.ExtendedSpecifiers)
 	t.LineID = toLineID(overlay.Specifiers)
 	return nil
 }
