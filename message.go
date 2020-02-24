@@ -21,6 +21,8 @@ type Header struct {
 	EventURN    URN             `json:"eventURN,omitempty"`
 	ReceivedAt  int             `json:"receivedAt,omitempty"`
 	RequestedAt int             `json:"requestedAt,omitempty"`
+	Producer    Producer        `json:"producer,omitempty"`
+	Timestamp   int             `json:"timestamp,omitempty"`
 }
 
 type Body struct {
@@ -134,6 +136,7 @@ func (m *Message) parseRoutingKey(routingKey string) error {
 	return nil
 }
 
+// after unmarshall copy producer and timestamp to Header
 func (m *Message) unpack() error {
 	if m.Raw == nil {
 		return nil
@@ -148,30 +151,48 @@ func (m *Message) unpack() error {
 	case MessageTypeAlive:
 		m.Alive = &Alive{}
 		unmarshal(m.Alive)
+		m.Timestamp = m.Alive.Timestamp
+		m.Producer = m.Alive.Producer
 	case MessageTypeBetCancel:
 		m.BetCancel = &BetCancel{}
 		unmarshal(m.BetCancel)
+		m.Timestamp = m.BetCancel.Timestamp
+		m.Producer = m.BetCancel.Producer
 	case MessageTypeBetSettlement:
 		m.BetSettlement = &BetSettlement{}
 		unmarshal(m.BetSettlement)
+		m.Timestamp = m.BetSettlement.Timestamp
+		m.Producer = m.BetSettlement.Producer
 	case MessageTypeBetStop:
 		m.BetStop = &BetStop{}
 		unmarshal(m.BetStop)
+		m.Timestamp = m.BetStop.Timestamp
+		m.Producer = m.BetStop.Producer
 	case MessageTypeFixtureChange:
 		m.FixtureChange = &FixtureChange{}
 		unmarshal(m.FixtureChange)
+		m.Timestamp = m.FixtureChange.Timestamp
+		m.Producer = m.FixtureChange.Producer
 	case MessageTypeOddsChange:
 		m.OddsChange = &OddsChange{}
 		unmarshal(m.OddsChange)
+		m.Timestamp = m.OddsChange.Timestamp
+		m.Producer = m.OddsChange.Producer
 	case MessageTypeRollbackBetSettlement:
 		m.RollbackBetSettlement = &RollbackBetSettlement{}
 		unmarshal(m.RollbackBetSettlement)
+		m.Timestamp = m.RollbackBetSettlement.Timestamp
+		m.Producer = m.RollbackBetSettlement.Producer
 	case MessageTypeRollbackBetCancel:
 		m.RollbackBetCancel = &RollbackBetCancel{}
 		unmarshal(m.RollbackBetCancel)
+		m.Timestamp = m.RollbackBetCancel.Timestamp
+		m.Producer = m.RollbackBetCancel.Producer
 	case MessageTypeSnapshotComplete:
 		m.SnapshotComplete = &SnapshotComplete{}
 		unmarshal(m.SnapshotComplete)
+		m.Timestamp = m.SnapshotComplete.Timestamp
+		m.Producer = m.SnapshotComplete.Producer
 	case MessageTypeFixture:
 		fr := FixtureRsp{}
 		unmarshal(&fr)
