@@ -128,7 +128,7 @@ func TestMessageTypeParse(t *testing.T) {
 
 func TestMessageWithRawMarshal(t *testing.T) {
 	m := &Message{
-		Header: Header{Type: MessageTypeAlive, Scope: MessageScopeSystem, Priority: MessagePriorityLow, ReceivedAt: 12345},
+		Header: Header{Type: MessageTypeAlive, Scope: MessageScopeSystem, Priority: MessagePriorityLow, ReceivedAt: 12345, Producer: ProducerPrematch, Timestamp: 12340},
 		Raw:    []byte(`<alive product="3" timestamp="12340" subscribed="1"/>`),
 		Body: Body{
 			Alive: &Alive{
@@ -140,7 +140,7 @@ func TestMessageWithRawMarshal(t *testing.T) {
 	}
 
 	buf := m.Marshal()
-	expected := []byte(`{"type":64,"scope":4,"receivedAt":12345}
+	expected := []byte(`{"type":64,"scope":4,"receivedAt":12345,"producer":3,"timestamp":12340}
 <alive product="3" timestamp="12340" subscribed="1"/>`)
 	assert.Equal(t, expected, buf)
 
