@@ -110,9 +110,8 @@ func (r *recovery) requestRecovery(p *recoveryProducer) {
 
 	r.subProcs.Add(1)
 	go func(producer uof.Producer, timestamp int, requestID int) {
+		defer r.subProcs.Done()
 		for {
-			defer r.subProcs.Done()
-
 			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", producer.Code(), timestamp, requestID)
 			r.log(fmt.Errorf("starting %s", op))
 			err := r.api.RequestRecovery(producer, timestamp, requestID)
