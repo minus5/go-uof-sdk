@@ -48,7 +48,7 @@ type Fixture struct {
 	//DelayedInfo DelayedInfo `xml:"delayed_info,omitempty" json:"delayedInfo,omitempty"`
 	//CoverageInfo CoverageInfo `xml:"coverage_info,omitempty" json:"coverageInfo,omitempty"`
 	//Races        []SportEvent `xml:"races>sport_event,omitempty" json:"races,omitempty"`
-	//ExtraInfo   ExtraInfo    `xml:"extra_info,omitempty" json:"extraInfo,omitempty"`
+	ExtraInfo []ExtraInfo `xml:"extra_info>info,omitempty" json:"extraInfo,omitempty"`
 	//ScheduledStartTimeChanges []ScheduledStartTimeChange `xml:"scheduled_start_time_changes>scheduled_start_time_change,omitempty" json:"scheduledStartTimeChanges,omitempty"`
 	//Parent *ParentStage `xml:"parent,omitempty" json:"parent,omitempty"`
 
@@ -161,6 +161,13 @@ type ProductInfo struct {
 	IsInLiveCenterSoccer string             `xml:"is_in_live_center_soccer,omitempty" json:"isInLiveCenterSoccer,omitempty"`
 	IsAutoTraded         string             `xml:"is_auto_traded,omitempty" json:"isAutoTraded,omitempty"`
 	Links                []ProductInfoLink  `xml:"links>link,omitempty" json:"links,omitempty"`
+}
+
+// ExtraInfo covers additional fixture information about the match,
+// such as coverage information, extended markets offer, additional rules etc.
+type ExtraInfo struct {
+	Key   string `xml:"key,attr,omitempty" json:"key,omitempty"`
+	Value string `xml:"value,attr,omitempty" json:"value,omitempty"`
 }
 
 func (f *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {

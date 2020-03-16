@@ -314,6 +314,21 @@ func TestFixture(t *testing.T) {
 	assert.Equal(t, 2953, f.Home.ID)
 	assert.Equal(t, 33, f.Away.ID)
 
+	// <extra_info>
+	// 	<info key="neutral_ground" value="false"/>
+	//  ...
+	// </extra_info>
+	assert.Equal(t, "neutral_ground", f.ExtraInfo[0].Key)
+	assert.Equal(t, "false", f.ExtraInfo[0].Value)
+	assert.Equal(t, "period_length", f.ExtraInfo[1].Key)
+	assert.Equal(t, "45", f.ExtraInfo[1].Value)
+	assert.Equal(t, "overtime_length", f.ExtraInfo[2].Key)
+	assert.Equal(t, "15", f.ExtraInfo[2].Value)
+	assert.Equal(t, "coverage_source", f.ExtraInfo[3].Key)
+	assert.Equal(t, "tv", f.ExtraInfo[3].Value)
+	assert.Equal(t, "extended_live_markets_offered", f.ExtraInfo[4].Key)
+	assert.Equal(t, "true", f.ExtraInfo[4].Value)
+
 	msg, err := NewAPIMessage(LangEN, MessageTypeFixture, buf)
 	assert.NoError(t, err)
 	assert.Equal(t, f, *msg.Fixture)
