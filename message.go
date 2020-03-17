@@ -293,6 +293,7 @@ func NewFixtureMessage(lang Lang, x Fixture, requestedAt int) *Message {
 			ReceivedAt:  uniqTimestamp(),
 			RequestedAt: requestedAt,
 		},
+		Raw:  x.Raw,
 		Body: Body{Fixture: &x},
 	}
 }

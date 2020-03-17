@@ -42,13 +42,15 @@ type Fixture struct {
 
 	Home Competitor `json:"home"`
 	Away Competitor `json:"away"`
+
+	ExtraInfo []ExtraInfo `xml:"extra_info>info,omitempty" json:"extraInfo,omitempty"`
+	Raw       []byte      // fixture API raw XML response; keep for downstream processing
 	// this also exists but we are skiping for the time being
 	//ReferenceIDs         ReferenceIDs         `xml:"reference_ids,omitempty" json:"referenceIDs,omitempty"`
 	//SportEventConditions SportEventConditions `xml:"sport_event_conditions,omitempty" json:"sportEventConditions,omitempty"`
 	//DelayedInfo DelayedInfo `xml:"delayed_info,omitempty" json:"delayedInfo,omitempty"`
 	//CoverageInfo CoverageInfo `xml:"coverage_info,omitempty" json:"coverageInfo,omitempty"`
 	//Races        []SportEvent `xml:"races>sport_event,omitempty" json:"races,omitempty"`
-	ExtraInfo []ExtraInfo `xml:"extra_info>info,omitempty" json:"extraInfo,omitempty"`
 	//ScheduledStartTimeChanges []ScheduledStartTimeChange `xml:"scheduled_start_time_changes>scheduled_start_time_change,omitempty" json:"scheduledStartTimeChanges,omitempty"`
 	//Parent *ParentStage `xml:"parent,omitempty" json:"parent,omitempty"`
 

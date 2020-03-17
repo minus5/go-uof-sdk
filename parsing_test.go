@@ -329,9 +329,19 @@ func TestFixture(t *testing.T) {
 	assert.Equal(t, "extended_live_markets_offered", f.ExtraInfo[4].Key)
 	assert.Equal(t, "true", f.ExtraInfo[4].Value)
 
-	msg, err := NewAPIMessage(LangEN, MessageTypeFixture, buf)
+	// test creating uof.Message
+	msgAPI, err := NewAPIMessage(LangEN, MessageTypeFixture, buf)
 	assert.NoError(t, err)
-	assert.Equal(t, f, *msg.Fixture)
+	assert.Equal(t, f, *msgAPI.Fixture)
+
+	f.Raw = buf // enrich with raw API reponse
+	requestedAt := int(time.Now().UnixNano() / 1e6)
+	msgFromFix := NewFixtureMessage(LangEN, f, requestedAt)
+	assert.NotNil(t, msgFromFix)
+	assert.NotEqual(t, 0, len(msgFromFix.Raw))
+	assert.Len(t, msgFromFix.Raw, 5283)
+	assert.Len(t, msgFromFix.Fixture.Raw, 5283)
+	assert.Equal(t, &msgFromFix.Fixture.Raw, &msgFromFix.Raw)
 }
 
 func TestFixutreWithPlayers(t *testing.T) {
