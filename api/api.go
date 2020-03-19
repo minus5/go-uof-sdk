@@ -112,11 +112,6 @@ func (a *API) getAs(o interface{}, tpl string, p *params) error {
 	if err := xml.Unmarshal(buf, o); err != nil {
 		return uof.Notice("unmarshal", err)
 	}
-	// assert FixtureRsp and inject raw
-	fx, ok := o.(*fixtureRsp)
-	if ok {
-		fx.Fixture.Raw = buf
-	}
 	return nil
 }
 

@@ -44,7 +44,6 @@ type Fixture struct {
 	Away Competitor `json:"away"`
 
 	ExtraInfo []ExtraInfo `xml:"extra_info>info,omitempty" json:"extraInfo,omitempty"`
-	Raw       []byte      // fixture API raw XML response; keep for downstream processing
 	// this also exists but we are skiping for the time being
 	//ReferenceIDs         ReferenceIDs         `xml:"reference_ids,omitempty" json:"referenceIDs,omitempty"`
 	//SportEventConditions SportEventConditions `xml:"sport_event_conditions,omitempty" json:"sportEventConditions,omitempty"`

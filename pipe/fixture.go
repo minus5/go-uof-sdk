@@ -8,7 +8,7 @@ import (
 )
 
 type fixtureAPI interface {
-	Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error)
+	Fixture(lang uof.Lang, eventURN uof.URN) ([]byte, error)
 	Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error)
 }
 
@@ -129,12 +129,17 @@ func (f *fixture) getFixture(eventURN uof.URN, receivedAt int) {
 			if f.em.fresh(key) {
 				return
 			}
-			x, err := f.api.Fixture(lang, eventURN)
+			buf, err := f.api.Fixture(lang, eventURN)
 			if err != nil {
 				f.errc <- err
 				return
 			}
-			f.out <- uof.NewFixtureMessage(lang, *x, receivedAt)
+			m, err := uof.NewFixtureMessageFromBuf(lang, buf, receivedAt)
+			if err != nil {
+				f.errc <- err
+				return
+			}
+			f.out <- m
 			f.em.insert(key)
 		}(lang)
 	}
