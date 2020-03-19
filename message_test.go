@@ -1,6 +1,7 @@
 package uof
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -265,6 +266,15 @@ func TestNewMessage(t *testing.T) {
 
 	m.NewFixtureMessage(LangEN, Fixture{})
 	assert.True(t, m.Is(MessageTypeFixture))
+}
+
+func TestNewMessageFromBufFail(t *testing.T) {
+	failing := []byte{}
+	expectErr := fmt.Errorf("NOTICE uof error op: message.unpack, inner: EOF")
+	m, err := NewFixtureMessageFromBuf(LangEN, failing, 0)
+	assert.Nil(t, m)
+	assert.Error(t, err)
+	assert.EqualError(t, err, expectErr.Error())
 }
 
 func TestUnpackFail(t *testing.T) {
