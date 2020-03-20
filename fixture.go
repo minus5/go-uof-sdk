@@ -43,13 +43,13 @@ type Fixture struct {
 	Home Competitor `json:"home"`
 	Away Competitor `json:"away"`
 
-	ExtraInfo []ExtraInfo `xml:"extra_info>info,omitempty" json:"extraInfo,omitempty"`
+	ExtraInfo []ExtraInfo  `xml:"extra_info>info,omitempty" json:"extraInfo,omitempty"`
+	Races     []SportEvent `xml:"races>sport_event,omitempty" json:"races,omitempty"`
 	// this also exists but we are skiping for the time being
 	//ReferenceIDs         ReferenceIDs         `xml:"reference_ids,omitempty" json:"referenceIDs,omitempty"`
 	//SportEventConditions SportEventConditions `xml:"sport_event_conditions,omitempty" json:"sportEventConditions,omitempty"`
 	//DelayedInfo DelayedInfo `xml:"delayed_info,omitempty" json:"delayedInfo,omitempty"`
 	//CoverageInfo CoverageInfo `xml:"coverage_info,omitempty" json:"coverageInfo,omitempty"`
-	//Races        []SportEvent `xml:"races>sport_event,omitempty" json:"races,omitempty"`
 	//ScheduledStartTimeChanges []ScheduledStartTimeChange `xml:"scheduled_start_time_changes>scheduled_start_time_change,omitempty" json:"scheduledStartTimeChanges,omitempty"`
 	//Parent *ParentStage `xml:"parent,omitempty" json:"parent,omitempty"`
 
@@ -169,6 +169,16 @@ type ProductInfo struct {
 type ExtraInfo struct {
 	Key   string `xml:"key,attr,omitempty" json:"key,omitempty"`
 	Value string `xml:"value,attr,omitempty" json:"value,omitempty"`
+}
+
+// SportEvent covers information about scheduled races in a stage
+// For VHC and VDR information is in vdr/vhc:stage:<int> fixture with type="parent"
+type SportEvent struct {
+	ID           string    `xml:"id,attr,omitempty" json:"id,omitempty"`
+	Name         string    `xml:"name,attr,omitempty" json:"name,omitempty"`
+	Type         string    `xml:"type,attr,omitempty" json:"type,omitempty"`
+	Scheduled    time.Time `xml:"scheduled,attr,omitempty" json:"scheduled,omitempty"`
+	ScheduledEnd time.Time `xml:"scheduled_end,attr,omitempty" json:"scheduled_end,omitempty"`
 }
 
 func (f *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
