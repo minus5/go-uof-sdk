@@ -12,6 +12,7 @@ const (
 	pathMarketVariant = "/v1/descriptions/{{.Lang}}/markets/{{.MarketID}}/variants/{{.Variant}}?include_mappings={{.IncludeMappings}}"
 	pathFixture       = "/v1/sports/{{.Lang}}/sport_events/{{.EventURN}}/fixture.xml"
 	pathPlayer        = "/v1/sports/{{.Lang}}/players/sr:player:{{.PlayerID}}/profile.xml"
+	pathCompetitor    = "/v1/sports/{{.Lang}}/competitors/sr:competitor:{{.PlayerID}}/profile.xml"
 	events            = "/v1/sports/{{.Lang}}/schedules/pre/schedule.xml?start={{.Start}}&limit={{.Limit}}"
 	liveEvents        = "/v1/sports/{{.Lang}}/schedules/live/schedule.xml"
 )
@@ -41,6 +42,11 @@ func (a *API) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
 	return &pr.Player, a.getAs(&pr, pathPlayer, &params{Lang: lang, PlayerID: playerID})
 }
 
+func (a *API) Competitor(lang uof.Lang, playerID int) (*uof.CompetitorPlayer, error) {
+	var cr competitorRsp
+	return &cr.Competitor, a.getAs(&cr, pathCompetitor, &params{Lang: lang, PlayerID: playerID})
+}
+
 type marketsRsp struct {
 	Markets uof.MarketDescriptions `xml:"market,omitempty" json:"markets,omitempty"`
 	// unused
@@ -51,6 +57,11 @@ type marketsRsp struct {
 type playerRsp struct {
 	Player      uof.Player `xml:"player" json:"player"`
 	GeneratedAt time.Time  `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
+}
+
+type competitorRsp struct {
+	Competitor  uof.CompetitorPlayer `xml:"competitor" json:"competitor"`
+	GeneratedAt time.Time            `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
 }
 
 type fixtureRsp struct {

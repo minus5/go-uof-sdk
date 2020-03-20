@@ -38,9 +38,10 @@ type Body struct {
 	BetSettlement         *BetSettlement         `json:"betSettlement,omitempty"`
 	BetStop               *BetStop               `json:"betStop,omitempty"`
 	// api response message types
-	Fixture *Fixture           `json:"fixture,omitempty"`
-	Markets MarketDescriptions `json:"markets,omitempty"`
-	Player  *Player            `json:"player,omitempty"`
+	Fixture    *Fixture           `json:"fixture,omitempty"`
+	Markets    MarketDescriptions `json:"markets,omitempty"`
+	Player     *Player            `json:"player,omitempty"`
+	Competitor *CompetitorPlayer  `json:"competitor,omitempty"`
 	// sdk status message types
 	Connection *Connection     `json:"connection,omitempty"`
 	Producers  ProducersChange `json:"producerChange,omitempty"`
@@ -255,6 +256,18 @@ func NewPlayerMessage(lang Lang, player *Player, requestedAt int) *Message {
 	}
 }
 
+func NewCompetitorMessage(lang Lang, competitor *CompetitorPlayer, requestedAt int) *Message {
+	return &Message{
+		Header: Header{
+			Type:        MessageTypeCompetitor,
+			Lang:        lang,
+			ReceivedAt:  uniqTimestamp(),
+			RequestedAt: requestedAt,
+		},
+		Body: Body{Competitor: competitor},
+	}
+}
+
 func NewConnnectionMessage(status ConnectionStatus) *Message {
 	ts := uniqTimestamp()
 	return &Message{
@@ -339,6 +352,11 @@ func (m Message) Marshal() []byte {
 	buf, _ := json.Marshal(m.Header)
 	buf = append(buf, separator)
 	return append(buf, m.Raw...)
+}
+
+func (m Message) MarshalPretty() []byte {
+	buf, _ := json.Marshal(m)
+	return buf
 }
 
 func (m *Message) Unmarshal(buf []byte) error {

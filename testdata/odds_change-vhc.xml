@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<odds_change product="11" event_id="vhc:stage:18361597" timestamp="1584719785024" request_id="1">
+    <sport_event_status status="3" match_status="100"/>
+    <odds>
+        <market favourite="1" status="0" id="870">
+            <outcome id="sr:competitor:94075,sr:competitor:94137" odds="9.5" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94081" odds="40.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94163" odds="46.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94075" odds="20.0" active="0"/>
+            <outcome id="sr:competitor:94163,sr:competitor:94155" odds="23.0" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94127" odds="46.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94127" odds="25.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94123" odds="22.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94107" odds="36.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94097" odds="25.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94107" odds="25.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94105" odds="27.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94097" odds="23.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94123" odds="46.0" active="0"/>
+            <outcome id="sr:competitor:94123,sr:competitor:94075" odds="32.0" active="0"/>
+            <outcome id="sr:competitor:94123,sr:competitor:94107" odds="29.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94081" odds="32.0" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94155" odds="36.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94137" odds="46.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94155" odds="25.0" active="0"/>
+            <outcome id="1893" odds="2.2" active="0"/>
+        </market>
+        <market favourite="1" status="0" id="871">
+            <outcome id="sr:competitor:94075,sr:competitor:94137" odds="9.25" active="0"/>
+            <outcome id="sr:competitor:94081,sr:competitor:94155" odds="37.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94155" odds="11.5" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94163" odds="15.75" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94127" odds="37.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94105" odds="24.0" active="0"/>
+            <outcome id="sr:competitor:94105,sr:competitor:94155" odds="33.0" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94155" odds="18.25" active="0"/>
+            <outcome id="sr:competitor:94081,sr:competitor:94105" odds="41.0" active="0"/>
+            <outcome id="sr:competitor:94097,sr:competitor:94155" odds="24.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94097" odds="19.5" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94163" odds="37.0" active="0"/>
+            <outcome id="sr:competitor:94123,sr:competitor:94155" odds="37.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94123" odds="13.25" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94081" odds="22.0" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94123" odds="21.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94107" odds="17.5" active="0"/>
+            <outcome id="sr:competitor:94137,sr:competitor:94155" odds="33.0" active="0"/>
+            <outcome id="sr:competitor:94097,sr:competitor:94123" odds="33.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94127" odds="21.0" active="0"/>
+            <outcome id="1893" odds="4.0" active="0"/>
+        </market>
+        <market favourite="1" status="0" id="872">
+            <outcome id="sr:competitor:94075,sr:competitor:94097,sr:competitor:94107" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94123,sr:competitor:94107,sr:competitor:94075" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94123,sr:competitor:94075" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94137,sr:competitor:94081" odds="37.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94075,sr:competitor:94123" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94123,sr:competitor:94107" odds="52.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94081,sr:competitor:94075" odds="43.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94137,sr:competitor:94075" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94163,sr:competitor:94155,sr:competitor:94075" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94137,sr:competitor:94097" odds="32.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94081,sr:competitor:94107" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94081,sr:competitor:94105" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94137,sr:competitor:94107" odds="52.0" active="0"/>
+            <outcome id="sr:competitor:94163,sr:competitor:94155,sr:competitor:94107" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94097,sr:competitor:94155" odds="43.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94097,sr:competitor:94123" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94123,sr:competitor:94075,sr:competitor:94127" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94137,sr:competitor:94123" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94105,sr:competitor:94081" odds="64.0" active="0"/>
+            <outcome id="sr:competitor:94155,sr:competitor:94075,sr:competitor:94081" odds="52.0" active="0"/>
+            <outcome id="1893" odds="1.2" active="0"/>
+        </market>
+        <market favourite="1" status="0" id="873">
+            <outcome id="sr:competitor:94075,sr:competitor:94107,sr:competitor:94127" odds="39.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94107,sr:competitor:94123" odds="19.75" active="0"/>
+            <outcome id="sr:competitor:94097,sr:competitor:94107,sr:competitor:94123" odds="45.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94097,sr:competitor:94155" odds="22.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94137,sr:competitor:94155" odds="26.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94107,sr:competitor:94137" odds="35.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94105,sr:competitor:94155" odds="35.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94081,sr:competitor:94155" odds="26.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94155,sr:competitor:94163" odds="28.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94081,sr:competitor:94137" odds="28.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94081,sr:competitor:94105" odds="28.0" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94123,sr:competitor:94127" odds="45.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94123,sr:competitor:94137" odds="39.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94123,sr:competitor:94155" odds="31.0" active="0"/>
+            <outcome id="sr:competitor:94107,sr:competitor:94155,sr:competitor:94163" odds="31.0" active="0"/>
+            <outcome id="sr:competitor:94097,sr:competitor:94123,sr:competitor:94155" odds="35.0" active="0"/>
+            <outcome id="sr:competitor:94097,sr:competitor:94155,sr:competitor:94163" odds="52.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94097,sr:competitor:94137" odds="28.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94105,sr:competitor:94123" odds="39.0" active="0"/>
+            <outcome id="sr:competitor:94075,sr:competitor:94107,sr:competitor:94155" odds="31.0" active="0"/>
+            <outcome id="1893" odds="1.75" active="0"/>
+        </market>
+        <market favourite="1" status="0" id="868" specifiers="pos=3">
+            <outcome id="sr:competitor:94163" odds="4.45" active="0"/>
+            <outcome id="sr:competitor:94075" odds="1.55" active="0"/>
+            <outcome id="sr:competitor:94155" odds="1.95" active="0"/>
+            <outcome id="sr:competitor:94097" odds="3.5" active="0"/>
+            <outcome id="sr:competitor:94081" odds="3.95" active="0"/>
+            <outcome id="sr:competitor:94107" odds="2.5" active="0"/>
+            <outcome id="sr:competitor:94105" odds="3.8" active="0"/>
+            <outcome id="sr:competitor:94137" odds="3.3" active="0"/>
+            <outcome id="sr:competitor:94127" odds="3.75" active="0"/>
+            <outcome id="sr:competitor:94123" odds="2.85" active="0"/>
+        </market>
+        <market favourite="1" status="0" id="866">
+            <outcome id="sr:competitor:94163" odds="11.5" active="0"/>
+            <outcome id="sr:competitor:94075" odds="2.65" active="0"/>
+            <outcome id="sr:competitor:94155" odds="4.25" active="0"/>
+            <outcome id="sr:competitor:94097" odds="29.0" active="0"/>
+            <outcome id="sr:competitor:94081" odds="18.0" active="0"/>
+            <outcome id="sr:competitor:94107" odds="8.25" active="0"/>
+            <outcome id="sr:competitor:94105" odds="14.75" active="0"/>
+            <outcome id="sr:competitor:94137" odds="32.0" active="0"/>
+            <outcome id="sr:competitor:94127" odds="17.0" active="0"/>
+            <outcome id="sr:competitor:94123" odds="7.5" active="0"/>
+        </market>
+    </odds>
+</odds_change>

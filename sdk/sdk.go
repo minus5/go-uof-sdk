@@ -52,6 +52,7 @@ func Run(ctx context.Context, options ...Option) error {
 		pipe.Markets(apiConn, c.Languages),
 		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
 		pipe.Player(apiConn, c.Languages),
+		pipe.Competitor(apiConn, c.Languages),
 		pipe.BetStop(),
 	}
 	if len(c.Recovery) > 0 {

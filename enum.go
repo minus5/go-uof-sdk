@@ -84,10 +84,15 @@ func (p Producer) Prematch() bool {
 	return p == 3
 }
 
+func (p Producer) Sports() bool {
+	return p == ProducerLiveOdds || p == ProducerPrematch
+}
+
 const (
-	InvalidName = "?"
-	srMatch     = "sr:match:"
-	srPlayer    = "sr:player:"
+	InvalidName  = "?"
+	srMatch      = "sr:match:"
+	srPlayer     = "sr:player:"
+	srCompetitor = "sr:competitor:"
 )
 
 type URN string
@@ -344,6 +349,7 @@ const (
 	MessageTypeFixture MessageType = iota + 32
 	MessageTypeMarkets
 	MessageTypePlayer
+	MessageTypeCompetitor
 )
 
 // system message types
@@ -368,6 +374,7 @@ var messageTypes = []MessageType{
 	MessageTypeFixture,
 	MessageTypeMarkets,
 	MessageTypePlayer,
+	MessageTypeCompetitor,
 
 	MessageTypeAlive,
 	MessageTypeSnapshotComplete,
@@ -389,6 +396,7 @@ var messageTypeNames = []string{
 	"fixture",
 	"market",
 	"player",
+	"competitor",
 
 	"alive",
 	"snapshot_complete",
