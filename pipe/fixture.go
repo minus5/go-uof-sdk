@@ -61,6 +61,9 @@ func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 }
 
 func (f *fixture) eventURN(m *uof.Message) uof.URN {
+	if m.Producer.Virtuals() && m.Is(uof.MessageTypeOddsChange) {
+		return m.EventURN
+	}
 	if m.Type != uof.MessageTypeFixtureChange || m.FixtureChange == nil {
 		return uof.NoURN
 	}
