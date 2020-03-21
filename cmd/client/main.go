@@ -96,7 +96,7 @@ func logMessage(m *uof.Message) {
 	case uof.MessageTypeConnection:
 		fmt.Printf("%-25s status: %s\n", m.Type, m.Connection.Status)
 	case uof.MessageTypeFixture:
-		fmt.Printf("%-25s lang: %s, urn: %s raw: %d\n", m.Type, m.Lang, m.Fixture.URN, len(m.Fixture.Raw))
+		fmt.Printf("%-25s lang: %s, urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
 	case uof.MessageTypeMarkets:
 		fmt.Printf("%-25s lang: %s, count: %d\n", m.Type, m.Lang, len(m.Markets))
 	case uof.MessageTypeAlive:

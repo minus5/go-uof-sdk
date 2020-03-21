@@ -94,12 +94,6 @@ func testFixture(t *testing.T, a *API) {
 	f, err := a.Fixture(lang, "sr:match:8696826")
 	assert.Nil(t, err)
 	assert.Equal(t, "IK Oddevold", f.Home.Name)
-	// for fixtures raw response should be kept
-	assert.NotEqual(t, 0, len(f.Raw))
-	if testing.Verbose() && len(f.Raw) != 0 {
-		// strip <?xml version="1.0" encoding="UTF-8"?>
-		fmt.Printf("\t%s\n", f.Raw[39:100])
-	}
 }
 
 func testPlayer(t *testing.T, a *API) {

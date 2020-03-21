@@ -333,15 +333,6 @@ func TestFixture(t *testing.T) {
 	msgAPI, err := NewAPIMessage(LangEN, MessageTypeFixture, buf)
 	assert.NoError(t, err)
 	assert.Equal(t, f, *msgAPI.Fixture)
-
-	f.Raw = buf // enrich with raw API reponse
-	requestedAt := int(time.Now().UnixNano() / 1e6)
-	msgFromFix := NewFixtureMessage(LangEN, f, requestedAt)
-	assert.NotNil(t, msgFromFix)
-	assert.NotEqual(t, 0, len(msgFromFix.Raw))
-	assert.Len(t, msgFromFix.Raw, 5283)
-	assert.Len(t, msgFromFix.Fixture.Raw, 5283)
-	assert.Equal(t, &msgFromFix.Fixture.Raw, &msgFromFix.Raw)
 }
 
 func TestFixutreWithPlayers(t *testing.T) {
