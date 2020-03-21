@@ -68,6 +68,15 @@ func (p Producer) Code() string {
 	return InvalidName
 }
 
+func (p Producer) Scope() string {
+	for _, d := range producers {
+		if p == d.id {
+			return d.scope
+		}
+	}
+	return InvalidName
+}
+
 // RecoveryWindow in milliseconds
 func (p Producer) RecoveryWindow() int {
 	for _, d := range producers {
@@ -86,6 +95,21 @@ func (p Producer) Prematch() bool {
 
 func (p Producer) Sports() bool {
 	return p == ProducerLiveOdds || p == ProducerPrematch
+}
+
+func (p Producer) Virtuals() bool {
+	return p.Scope() == "virtual"
+}
+
+func VirtualProducers() []Producer {
+	var v []Producer
+	for _, d := range producers {
+		p := d.id
+		if p.Virtuals() {
+			v = append(v, p)
+		}
+	}
+	return v
 }
 
 const (

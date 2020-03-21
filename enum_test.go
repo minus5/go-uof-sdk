@@ -18,6 +18,12 @@ func TestProducer(t *testing.T) {
 
 	assert.Equal(t, 259200000, Producer(3).RecoveryWindow())
 	assert.True(t, Producer(3).Prematch())
+
+	assert.True(t, Producer(3).Sports())
+	assert.False(t, Producer(3).Virtuals())
+
+	assert.False(t, Producer(11).Sports())
+	assert.True(t, Producer(11).Virtuals())
 }
 
 func TestURN(t *testing.T) {
