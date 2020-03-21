@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tournament_info generated_at="2020-03-21T07:49:35.459Z" 
+    xmlns="http://schemas.sportradar.com/sportsapi/v1/unified">
+    <tournament id="vf:tournament:13933" name="Virtual Football Nations Cup">
+        <sport id="sr:sport:1" name="Soccer"/>
+        <category id="sr:category:1111" name="Virtual Football"/>
+        <current_season start_date="2020-03-21Z" end_date="2020-03-21Z" start_time="07:33:15.000Z" end_time="08:28:25.000Z" year="33832" id="vf:season:701457" name="VFNC 33832"/>
+    </tournament>
+    <season start_date="2020-03-21Z" end_date="2020-03-21Z" start_time="07:33:15.000Z" end_time="08:28:25.000Z" year="33832" tournament_id="vf:tournament:13933" id="vf:season:701457" name="VFNC 33832"/>
+    <groups>
+        <group name="A">
+            <competitor id="sr:competitor:272001" name="Mexico" abbreviation="MEX"/>
+            <competitor id="sr:competitor:272002" name="Costa Rica" abbreviation="CRC"/>
+            <competitor id="sr:competitor:272003" name="Jamaica" abbreviation="JAM"/>
+            <competitor id="sr:competitor:272004" name="USA" abbreviation="USA"/>
+        </group>
+        <group name="B">
+            <competitor id="sr:competitor:272005" name="Spain" abbreviation="ESP"/>
+            <competitor id="sr:competitor:272006" name="Italy" abbreviation="ITA"/>
+            <competitor id="sr:competitor:272007" name="England" abbreviation="ENG"/>
+            <competitor id="sr:competitor:272008" name="Turkey" abbreviation="TUR"/>
+        </group>
+        <group name="C">
+            <competitor id="sr:competitor:272009" name="Germany" abbreviation="GER"/>
+            <competitor id="sr:competitor:272010" name="Ukraine" abbreviation="UKR"/>
+            <competitor id="sr:competitor:272011" name="Russia" abbreviation="RUS"/>
+            <competitor id="sr:competitor:272012" name="Georgia" abbreviation="GEO"/>
+        </group>
+        <group name="D">
+            <competitor id="sr:competitor:272013" name="Argentina" abbreviation="ARG"/>
+            <competitor id="sr:competitor:272014" name="Chile" abbreviation="CHI"/>
+            <competitor id="sr:competitor:272015" name="Uruguay" abbreviation="URU"/>
+            <competitor id="sr:competitor:272016" name="Brazil" abbreviation="BRA"/>
+        </group>
+        <group name="E">
+            <competitor id="sr:competitor:272017" name="Nigeria" abbreviation="NGR"/>
+            <competitor id="sr:competitor:272018" name="Ghana" abbreviation="GHA"/>
+            <competitor id="sr:competitor:272019" name="Senegal" abbreviation="SEN"/>
+            <competitor id="sr:competitor:272020" name="Côte d'Ivoire" abbreviation="CIV"/>
+        </group>
+        <group name="F">
+            <competitor id="sr:competitor:272021" name="Australia" abbreviation="AUS"/>
+            <competitor id="sr:competitor:272022" name="Korea Rep." abbreviation="KOR"/>
+            <competitor id="sr:competitor:272023" name="Japan" abbreviation="JPN"/>
+            <competitor id="sr:competitor:272024" name="China" abbreviation="CHN"/>
+        </group>
+    </groups>
+</tournament_info>
