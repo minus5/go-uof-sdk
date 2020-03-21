@@ -1,7 +1,6 @@
 package pipe
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -135,7 +134,6 @@ func (f *fixture) getFixture(eventURN uof.URN, receivedAt int) {
 				return
 			}
 			if eventURN.IsTournament() {
-				fmt.Println(">>> get tournament", eventURN)
 				x, err := f.api.Tournament(lang, eventURN)
 				if err != nil {
 					f.errc <- err
