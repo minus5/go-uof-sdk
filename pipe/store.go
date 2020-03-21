@@ -64,7 +64,10 @@ func filename(m *uof.Message) string {
 			s := m.Markets[0]
 			return fmt.Sprintf("/state/%s/markets/%08d-%08d/%13d", m.Lang, s.ID, s.VariantID, m.RequestedAt)
 		case uof.MessageTypeFixture:
-			return fmt.Sprintf("/state/%s/fixtures/%08d/%13d", m.Lang, m.EventID, m.RequestedAt)
+			if m.EventURN == "" {
+				return fmt.Sprintf("/state/%s/fixtures/%08d/%13d", m.Lang, m.EventID, m.RequestedAt)
+			}
+			return fmt.Sprintf("/state/%s/fixtures/%s", m.Lang, m.EventURN)
 		case uof.MessageTypeCompetitor:
 			return fmt.Sprintf("/state/%s/competitors/%08d/%13d", m.Lang, m.Competitor.ID, m.RequestedAt)
 		}
