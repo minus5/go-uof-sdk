@@ -133,48 +133,6 @@ func (u URN) ID() int {
 	return int(i)
 }
 
-/*
-const (
-	URNTypeMatch int8 = iota
-	URNTypeStage
-	URNTypeTournament
-	URNTypeSimpleTournament
-	URNTypeSeason
-	URNTypeDraw
-	URNTypeLottery
-	URNTypePlayer
-	URNTypeUnknown = int8(-1)
-)
-func (u URN) Type() int8 {
-	if u == "" {
-		return URNTypeUnknown
-	}
-	p := strings.Split(string(u), ":")
-	if len(p) != 3 {
-		return URNTypeUnknown
-	}
-	switch p[1] {
-	case "match":
-		return URNTypeMatch
-	case "stage":
-		return URNTypeStage
-	case "tournament":
-		return URNTypeTournament
-	case "simple_tournament":
-		return URNTypeSimpleTournament
-	case "season":
-		return URNTypeSeason
-	case "draw":
-		return URNTypeDraw
-	case "lottery":
-		return URNTypeLottery
-	case "player":
-		return URNTypePlayer
-	}
-	return URNTypeUnknown
-}
-*/
-
 func (u URN) Empty() bool {
 	return string(u) == ""
 }
