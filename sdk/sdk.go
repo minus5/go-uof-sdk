@@ -21,6 +21,7 @@ type Config struct {
 	Replay      func(*api.ReplayAPI) error
 	Env         uof.Environment
 	Staging     bool
+	Virtuals    bool
 	Languages   []uof.Lang
 }
 
@@ -52,7 +53,7 @@ func Run(ctx context.Context, options ...Option) error {
 		pipe.Markets(apiConn, c.Languages),
 		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
 		pipe.Player(apiConn, c.Languages),
-		pipe.Competitor(apiConn, c.Languages),
+		//pipe.Competitor(apiConn, c.Languages),
 		pipe.BetStop(),
 	}
 	if len(c.Recovery) > 0 {
@@ -91,7 +92,11 @@ func config(options ...Option) Config {
 
 // connect to the queue and api
 func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error) {
-	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token)
+	bind := queue.BindAll
+	if c.Virtuals {
+		bind = queue.BindVirtuals
+	}
+	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, bind)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -126,6 +131,13 @@ func Staging() Option {
 	return func(c *Config) {
 		c.Env = uof.Staging
 		c.Staging = true
+	}
+}
+
+// Virtuals bind only to virtuals messages
+func Virtuals() Option {
+	return func(c *Config) {
+		c.Virtuals = true
 	}
 }
 
