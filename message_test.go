@@ -260,10 +260,6 @@ func TestNewMessage(t *testing.T) {
 	m = NewFixtureMessage(LangEN, Fixture{}, 0)
 	assert.True(t, m.Is(MessageTypeFixture))
 
-	m, err := NewFixtureMessageFromBuf(LangEN, nil, 0)
-	assert.NoError(t, err)
-	assert.True(t, m.Is(MessageTypeFixture))
-
 	m.NewFixtureMessage(LangEN, Fixture{})
 	assert.True(t, m.Is(MessageTypeFixture))
 }

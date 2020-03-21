@@ -29,12 +29,9 @@ func (a *API) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.Ma
 }
 
 // Fixture lists the fixture for a specified sport event
-func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) ([]byte, error) {
-	buf, err := a.get(pathFixture, &params{Lang: lang, EventURN: eventURN})
-	if err != nil {
-		return nil, err
-	}
-	return buf, err
+func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
+	var fr fixtureRsp
+	return &fr.Fixture, a.getAs(&fr, pathFixture, &params{Lang: lang, EventURN: eventURN})
 }
 
 func (a *API) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
