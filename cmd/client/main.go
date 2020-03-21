@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+
 	"context"
 	"encoding/json"
 	"fmt"
@@ -73,6 +74,7 @@ func main() {
 		sdk.Credentials(bookmakerID, token),
 		sdk.Staging(),
 		sdk.Recovery(pc),
+		sdk.BindSports(),
 		sdk.Fixtures(preloadTo),
 		sdk.Languages(uof.Languages("en,de,hr")),
 		sdk.BufferedConsumer(pipe.FileStore("./tmp"), 1024),

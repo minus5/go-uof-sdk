@@ -25,11 +25,14 @@ const (
 	// because you are typically always interested in receiving the system
 	// messages that will come with a routing key starting with -.-.-
 	bindingKeyVirtuals = "*.virt.#"
+	bindingKeyPrematch = "*.pre.#"
+	bindingKeyLive     = "*.*.live.#"
 	bindingKeySystem   = "-.-.-.#"
 )
 
 const (
 	BindAll int8 = iota
+	BindSports
 	BindVirtuals
 )
 
@@ -108,6 +111,8 @@ func dial(ctx context.Context, server, bookmakerID, token string, bind int8) (*C
 	switch bind {
 	case BindVirtuals:
 		bindingKeys = []string{bindingKeyVirtuals, bindingKeySystem}
+	case BindSports:
+		bindingKeys = []string{bindingKeyPrematch, bindingKeyLive, bindingKeySystem}
 	default:
 		bindingKeys = []string{bindingKeyAll}
 	}

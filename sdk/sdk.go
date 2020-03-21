@@ -13,16 +13,17 @@ import (
 var defaultLanuages = uof.Languages("en,de")
 
 type Config struct {
-	BookmakerID string
-	Token       string
-	Fixtures    time.Time
-	Recovery    []uof.ProducerChange
-	Stages      []pipe.InnerStage
-	Replay      func(*api.ReplayAPI) error
-	Env         uof.Environment
-	Staging     bool
-	Virtuals    bool
-	Languages   []uof.Lang
+	BookmakerID  string
+	Token        string
+	Fixtures     time.Time
+	Recovery     []uof.ProducerChange
+	Stages       []pipe.InnerStage
+	Replay       func(*api.ReplayAPI) error
+	Env          uof.Environment
+	Staging      bool
+	BindVirtuals bool
+	BindSports   bool
+	Languages    []uof.Lang
 }
 
 // Option sets attributes on the Config.
@@ -93,8 +94,11 @@ func config(options ...Option) Config {
 // connect to the queue and api
 func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error) {
 	bind := queue.BindAll
-	if c.Virtuals {
+	if c.BindVirtuals {
 		bind = queue.BindVirtuals
+	}
+	if c.BindSports {
+		bind = queue.BindSports
 	}
 	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, bind)
 	if err != nil {
@@ -134,10 +138,17 @@ func Staging() Option {
 	}
 }
 
-// Virtuals bind only to virtuals messages
-func Virtuals() Option {
+// BindVirtuals bind only to virtuals messages
+func BindVirtuals() Option {
 	return func(c *Config) {
-		c.Virtuals = true
+		c.BindVirtuals = true
+	}
+}
+
+// BindSports bind only to sports messages
+func BindSports() Option {
+	return func(c *Config) {
+		c.BindSports = true
 	}
 }
 

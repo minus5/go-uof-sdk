@@ -70,7 +70,7 @@ func main() {
 	err := sdk.Run(exitSignal(),
 		sdk.Credentials(bookmakerID, token),
 		sdk.Staging(),
-		sdk.Virtuals(),
+		sdk.BindVirtuals(),
 		sdk.Recovery(pc),
 		sdk.Fixtures(preloadTo),
 		sdk.Languages(uof.Languages("en,hr")),
