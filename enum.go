@@ -10,7 +10,8 @@ import (
 type Producer int8
 
 const (
-	ProducerUnknown  Producer = 0
+	ProducerUnknown  Producer = -1
+	ProducerDefault  Producer = 0
 	ProducerLiveOdds Producer = 1
 	ProducerPrematch Producer = 3
 )
@@ -23,6 +24,7 @@ var producers = []struct {
 	scope          string
 	recoveryWindow int // in minutes
 }{
+	{id: 0, name: "SR", description: "Sports", code: "sr"},
 	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 4320},
 	{id: 3, name: "Ctrl", description: "Betradar Ctrl", code: "pre", scope: "prematch", recoveryWindow: 4320},
 	{id: 4, name: "BetPal", description: "BetPal", code: "betpal", scope: "live", recoveryWindow: 4320},
@@ -162,11 +164,15 @@ const NoURN = URN("")
 //            http://sdk.sportradar.com/content/unifiedfeedsdk/net/doc/html/e1f73019-73cd-c9f8-0d58-7fe25800abf2.htm
 // List of currently existing event types is taken from the combo box in the
 // integration control page. From method "Fixture for a specified sport event".
+// !!! Refactored to Producer + EventID in producer.
 //nolint:gocyclo //accepting complexity of 23
 func (u URN) EventID() int {
 	id, prefix := u.split()
 	if id == 0 {
 		return 0
+	}
+	if u.Producer() != ProducerUnknown {
+		return id
 	}
 
 	suffixID := func(suffix int8) int {
@@ -219,6 +225,19 @@ func (u URN) EventID() int {
 	}
 }
 
+func (u URN) Producer() Producer {
+	p := strings.Split(string(u), ":")
+	if len(p) != 3 {
+		return ProducerUnknown
+	}
+	for _, d := range producers {
+		if d.code == p[0] {
+			return Producer(d.id)
+		}
+	}
+	return ProducerUnknown
+}
+
 // splits urn into id and prefix
 func (u URN) split() (int, string) {
 	if u == "" {
@@ -236,6 +255,14 @@ func (u URN) split() (int, string) {
 	prefix := p[0] + ":" + p[1]
 
 	return id, prefix
+}
+
+func (u URN) IsTournament() bool {
+	p := strings.Split(string(u), ":")
+	if len(p) != 3 {
+		return false
+	}
+	return p[1] == "season" || p[1] == "tournament"
 }
 
 func toLineID(specifiers string) int {
@@ -332,6 +359,7 @@ const (
 	MessageTypeMarkets
 	MessageTypePlayer
 	MessageTypeCompetitor
+	MessageTypeTournament
 )
 
 // system message types
@@ -357,6 +385,7 @@ var messageTypes = []MessageType{
 	MessageTypeMarkets,
 	MessageTypePlayer,
 	MessageTypeCompetitor,
+	MessageTypeTournament,
 
 	MessageTypeAlive,
 	MessageTypeSnapshotComplete,
@@ -379,6 +408,7 @@ var messageTypeNames = []string{
 	"market",
 	"player",
 	"competitor",
+	"tournament",
 
 	"alive",
 	"snapshot_complete",

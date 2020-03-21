@@ -1,6 +1,7 @@
 package pipe
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 
 type fixtureAPI interface {
 	Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error)
+	Tournament(lang uof.Lang, eventURN uof.URN) (*uof.FixtureTournament, error)
 	Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error)
 }
 
@@ -132,12 +134,22 @@ func (f *fixture) getFixture(eventURN uof.URN, receivedAt int) {
 			if f.em.fresh(key) {
 				return
 			}
-			x, err := f.api.Fixture(lang, eventURN)
-			if err != nil {
-				f.errc <- err
-				return
+			if eventURN.IsTournament() {
+				fmt.Println(">>> get tournament", eventURN)
+				x, err := f.api.Tournament(lang, eventURN)
+				if err != nil {
+					f.errc <- err
+					return
+				}
+				f.out <- uof.NewTournamentMessage(lang, *x, receivedAt)
+			} else {
+				x, err := f.api.Fixture(lang, eventURN)
+				if err != nil {
+					f.errc <- err
+					return
+				}
+				f.out <- uof.NewFixtureMessage(lang, *x, receivedAt)
 			}
-			f.out <- uof.NewFixtureMessage(lang, *x, receivedAt)
 			f.em.insert(key)
 		}(lang)
 	}

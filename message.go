@@ -42,6 +42,7 @@ type Body struct {
 	Markets    MarketDescriptions `json:"markets,omitempty"`
 	Player     *Player            `json:"player,omitempty"`
 	Competitor *CompetitorPlayer  `json:"competitor,omitempty"`
+	Tournament *FixtureTournament `json:"tournament,omitempty"`
 	// sdk status message types
 	Connection *Connection     `json:"connection,omitempty"`
 	Producers  ProducersChange `json:"producerChange,omitempty"`
@@ -303,11 +304,26 @@ func NewFixtureMessage(lang Lang, x Fixture, requestedAt int) *Message {
 			EventURN:    x.URN,
 			EventID:     x.ID,
 			Lang:        lang,
+			Producer:    x.URN.Producer(),
 			ReceivedAt:  uniqTimestamp(),
 			RequestedAt: requestedAt,
 		},
-		Raw:  x.Raw,
 		Body: Body{Fixture: &x},
+	}
+}
+
+func NewTournamentMessage(lang Lang, x FixtureTournament, requestedAt int) *Message {
+	return &Message{
+		Header: Header{
+			Type:        MessageTypeTournament,
+			EventURN:    x.URN,
+			EventID:     x.ID,
+			Lang:        lang,
+			Producer:    x.URN.Producer(),
+			ReceivedAt:  uniqTimestamp(),
+			RequestedAt: requestedAt,
+		},
+		Body: Body{Tournament: &x},
 	}
 }
 

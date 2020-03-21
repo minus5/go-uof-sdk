@@ -94,6 +94,11 @@ func testFixture(t *testing.T, a *API) {
 	f, err := a.Fixture(lang, "sr:match:8696826")
 	assert.Nil(t, err)
 	assert.Equal(t, "IK Oddevold", f.Home.Name)
+
+	tf, err := a.Tournament(lang, "vto:season:1856707")
+	assert.Nil(t, err)
+	assert.NotNil(t, tf)
+	//pp(tf)
 }
 
 func testPlayer(t *testing.T, a *API) {
@@ -117,4 +122,13 @@ func testFixtures(t *testing.T, a *API) {
 			panic(err)
 		}
 	}()
+}
+
+// PP prety print object
+func pp(o interface{}) {
+	buf, err := json.MarshalIndent(o, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s\n", buf)
 }

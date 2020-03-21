@@ -20,6 +20,9 @@ func (m *fixtureAPIMock) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture,
 	m.eventURN = eventURN
 	return &uof.Fixture{}, nil
 }
+func (m *fixtureAPIMock) Tournament(lang uof.Lang, eventURN uof.URN) (*uof.FixtureTournament, error) {
+	return nil, nil
+}
 func (m *fixtureAPIMock) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error) {
 	m.preloadTo = to
 	out := make(chan uof.Fixture)

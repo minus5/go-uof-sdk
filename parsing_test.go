@@ -346,6 +346,24 @@ func TestFixutreWithPlayers(t *testing.T) {
 	assert.Equal(t, "Goldhoff, George", msg.Fixture.Competitors[1].Players[0].Name)
 }
 
+func TestFixtureTournament(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/fixture-3.xml")
+	assert.Nil(t, err)
+
+	ft := FixtureTournament{}
+	err = xml.Unmarshal(buf, &ft)
+	assert.Nil(t, err)
+
+	assert.Equal(t, 13933, ft.ID)
+	assert.Equal(t, "vf:tournament:13933", string(ft.URN))
+	assert.Equal(t, 1111, ft.Category.ID)
+	assert.Equal(t, 13933, ft.Tournament.ID)
+	assert.Len(t, ft.Groups, 6)
+	assert.Len(t, ft.Groups[0].Competitors, 4)
+	assert.Equal(t, "Jamaica", ft.Groups[0].Competitors[2].Name)
+	pp(ft)
+}
+
 func TestBetSettlementToResult(t *testing.T) {
 	data := []struct {
 		result         int

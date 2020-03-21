@@ -70,6 +70,8 @@ func filename(m *uof.Message) string {
 			return fmt.Sprintf("/state/%s/fixtures/%s", m.Lang, m.EventURN)
 		case uof.MessageTypeCompetitor:
 			return fmt.Sprintf("/state/%s/competitors/%08d/%13d", m.Lang, m.Competitor.ID, m.RequestedAt)
+		case uof.MessageTypeTournament:
+			return fmt.Sprintf("/state/%s/tournaments/%s", m.Lang, m.EventURN)
 		}
 	case uof.MessageKindSystem:
 		return fmt.Sprintf("log/system/%13d-%s/%13d", m.ReceivedAt, m.Type, m.ReceivedAt)

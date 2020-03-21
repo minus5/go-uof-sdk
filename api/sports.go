@@ -34,6 +34,11 @@ func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
 	return &fr.Fixture, a.getAs(&fr, pathFixture, &params{Lang: lang, EventURN: eventURN})
 }
 
+func (a *API) Tournament(lang uof.Lang, eventURN uof.URN) (*uof.FixtureTournament, error) {
+	var ft uof.FixtureTournament
+	return &ft, a.getAs(&ft, pathFixture, &params{Lang: lang, EventURN: eventURN})
+}
+
 func (a *API) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
 	var pr playerRsp
 	return &pr.Player, a.getAs(&pr, pathPlayer, &params{Lang: lang, PlayerID: playerID})
