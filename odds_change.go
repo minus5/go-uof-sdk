@@ -206,6 +206,15 @@ func (o *OddsChange) EachPlayer(handler func(int)) {
 				handler(id)
 			}
 		}
+		// fetch player if provided as market specifier
+		// <market id="888" specifiers="player=sr:player:575270">
+		// <market id="891" specifiers="goalnr=1|player=sr:player:833167">
+		if playerID, ok := m.Specifiers["player"]; ok {
+			id, err := strconv.Atoi(playerID)
+			if err == nil {
+				handler(id)
+			}
+		}
 	}
 }
 

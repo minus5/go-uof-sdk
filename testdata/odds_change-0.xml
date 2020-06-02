@@ -81,5 +81,17 @@
             <outcome id="sr:point_range:76+:1135" odds="6.0" probabilities="0.138334557" active="1"/>
             <outcome id="sr:point_range:76+:1136" odds="6.25" probabilities="0.1324283589" active="1"/>
         </market>
+        <market favourite="1" status="1" id="888" specifiers="player=sr:player:361790">
+            <outcome id="1894" odds="12.0" probabilities="0.0516717989" active="1"/>
+            <outcome id="1895" odds="11.75" probabilities="0.0528440917" active="1"/>
+            <outcome id="1896" odds="5.25" probabilities="0.1211369617" active="1"/>
+            <outcome id="1897" odds="1.01" active="1"/>
+        </market>
+        <market favourite="1" status="1" id="891" specifiers="goalnr=1|player=sr:player:122702">
+            <outcome id="1894" odds="6.0" active="1"/>
+            <outcome id="1895" odds="40.0" active="1"/>
+            <outcome id="1896" odds="100.0" active="1"/>
+            <outcome id="1897" odds="1.01" active="1"/>
+        </market>
     </odds>
 </odds_change>
