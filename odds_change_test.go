@@ -41,7 +41,7 @@ func TestOddsChange(t *testing.T) {
 }
 
 func testOddsChangeUnmarshal(t *testing.T, oc *OddsChange) {
-	assert.Len(t, oc.Markets, 7)
+	assert.Len(t, oc.Markets, 9)
 	assert.Equal(t, 123, oc.EventID)
 	assert.Equal(t, 2, int(oc.Producer))
 	assert.Equal(t, 1234, int(oc.Timestamp))
@@ -98,13 +98,29 @@ func testOddsChangeURN(t *testing.T, oc *OddsChange) {
 }
 
 func testOddsChangeSpecifiers(t *testing.T, oc *OddsChange) {
+	// <market id="47" specifiers="score=41.5" favourite="1" status="1">
 	s := oc.Markets[0].Specifiers
 	assert.Equal(t, 1, len(s))
 	assert.Equal(t, "41.5", s["score"])
 
+	// <market id="123" specifiers="set=2|game=3|point=1" extended_specifiers="pero=2" status="-1">
 	s = oc.Markets[3].Specifiers
 	assert.Equal(t, 4, len(s))
 	assert.Equal(t, "2", s["pero"])
+	assert.Equal(t, "2", s["set"])
+	assert.Equal(t, "3", s["game"])
+	assert.Equal(t, "1", s["point"])
+
+	// <market favourite="1" status="1" id="888" specifiers="player=sr:player:361790">
+	s = oc.Markets[7].Specifiers
+	assert.Equal(t, 1, len(s))
+	assert.Equal(t, "361790", s["player"])
+
+	// <market favourite="1" status="1" id="891" specifiers="goalnr=1|player=sr:player:122702">
+	s = oc.Markets[8].Specifiers
+	assert.Equal(t, 2, len(s))
+	assert.Equal(t, "122702", s["player"])
+	assert.Equal(t, "1", s["goalnr"])
 }
 
 func TestSpecifiersParsing(t *testing.T) {
@@ -140,10 +156,12 @@ func TestSpecifiersParsing(t *testing.T) {
 		},
 
 		{
-			// ne pronalazim ispravan primjer kako bi specifier trebao izgledat za player=?, pa mi nije jasno koji prefix se trima
-			// odds_change.go:174
-			specifiers:    "player=Jack_Lee|from=5|to=10",
-			specifiersMap: map[string]string{"from": "5", "to": "10", "player": "Jack_Lee"},
+			specifiers:    "player=sr:player:10000|from=5|to=10",
+			specifiersMap: map[string]string{"from": "5", "to": "10", "player": "10000"},
+		},
+		{
+			specifiers:    "goalnr=1|player=sr:player:122702",
+			specifiersMap: map[string]string{"goalnr": "1", "player": "122702"},
 		},
 	}
 	for i, d := range data {
@@ -164,8 +182,12 @@ func testEachPlayer(t *testing.T, oc *OddsChange) {
 		playerIDs[id] = struct{}{}
 	})
 	assert.Len(t, playerIDs, 41)
+	// checks playerIDs from outcomes
 	assert.Contains(t, playerIDs, 1234)
 	assert.Contains(t, playerIDs, 1104383)
+	// check playerIDs from marker specifier (marketIDs 888 & 891)
+	assert.Contains(t, playerIDs, 361790)
+	assert.Contains(t, playerIDs, 122702)
 }
 
 func testEachVariantMarket(t *testing.T, oc *OddsChange) {
