@@ -33,7 +33,7 @@ func FileStore(root string) ConsumerStage {
 	return func(in <-chan *uof.Message) error {
 		for m := range in {
 			fn := root + "/" + filename(m)
-			if err := save(fn, m.Marshal()); err != nil {
+			if err := save(fn, m.MarshalPretty()); err != nil {
 				return err
 			}
 		}
@@ -45,10 +45,14 @@ func FileStore(root string) ConsumerStage {
 func filename(m *uof.Message) string {
 	switch m.Type.Kind() {
 	case uof.MessageKindEvent:
-		if m.Type == uof.MessageTypeOddsChange {
-			return fmt.Sprintf("/log/events/%d/%13d", m.EventID, m.ReceivedAt)
+		producer := m.Producer.Code()
+		if m.Producer.Sports() {
+			producer = "sport"
 		}
-		return fmt.Sprintf("/log/events/%d/%13d-%s", m.EventID, m.ReceivedAt, m.Type)
+		if m.Type == uof.MessageTypeOddsChange {
+			return fmt.Sprintf("/log/events/%s/%s/%13d", producer, m.EventURN, m.ReceivedAt)
+		}
+		return fmt.Sprintf("/log/events/%s/%s/%13d-%s", producer, m.EventURN, m.ReceivedAt, m.Type)
 	case uof.MessageKindLexicon:
 		switch m.Type {
 		case uof.MessageTypePlayer:
@@ -60,7 +64,14 @@ func filename(m *uof.Message) string {
 			s := m.Markets[0]
 			return fmt.Sprintf("/state/%s/markets/%08d-%08d/%13d", m.Lang, s.ID, s.VariantID, m.RequestedAt)
 		case uof.MessageTypeFixture:
-			return fmt.Sprintf("/state/%s/fixtures/%08d/%13d", m.Lang, m.EventID, m.RequestedAt)
+			if m.EventURN == "" {
+				return fmt.Sprintf("/state/%s/fixtures/%08d/%13d", m.Lang, m.EventID, m.RequestedAt)
+			}
+			return fmt.Sprintf("/state/%s/fixtures/%s", m.Lang, m.EventURN)
+		case uof.MessageTypeCompetitor:
+			return fmt.Sprintf("/state/%s/competitors/%08d/%13d", m.Lang, m.Competitor.ID, m.RequestedAt)
+		case uof.MessageTypeTournament:
+			return fmt.Sprintf("/state/%s/tournaments/%s", m.Lang, m.EventURN)
 		}
 	case uof.MessageKindSystem:
 		return fmt.Sprintf("log/system/%13d-%s/%13d", m.ReceivedAt, m.Type, m.ReceivedAt)

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -93,10 +92,13 @@ func testMarketVariant(t *testing.T, a *API) {
 func testFixture(t *testing.T, a *API) {
 	lang := uof.LangEN
 	f, err := a.Fixture(lang, "sr:match:8696826")
-	assert.NoError(t, err)
-	assert.NotEqual(t, 0, len(f))
-	assert.NotEqual(t, -1, bytes.Index(f, []byte("sr:match:8696826")))
-	assert.NotEqual(t, -1, bytes.Index(f, []byte("IK Oddevold")))
+	assert.Nil(t, err)
+	assert.Equal(t, "IK Oddevold", f.Home.Name)
+
+	tf, err := a.Tournament(lang, "vto:season:1856707")
+	assert.Nil(t, err)
+	assert.NotNil(t, tf)
+	//pp(tf)
 }
 
 func testPlayer(t *testing.T, a *API) {
@@ -120,4 +122,13 @@ func testFixtures(t *testing.T, a *API) {
 			panic(err)
 		}
 	}()
+}
+
+// PP prety print object
+func pp(o interface{}) {
+	buf, err := json.MarshalIndent(o, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s\n", buf)
 }

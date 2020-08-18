@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-
 	"context"
 	"encoding/json"
 	"fmt"
@@ -43,7 +42,7 @@ func init() {
 }
 
 func debugHTTP() {
-	if err := http.ListenAndServe("localhost:8124", nil); err != nil {
+	if err := http.ListenAndServe("localhost:8125", nil); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -63,20 +62,18 @@ func exitSignal() context.Context {
 func main() {
 	go debugHTTP()
 
-	preloadTo := time.Now().Add(24 * time.Hour)
-
+	var preloadTo time.Time                         // zero
 	timestamp := uof.CurrentTimestamp() - 5*60*1000 // -5 minutes
 	var pc uof.ProducersChange
-	pc.Add(uof.ProducerPrematch, timestamp)
-	pc.Add(uof.ProducerLiveOdds, timestamp)
+	pc.AddAll(uof.VirtualProducers(), timestamp)
 
 	err := sdk.Run(exitSignal(),
 		sdk.Credentials(bookmakerID, token),
 		sdk.Staging(),
+		sdk.BindVirtuals(),
 		sdk.Recovery(pc),
-		sdk.BindSports(),
 		sdk.Fixtures(preloadTo),
-		sdk.Languages(uof.Languages("en,de,hr")),
+		sdk.Languages(uof.Languages("en,hr")),
 		sdk.BufferedConsumer(pipe.FileStore("./tmp"), 1024),
 		sdk.Consumer(logMessages),
 	)
@@ -98,7 +95,7 @@ func logMessage(m *uof.Message) {
 	case uof.MessageTypeConnection:
 		fmt.Printf("%-25s status: %s\n", m.Type, m.Connection.Status)
 	case uof.MessageTypeFixture:
-		fmt.Printf("%-25s lang: %s, urn: %s\n", m.Type, m.Lang, m.Fixture.URN)
+		fmt.Printf("%-25s lang: %s, urn: %s raw: %d\n", m.Type, m.Lang, m.Fixture.URN, len(m.Raw))
 	case uof.MessageTypeMarkets:
 		fmt.Printf("%-25s lang: %s, count: %d\n", m.Type, m.Lang, len(m.Markets))
 	case uof.MessageTypeAlive:

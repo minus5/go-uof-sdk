@@ -12,6 +12,7 @@ const (
 	pathMarketVariant = "/v1/descriptions/{{.Lang}}/markets/{{.MarketID}}/variants/{{.Variant}}?include_mappings={{.IncludeMappings}}"
 	pathFixture       = "/v1/sports/{{.Lang}}/sport_events/{{.EventURN}}/fixture.xml"
 	pathPlayer        = "/v1/sports/{{.Lang}}/players/sr:player:{{.PlayerID}}/profile.xml"
+	pathCompetitor    = "/v1/sports/{{.Lang}}/competitors/sr:competitor:{{.PlayerID}}/profile.xml"
 	events            = "/v1/sports/{{.Lang}}/schedules/pre/schedule.xml?start={{.Start}}&limit={{.Limit}}"
 	liveEvents        = "/v1/sports/{{.Lang}}/schedules/live/schedule.xml"
 )
@@ -28,17 +29,24 @@ func (a *API) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.Ma
 }
 
 // Fixture lists the fixture for a specified sport event
-func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) ([]byte, error) {
-	buf, err := a.get(pathFixture, &params{Lang: lang, EventURN: eventURN})
-	if err != nil {
-		return nil, err
-	}
-	return buf, err
+func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
+	var fr fixtureRsp
+	return &fr.Fixture, a.getAs(&fr, pathFixture, &params{Lang: lang, EventURN: eventURN})
+}
+
+func (a *API) Tournament(lang uof.Lang, eventURN uof.URN) (*uof.FixtureTournament, error) {
+	var ft uof.FixtureTournament
+	return &ft, a.getAs(&ft, pathFixture, &params{Lang: lang, EventURN: eventURN})
 }
 
 func (a *API) Player(lang uof.Lang, playerID int) (*uof.Player, error) {
 	var pr playerRsp
 	return &pr.Player, a.getAs(&pr, pathPlayer, &params{Lang: lang, PlayerID: playerID})
+}
+
+func (a *API) Competitor(lang uof.Lang, playerID int) (*uof.CompetitorPlayer, error) {
+	var cr competitorRsp
+	return &cr.Competitor, a.getAs(&cr, pathCompetitor, &params{Lang: lang, PlayerID: playerID})
 }
 
 type marketsRsp struct {
@@ -51,6 +59,11 @@ type marketsRsp struct {
 type playerRsp struct {
 	Player      uof.Player `xml:"player" json:"player"`
 	GeneratedAt time.Time  `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
+}
+
+type competitorRsp struct {
+	Competitor  uof.CompetitorPlayer `xml:"competitor" json:"competitor"`
+	GeneratedAt time.Time            `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
 }
 
 type fixtureRsp struct {

@@ -333,12 +333,6 @@ func TestFixture(t *testing.T) {
 	msgAPI, err := NewAPIMessage(LangEN, MessageTypeFixture, buf)
 	assert.NoError(t, err)
 	assert.Equal(t, f, *msgAPI.Fixture)
-
-	requestedAt := int(time.Now().UnixNano() / 1e6)
-	msgFormBuf, err := NewFixtureMessageFromBuf(LangEN, buf, requestedAt)
-	assert.NotNil(t, msgFormBuf)
-	assert.NotEqual(t, 0, len(msgFormBuf.Raw))
-	assert.Len(t, msgFormBuf.Raw, 5283)
 }
 
 func TestFixutreWithPlayers(t *testing.T) {
@@ -350,6 +344,24 @@ func TestFixutreWithPlayers(t *testing.T) {
 	assert.Len(t, msg.Fixture.Competitors[0].Players, 2)
 	assert.Len(t, msg.Fixture.Competitors[1].Players, 2)
 	assert.Equal(t, "Goldhoff, George", msg.Fixture.Competitors[1].Players[0].Name)
+}
+
+func TestFixtureTournament(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/fixture-3.xml")
+	assert.Nil(t, err)
+
+	ft := FixtureTournament{}
+	err = xml.Unmarshal(buf, &ft)
+	assert.Nil(t, err)
+
+	assert.Equal(t, 13933, ft.ID)
+	assert.Equal(t, "vf:tournament:13933", string(ft.URN))
+	assert.Equal(t, 1111, ft.Category.ID)
+	assert.Equal(t, 13933, ft.Tournament.ID)
+	assert.Len(t, ft.Groups, 6)
+	assert.Len(t, ft.Groups[0].Competitors, 4)
+	assert.Equal(t, "Jamaica", ft.Groups[0].Competitors[2].Name)
+	pp(ft)
 }
 
 func TestBetSettlementToResult(t *testing.T) {

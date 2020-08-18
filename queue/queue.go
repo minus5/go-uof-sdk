@@ -20,35 +20,49 @@ const (
 	productionServer = "mq.betradar.com:5671"
 	queueExchange    = "unifiedfeed"
 	bindingKeyAll    = "#"
+	// Unless you are binding to all messages (“#”), you will typically bind to
+	// at least two routing key patterns (e.g. “*.*.live.#” and “-.-.-.#”)
+	// because you are typically always interested in receiving the system
+	// messages that will come with a routing key starting with -.-.-
+	bindingKeyVirtuals = "*.virt.#"
+	bindingKeyPrematch = "*.pre.#"
+	bindingKeyLive     = "*.*.live.#"
+	bindingKeySystem   = "-.-.-.#"
+)
+
+const (
+	BindAll int8 = iota
+	BindSports
+	BindVirtuals
 )
 
 // Dial connects to the queue chosen by environment
-func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (*Connection, error) {
+func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string, bind int8) (*Connection, error) {
 	switch env {
 	case uof.Replay:
-		return DialReplay(ctx, bookmakerID, token)
+		return DialReplay(ctx, bookmakerID, token, bind)
 	case uof.Staging:
-		return DialStaging(ctx, bookmakerID, token)
+		return DialStaging(ctx, bookmakerID, token, bind)
 	case uof.Production:
-		return DialProduction(ctx, bookmakerID, token)
+		return DialProduction(ctx, bookmakerID, token, bind)
 	default:
 		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
 	}
 }
 
 // Dial connects to the production queue
-func DialProduction(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, productionServer, bookmakerID, token)
+func DialProduction(ctx context.Context, bookmakerID, token string, bind int8) (*Connection, error) {
+	return dial(ctx, productionServer, bookmakerID, token, bind)
 }
 
 // DialStaging connects to the staging queue
-func DialStaging(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, stagingServer, bookmakerID, token)
+func DialStaging(ctx context.Context, bookmakerID, token string, bind int8) (*Connection, error) {
+	return dial(ctx, stagingServer, bookmakerID, token, bind)
 }
 
 // DialReplay connects to the replay server
-func DialReplay(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, replayServer, bookmakerID, token)
+func DialReplay(ctx context.Context, bookmakerID, token string, bind int8) (*Connection, error) {
+	return dial(ctx, replayServer, bookmakerID, token, bind)
 }
 
 type Connection struct {
@@ -90,8 +104,18 @@ func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
 	<-errsDone
 }
 
-func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, error) {
+func dial(ctx context.Context, server, bookmakerID, token string, bind int8) (*Connection, error) {
 	addr := fmt.Sprintf("amqps://%s:@%s//unifiedfeed/%s", token, server, bookmakerID)
+
+	var bindingKeys []string
+	switch bind {
+	case BindVirtuals:
+		bindingKeys = []string{bindingKeyVirtuals, bindingKeySystem}
+	case BindSports:
+		bindingKeys = []string{bindingKeyPrematch, bindingKeyLive, bindingKeySystem}
+	default:
+		bindingKeys = []string{bindingKeyAll}
+	}
 
 	tls := &tls.Config{
 		ServerName:         server,
@@ -120,15 +144,17 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		return nil, uof.Notice("conn.QueueDeclare", err)
 	}
 
-	err = chnl.QueueBind(
-		qee.Name,      // name of the queue
-		bindingKeyAll, // bindingKey
-		queueExchange, // sourceExchange
-		false,         // noWait
-		nil,           // arguments
-	)
-	if err != nil {
-		return nil, uof.Notice("conn.QueueBind", err)
+	for _, bk := range bindingKeys {
+		err = chnl.QueueBind(
+			qee.Name,      // name of the queue
+			bk,            // bindingKey
+			queueExchange, // sourceExchange
+			false,         // noWait
+			nil,           // arguments
+		)
+		if err != nil {
+			return nil, uof.Notice("conn.QueueBind", err)
+		}
 	}
 
 	consumerTag := ""
@@ -152,7 +178,7 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		msgs: msgs,
 		errs: errs,
 		reDial: func() (*Connection, error) {
-			return dial(ctx, server, bookmakerID, token)
+			return dial(ctx, server, bookmakerID, token, bind)
 		},
 	}
 

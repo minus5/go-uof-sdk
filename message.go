@@ -38,9 +38,11 @@ type Body struct {
 	BetSettlement         *BetSettlement         `json:"betSettlement,omitempty"`
 	BetStop               *BetStop               `json:"betStop,omitempty"`
 	// api response message types
-	Fixture *Fixture           `json:"fixture,omitempty"`
-	Markets MarketDescriptions `json:"markets,omitempty"`
-	Player  *Player            `json:"player,omitempty"`
+	Fixture    *Fixture           `json:"fixture,omitempty"`
+	Markets    MarketDescriptions `json:"markets,omitempty"`
+	Player     *Player            `json:"player,omitempty"`
+	Competitor *CompetitorPlayer  `json:"competitor,omitempty"`
+	Tournament *FixtureTournament `json:"tournament,omitempty"`
 	// sdk status message types
 	Connection *Connection     `json:"connection,omitempty"`
 	Producers  ProducersChange `json:"producerChange,omitempty"`
@@ -255,6 +257,18 @@ func NewPlayerMessage(lang Lang, player *Player, requestedAt int) *Message {
 	}
 }
 
+func NewCompetitorMessage(lang Lang, competitor *CompetitorPlayer, requestedAt int) *Message {
+	return &Message{
+		Header: Header{
+			Type:        MessageTypeCompetitor,
+			Lang:        lang,
+			ReceivedAt:  uniqTimestamp(),
+			RequestedAt: requestedAt,
+		},
+		Body: Body{Competitor: competitor},
+	}
+}
+
 func NewConnnectionMessage(status ConnectionStatus) *Message {
 	ts := uniqTimestamp()
 	return &Message{
@@ -290,6 +304,7 @@ func NewFixtureMessage(lang Lang, x Fixture, requestedAt int) *Message {
 			EventURN:    x.URN,
 			EventID:     x.ID,
 			Lang:        lang,
+			Producer:    x.URN.Producer(),
 			ReceivedAt:  uniqTimestamp(),
 			RequestedAt: requestedAt,
 		},
@@ -297,26 +312,19 @@ func NewFixtureMessage(lang Lang, x Fixture, requestedAt int) *Message {
 	}
 }
 
-// NewFixtureMessageFromBuf creates uof.Message from fixture API response XML ([]byte)
-// message is created from raw XML response in order to save it in the message
-func NewFixtureMessageFromBuf(lang Lang, buf []byte, requestedAt int) (*Message, error) {
-	m := &Message{
+func NewTournamentMessage(lang Lang, x FixtureTournament, requestedAt int) *Message {
+	return &Message{
 		Header: Header{
-			Type:        MessageTypeFixture,
+			Type:        MessageTypeTournament,
+			EventURN:    x.URN,
+			EventID:     x.ID,
 			Lang:        lang,
+			Producer:    x.URN.Producer(),
 			ReceivedAt:  uniqTimestamp(),
 			RequestedAt: requestedAt,
 		},
-		Raw: buf, // keep raw
+		Body: Body{Tournament: &x},
 	}
-	if err := m.unpack(); err != nil {
-		return nil, err
-	}
-	if m.Fixture != nil { // if buf == nil
-		m.EventURN = m.Fixture.URN
-		m.EventID = m.Fixture.ID
-	}
-	return m, nil
 }
 
 func (m *Message) NewFixtureMessage(lang Lang, f Fixture) *Message {
@@ -339,6 +347,11 @@ func (m Message) Marshal() []byte {
 	buf, _ := json.Marshal(m.Header)
 	buf = append(buf, separator)
 	return append(buf, m.Raw...)
+}
+
+func (m Message) MarshalPretty() []byte {
+	buf, _ := json.Marshal(m)
+	return buf
 }
 
 func (m *Message) Unmarshal(buf []byte) error {

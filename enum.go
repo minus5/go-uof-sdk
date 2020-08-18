@@ -10,7 +10,8 @@ import (
 type Producer int8
 
 const (
-	ProducerUnknown  Producer = 0
+	ProducerUnknown  Producer = -1
+	ProducerDefault  Producer = 0
 	ProducerLiveOdds Producer = 1
 	ProducerPrematch Producer = 3
 )
@@ -23,6 +24,7 @@ var producers = []struct {
 	scope          string
 	recoveryWindow int // in minutes
 }{
+	{id: 0, name: "SR", description: "Sports", code: "sr"},
 	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 4320},
 	{id: 3, name: "Ctrl", description: "Betradar Ctrl", code: "pre", scope: "prematch", recoveryWindow: 4320},
 	{id: 4, name: "BetPal", description: "BetPal", code: "betpal", scope: "live", recoveryWindow: 4320},
@@ -68,6 +70,15 @@ func (p Producer) Code() string {
 	return InvalidName
 }
 
+func (p Producer) Scope() string {
+	for _, d := range producers {
+		if p == d.id {
+			return d.scope
+		}
+	}
+	return InvalidName
+}
+
 // RecoveryWindow in milliseconds
 func (p Producer) RecoveryWindow() int {
 	for _, d := range producers {
@@ -84,10 +95,30 @@ func (p Producer) Prematch() bool {
 	return p == 3
 }
 
+func (p Producer) Sports() bool {
+	return p == ProducerLiveOdds || p == ProducerPrematch
+}
+
+func (p Producer) Virtuals() bool {
+	return p.Scope() == "virtual"
+}
+
+func VirtualProducers() []Producer {
+	var v []Producer
+	for _, d := range producers {
+		p := d.id
+		if p.Virtuals() {
+			v = append(v, p)
+		}
+	}
+	return v
+}
+
 const (
-	InvalidName = "?"
-	srMatch     = "sr:match:"
-	srPlayer    = "sr:player:"
+	InvalidName  = "?"
+	srMatch      = "sr:match:"
+	srPlayer     = "sr:player:"
+	srCompetitor = "sr:competitor:"
 )
 
 type URN string
@@ -103,48 +134,6 @@ func (u URN) ID() int {
 	i, _ := strconv.ParseUint(p[2], 10, 64)
 	return int(i)
 }
-
-/*
-const (
-	URNTypeMatch int8 = iota
-	URNTypeStage
-	URNTypeTournament
-	URNTypeSimpleTournament
-	URNTypeSeason
-	URNTypeDraw
-	URNTypeLottery
-	URNTypePlayer
-	URNTypeUnknown = int8(-1)
-)
-func (u URN) Type() int8 {
-	if u == "" {
-		return URNTypeUnknown
-	}
-	p := strings.Split(string(u), ":")
-	if len(p) != 3 {
-		return URNTypeUnknown
-	}
-	switch p[1] {
-	case "match":
-		return URNTypeMatch
-	case "stage":
-		return URNTypeStage
-	case "tournament":
-		return URNTypeTournament
-	case "simple_tournament":
-		return URNTypeSimpleTournament
-	case "season":
-		return URNTypeSeason
-	case "draw":
-		return URNTypeDraw
-	case "lottery":
-		return URNTypeLottery
-	case "player":
-		return URNTypePlayer
-	}
-	return URNTypeUnknown
-}
-*/
 
 func (u URN) Empty() bool {
 	return string(u) == ""
@@ -175,11 +164,15 @@ const NoURN = URN("")
 //            http://sdk.sportradar.com/content/unifiedfeedsdk/net/doc/html/e1f73019-73cd-c9f8-0d58-7fe25800abf2.htm
 // List of currently existing event types is taken from the combo box in the
 // integration control page. From method "Fixture for a specified sport event".
+// !!! Refactored to Producer + EventID in producer.
 //nolint:gocyclo //accepting complexity of 23
 func (u URN) EventID() int {
 	id, prefix := u.split()
 	if id == 0 {
 		return 0
+	}
+	if u.Producer() != ProducerUnknown {
+		return id
 	}
 
 	suffixID := func(suffix int8) int {
@@ -232,6 +225,19 @@ func (u URN) EventID() int {
 	}
 }
 
+func (u URN) Producer() Producer {
+	p := strings.Split(string(u), ":")
+	if len(p) != 3 {
+		return ProducerUnknown
+	}
+	for _, d := range producers {
+		if d.code == p[0] {
+			return Producer(d.id)
+		}
+	}
+	return ProducerUnknown
+}
+
 // splits urn into id and prefix
 func (u URN) split() (int, string) {
 	if u == "" {
@@ -249,6 +255,14 @@ func (u URN) split() (int, string) {
 	prefix := p[0] + ":" + p[1]
 
 	return id, prefix
+}
+
+func (u URN) IsTournament() bool {
+	p := strings.Split(string(u), ":")
+	if len(p) != 3 {
+		return false
+	}
+	return p[1] == "season" || p[1] == "tournament"
 }
 
 func toLineID(specifiers string) int {
@@ -344,6 +358,8 @@ const (
 	MessageTypeFixture MessageType = iota + 32
 	MessageTypeMarkets
 	MessageTypePlayer
+	MessageTypeCompetitor
+	MessageTypeTournament
 )
 
 // system message types
@@ -368,6 +384,8 @@ var messageTypes = []MessageType{
 	MessageTypeFixture,
 	MessageTypeMarkets,
 	MessageTypePlayer,
+	MessageTypeCompetitor,
+	MessageTypeTournament,
 
 	MessageTypeAlive,
 	MessageTypeSnapshotComplete,
@@ -389,6 +407,8 @@ var messageTypeNames = []string{
 	"fixture",
 	"market",
 	"player",
+	"competitor",
+	"tournament",
 
 	"alive",
 	"snapshot_complete",

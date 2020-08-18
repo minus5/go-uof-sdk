@@ -8,7 +8,8 @@ import (
 )
 
 type fixtureAPI interface {
-	Fixture(lang uof.Lang, eventURN uof.URN) ([]byte, error)
+	Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error)
+	Tournament(lang uof.Lang, eventURN uof.URN) (*uof.FixtureTournament, error)
 	Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error)
 }
 
@@ -61,6 +62,9 @@ func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 }
 
 func (f *fixture) eventURN(m *uof.Message) uof.URN {
+	if m.Producer.Virtuals() && m.Is(uof.MessageTypeOddsChange) {
+		return m.EventURN
+	}
 	if m.Type != uof.MessageTypeFixtureChange || m.FixtureChange == nil {
 		return uof.NoURN
 	}
@@ -129,17 +133,21 @@ func (f *fixture) getFixture(eventURN uof.URN, receivedAt int, isPreload bool) {
 			if isPreload && f.em.fresh(key) {
 				return
 			}
-			buf, err := f.api.Fixture(lang, eventURN)
-			if err != nil {
-				f.errc <- err
-				return
+			if eventURN.IsTournament() {
+				x, err := f.api.Tournament(lang, eventURN)
+				if err != nil {
+					f.errc <- err
+					return
+				}
+				f.out <- uof.NewTournamentMessage(lang, *x, receivedAt)
+			} else {
+				x, err := f.api.Fixture(lang, eventURN)
+				if err != nil {
+					f.errc <- err
+					return
+				}
+				f.out <- uof.NewFixtureMessage(lang, *x, receivedAt)
 			}
-			m, err := uof.NewFixtureMessageFromBuf(lang, buf, receivedAt)
-			if err != nil {
-				f.errc <- err
-				return
-			}
-			f.out <- m
 			f.em.insert(key)
 		}(lang)
 	}

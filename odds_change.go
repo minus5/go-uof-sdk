@@ -2,6 +2,7 @@ package uof
 
 import (
 	"encoding/xml"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -70,6 +71,7 @@ type MarketMetadata struct {
 type Outcome struct {
 	ID            int      `json:"id"`
 	PlayerID      int      `json:"playerID"`
+	Competitors   []int    `json:"competitors"`
 	Odds          *float64 `xml:"odds,attr,omitempty" json:"odds,omitempty"`
 	Probabilities *float64 `xml:"probabilities,attr,omitempty" json:"probabilities,omitempty"`
 	Active        *bool    `xml:"active,attr,omitempty" json:"active,omitempty"`
@@ -145,6 +147,7 @@ func (t *Outcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 	t.ID = toOutcomeID(overlay.ID)
 	t.PlayerID = toPlayerID(overlay.ID)
+	t.Competitors = toComptitors(overlay.ID)
 	return nil
 }
 
@@ -186,6 +189,23 @@ func toPlayerID(id string) int {
 	return 0
 }
 
+func toComptitors(id string) []int {
+	if !strings.Contains(id, srCompetitor) {
+		return nil
+	}
+	var competitors []int
+	for _, p := range strings.Split(id, ",") {
+		v := strings.TrimPrefix(p, srCompetitor)
+		if k, err := strconv.Atoi(v); err == nil {
+			competitors = append(competitors, k)
+		}
+	}
+	if len(competitors) == 0 {
+		return nil
+	}
+	return competitors
+}
+
 func toOutcomeID(id string) int {
 	if strings.HasPrefix(id, srPlayer) {
 		return toPlayerID(id)
@@ -216,6 +236,39 @@ func (o *OddsChange) EachPlayer(handler func(int)) {
 			}
 		}
 	}
+}
+
+func (o *OddsChange) EachCompetitor(handler func(int)) {
+	if o == nil {
+		return
+	}
+	for _, id := range o.Competitors() {
+		handler(id)
+	}
+}
+
+// Competitors collects all competitors from outcomes
+func (o *OddsChange) Competitors() []int {
+	cm := make(map[int]struct{})
+	for _, m := range o.Markets {
+		for _, o := range m.Outcomes {
+			if cs := o.Competitors; cs != nil {
+				for _, c := range cs {
+					cm[c] = struct{}{}
+				}
+
+			}
+		}
+	}
+	if len(cm) == 0 {
+		return nil
+	}
+	ca := make([]int, 0, len(cm))
+	for id := range cm {
+		ca = append(ca, id)
+	}
+	sort.Ints(ca)
+	return ca
 }
 
 func (o *OddsChange) EachVariantMarket(handler func(int, string)) {

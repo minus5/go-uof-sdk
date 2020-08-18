@@ -1,6 +1,7 @@
 package uof
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
@@ -207,4 +208,31 @@ func TestNilMethodCalls(t *testing.T) {
 		oc.EachPlayer(func(int) {})
 	})
 
+}
+
+func TestOddsChangeVHC(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/odds_change-vhc.xml")
+	assert.Nil(t, err)
+	oc := &OddsChange{}
+	err = xml.Unmarshal(buf, oc)
+	assert.Nil(t, err)
+
+	m0 := oc.Markets[0]
+	assert.Equal(t, []int{94075, 94137}, m0.Outcomes[0].Competitors)
+
+	m2 := oc.Markets[2]
+	assert.Equal(t, []int{94075, 94097, 94107}, m2.Outcomes[0].Competitors)
+
+	ca := oc.Competitors()
+	assert.Len(t, ca, 10)
+	assert.Equal(t, []int{94075, 94081, 94097, 94105, 94107, 94123, 94127, 94137, 94155, 94163}, ca)
+}
+
+// PP prety print object
+func pp(o interface{}) {
+	buf, err := json.MarshalIndent(o, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s\n", buf)
 }
