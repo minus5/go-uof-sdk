@@ -38,11 +38,13 @@ type Body struct {
 	BetSettlement         *BetSettlement         `json:"betSettlement,omitempty"`
 	BetStop               *BetStop               `json:"betStop,omitempty"`
 	// api response message types
-	Fixture    *Fixture           `json:"fixture,omitempty"`
-	Markets    MarketDescriptions `json:"markets,omitempty"`
-	Player     *Player            `json:"player,omitempty"`
-	Competitor *CompetitorPlayer  `json:"competitor,omitempty"`
-	Tournament *FixtureTournament `json:"tournament,omitempty"`
+	Fixture            *Fixture            `json:"fixture,omitempty"`
+	Markets            MarketDescriptions  `json:"markets,omitempty"`
+	Player             *Player             `json:"player,omitempty"`
+	Competitor         *CompetitorPlayer   `json:"competitor,omitempty"`
+	Tournament         *FixtureTournament  `json:"tournament,omitempty"`
+	SummaryEventStatus *SummaryEventStatus `json:"summaryEventStatus,omitempty"`
+
 	// sdk status message types
 	Connection *Connection     `json:"connection,omitempty"`
 	Producers  ProducersChange `json:"producerChange,omitempty"`
@@ -199,6 +201,11 @@ func (m *Message) unpack() error {
 		fr := FixtureRsp{}
 		unmarshal(&fr)
 		m.Fixture = &fr.Fixture
+	case MessageTypeSummary:
+		s := Summary{}
+		unmarshal(&s)
+		m.Fixture = &s.SportEvent
+		m.SummaryEventStatus = s.SummaryEventStatus
 	case MessageTypeMarkets:
 		md := &MarketsRsp{}
 		unmarshal(md)
@@ -309,6 +316,25 @@ func NewFixtureMessage(lang Lang, x Fixture, requestedAt int) *Message {
 			RequestedAt: requestedAt,
 		},
 		Body: Body{Fixture: &x},
+	}
+}
+
+func NewSummaryMessage(lang Lang, s Summary, requestedAt int) *Message {
+	f := &s.SportEvent
+	return &Message{
+		Header: Header{
+			Type:        MessageTypeSummary,
+			EventURN:    f.URN,
+			EventID:     f.ID,
+			Lang:        lang,
+			Producer:    f.URN.Producer(),
+			ReceivedAt:  uniqTimestamp(),
+			RequestedAt: requestedAt,
+		},
+		Body: Body{
+			Fixture:            f,
+			SummaryEventStatus: s.SummaryEventStatus,
+		},
 	}
 }
 

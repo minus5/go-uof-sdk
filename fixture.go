@@ -196,6 +196,21 @@ type SportEvent struct {
 	ScheduledEnd time.Time `xml:"scheduled_end,attr,omitempty" json:"scheduled_end,omitempty"`
 }
 
+type Summary struct {
+	SportEvent         Fixture             `xml:"sport_event" json:"sportEvent"`
+	GeneratedAt        time.Time           `xml:"generated_at,attr,omitempty" json:"generatedAt,omitempty"`
+	SummaryEventStatus *SummaryEventStatus `xml:"sport_event_status,omitempty" json:"summaryEventStatus,omitempty"`
+}
+
+// slici na sport_event_status ali statusi nisu int nego string
+type SummaryEventStatus struct {
+	Status       string        `xml:"status,attr" json:"status"`
+	MatchStatus  string        `xml:"match_status,attr" json:"matchStatus"`
+	HomeScore    *int          `xml:"home_score,attr,omitempty" json:"homeScore,omitempty"`
+	AwayScore    *int          `xml:"away_score,attr,omitempty" json:"awayScore,omitempty"`
+	PeriodScores []PeriodScore `xml:"period_scores>period_score,omitempty" json:"periodScores,omitempty"`
+}
+
 func (f *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Fixture
 	var overlay struct {

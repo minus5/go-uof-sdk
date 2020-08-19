@@ -9,6 +9,7 @@ import (
 
 type fixtureAPI interface {
 	Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error)
+	Summary(lang uof.Lang, eventURN uof.URN) (*uof.Summary, error)
 	Tournament(lang uof.Lang, eventURN uof.URN) (*uof.FixtureTournament, error)
 	Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error)
 }
@@ -54,6 +55,7 @@ func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 	for m := range in {
 		out <- m
 		if u := f.eventURN(m); u != uof.NoURN {
+			u.IsTournament()
 			f.getFixture(u, m.ReceivedAt, false)
 		}
 	}
@@ -140,6 +142,13 @@ func (f *fixture) getFixture(eventURN uof.URN, receivedAt int, isPreload bool) {
 					return
 				}
 				f.out <- uof.NewTournamentMessage(lang, *x, receivedAt)
+			} else if eventURN.Producer().Virtuals() {
+				x, err := f.api.Summary(lang, eventURN)
+				if err != nil {
+					f.errc <- err
+					return
+				}
+				f.out <- uof.NewSummaryMessage(lang, *x, receivedAt)
 			} else {
 				x, err := f.api.Fixture(lang, eventURN)
 				if err != nil {

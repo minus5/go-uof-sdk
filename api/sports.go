@@ -11,6 +11,7 @@ const (
 	pathMarkets       = "/v1/descriptions/{{.Lang}}/markets.xml?include_mappings={{.IncludeMappings}}"
 	pathMarketVariant = "/v1/descriptions/{{.Lang}}/markets/{{.MarketID}}/variants/{{.Variant}}?include_mappings={{.IncludeMappings}}"
 	pathFixture       = "/v1/sports/{{.Lang}}/sport_events/{{.EventURN}}/fixture.xml"
+	pathSummary       = "/v1/sports/{{.Lang}}/sport_events/{{.EventURN}}/summary.xml"
 	pathPlayer        = "/v1/sports/{{.Lang}}/players/sr:player:{{.PlayerID}}/profile.xml"
 	pathCompetitor    = "/v1/sports/{{.Lang}}/competitors/sr:competitor:{{.PlayerID}}/profile.xml"
 	events            = "/v1/sports/{{.Lang}}/schedules/pre/schedule.xml?start={{.Start}}&limit={{.Limit}}"
@@ -32,6 +33,12 @@ func (a *API) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.Ma
 func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) (*uof.Fixture, error) {
 	var fr fixtureRsp
 	return &fr.Fixture, a.getAs(&fr, pathFixture, &params{Lang: lang, EventURN: eventURN})
+}
+
+// Fixture with extra information
+func (a *API) Summary(lang uof.Lang, eventURN uof.URN) (*uof.Summary, error) {
+	var s uof.Summary
+	return &s, a.getAs(&s, pathSummary, &params{Lang: lang, EventURN: eventURN})
 }
 
 func (a *API) Tournament(lang uof.Lang, eventURN uof.URN) (*uof.FixtureTournament, error) {

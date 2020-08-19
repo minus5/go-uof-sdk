@@ -360,6 +360,7 @@ const (
 	MessageTypePlayer
 	MessageTypeCompetitor
 	MessageTypeTournament
+	MessageTypeSummary
 )
 
 // system message types
