@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"time"
+	"errors"
 )
 
 type FixtureRsp struct {
@@ -195,6 +196,9 @@ func (f *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	overlay.T = (*T)(f)
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
+	}
+	if overlay.Tournament == nil {
+		return errors.New("fixture without tournament")
 	}
 	f.ID = overlay.URN.EventID()
 	f.Sport = overlay.Tournament.Sport
