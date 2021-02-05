@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fixtures_fixture xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generated_at="2019-12-11T11:37:35+00:00" xmlns="http://schemas.sportradar.com/sportsapi/v1/unified" xsi:schemaLocation="http://schemas.sportradar.com/sportsapi/v1/unified http://schemas.sportradar.com/bsa-staging/unified/v1/xml/endpoints/unified/fixtures_fixture.xsd">
+<fixture id="sr:match:13616027" scheduled="2018-01-23T09:30:00+00:00" start_time_tbd="false" status="closed" next_live_time="2018-01-23T09:40:00+00:00" liveodds="not_available" start_time="2018-01-23T09:30:00+00:00" start_time_confirmed="true">
+    <tournament_round type="cup" name="round_of_16" betradar_id="67168"/>
+	<!-- this is for test when fixture is without tournament, causes SDK to fail with panic if unhandled
+    <tournament id="sr:tournament:15812" name="ITF Egypt F2, Men Doubles">
+        <sport id="sr:sport:5" name="Tennis"/>
+        <category id="sr:category:785" name="ITF Men"/>
+    </tournament>
+	-->
+    <competitors>
+        <competitor id="sr:competitor:328169" name="Hossam Y / Taweel I H" abbreviation="HOS" qualifier="home" gender="male">
+            <reference_ids>
+                <reference_id name="betradar" value="9635713"/>
+            </reference_ids>
+            <players>
+                <player id="sr:competitor:53491" name="Taweel, Issam Haitham" abbreviation="TIH" nationality="Egypt"/>
+                <player id="sr:competitor:110109" name="Hossam, Youssef" abbreviation="HOS" nationality="Egypt"/>
+            </players>
+        </competitor>
+        <competitor id="sr:competitor:406755" name="Goldhoff G / Gornet A" abbreviation="GOL" qualifier="away" gender="male">
+            <reference_ids>
+                <reference_id name="betradar" value="10502911"/>
+            </reference_ids>
+            <players>
+                <player id="sr:competitor:92845" name="Goldhoff, George" abbreviation="GOL" nationality="USA"/>
+                <player id="sr:competitor:167212" name="Gornet, Alexander" abbreviation="GOR" nationality="USA"/>
+            </players>
+        </competitor>
+    </competitors>
+    <extra_info>
+        <info key="neutral_ground" value="true"/>
+        <info key="best_of" value="3"/>
+        <info key="super_tiebreak" value="10"/>
+        <info key="surface" value="hardcourt_outdoor"/>
+        <info key="coverage_source" value="venue"/>
+        <info key="extended_live_markets_offered" value="false"/>
+        <info key="auto_traded" value="true"/>
+    </extra_info>
+    <product_info>
+        <is_in_hosted_statistics/>
+        <is_auto_traded/>
+    </product_info>
+    <reference_ids>
+        <reference_id name="BetradarCtrl" value="14523029"/>
+    </reference_ids>
+</fixture>
+</fixtures_fixture>

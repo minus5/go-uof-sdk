@@ -196,6 +196,9 @@ func (f *Fixture) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if err := d.DecodeElement(&overlay, &start); err != nil {
 		return err
 	}
+	if overlay.Tournament == nil {
+		return fmt.Errorf("missing tournament for fixture URN %s", f.URN)
+	}
 	f.ID = overlay.URN.EventID()
 	f.Sport = overlay.Tournament.Sport
 	f.Category = overlay.Tournament.Category
