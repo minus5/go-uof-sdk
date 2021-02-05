@@ -352,6 +352,16 @@ func TestFixutreWithPlayers(t *testing.T) {
 	assert.Equal(t, "Goldhoff, George", msg.Fixture.Competitors[1].Players[0].Name)
 }
 
+func TestFixtureNoTournament(t *testing.T) {
+	buf, err := ioutil.ReadFile("./testdata/fixture-3.xml")
+	assert.Nil(t, err)
+
+	requestedAt := int(time.Now().UnixNano() / 1e6)
+	msgFormBuf, err := NewFixtureMessageFromBuf(LangEN, buf, requestedAt)
+	assert.Nil(t, msgFormBuf)
+	assert.Error(t, err)
+}
+
 func TestBetSettlementToResult(t *testing.T) {
 	data := []struct {
 		result         int
