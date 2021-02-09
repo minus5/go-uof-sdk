@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -77,13 +78,14 @@ func main() {
 		sdk.Languages(uof.Languages("en,de,hr")),
 		sdk.BufferedConsumer(pipe.FileStore("./tmp"), 1024),
 		sdk.Consumer(logMessages),
+		sdk.ListenErrors(listenSDKErrors),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-// consumer of incomming messages
+// consumer of incoming messages
 func logMessages(in <-chan *uof.Message) error {
 	for m := range in {
 		logMessage(m)
@@ -122,5 +124,46 @@ func logMessage(m *uof.Message) {
 			b = b[:x]
 		}
 		fmt.Printf("%-25s %s\n", m.Type, b)
+	}
+}
+
+// listenSDKErrors listens all SDK errors for logging or any other pourpose
+func listenSDKErrors(err error) {
+	// example handling SDK typed errors
+	var eu uof.Error
+	if errors.As(err, &eu) {
+		// use uof.Error attributes to build custom logging
+		var logLine string
+		if eu.Severity == uof.NoticeSeverity {
+			logLine = fmt.Sprintf("NOTICE Operation:%s Details:", eu.Op)
+		} else {
+			logLine = fmt.Sprintf("ERROR Operation:%s Details:", eu.Op)
+		}
+
+		if eu.Inner != nil {
+			var ea uof.APIError
+			if errors.As(eu.Inner, &ea) {
+				// use uof.APIError attributes for custom logging
+				logLine = fmt.Sprintf("%s URL:%s", logLine, ea.URL)
+				logLine = fmt.Sprintf("%s StatusCode:%d", logLine, ea.StatusCode)
+				logLine = fmt.Sprintf("%s Response:%s", logLine, ea.Response)
+				if ea.Inner != nil {
+					logLine = fmt.Sprintf("%s Inner:%s", logLine, ea.Inner)
+				}
+
+				// or just log error as is...
+				//log.Print(ea.Error())
+			} else {
+				// not an uof.APIError
+				logLine = fmt.Sprintf("%s %s", logLine, eu.Inner)
+			}
+		}
+		log.Println(logLine)
+
+		// or just log error as is...
+		//log.Println(eu.Error())
+	} else {
+		// any other error not uof.Error
+		log.Println(err)
 	}
 }
