@@ -34,6 +34,8 @@ const (
 	BindAll int8 = iota
 	BindSports
 	BindVirtuals
+	BindPrematch
+	BindLive
 )
 
 // Dial connects to the queue chosen by environment
@@ -113,6 +115,10 @@ func dial(ctx context.Context, server, bookmakerID, token string, bind int8) (*C
 		bindingKeys = []string{bindingKeyVirtuals, bindingKeySystem}
 	case BindSports:
 		bindingKeys = []string{bindingKeyPrematch, bindingKeyLive, bindingKeySystem}
+	case BindPrematch:
+		bindingKeys = []string{bindingKeyPrematch, bindingKeySystem}
+	case BindLive:
+		bindingKeys = []string{bindingKeyLive, bindingKeySystem}
 	default:
 		bindingKeys = []string{bindingKeyAll}
 	}

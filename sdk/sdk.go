@@ -23,6 +23,8 @@ type Config struct {
 	Staging      bool
 	BindVirtuals bool
 	BindSports   bool
+	BindPrematch bool
+	BindLive     bool
 	Languages    []uof.Lang
 }
 
@@ -100,6 +102,12 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error)
 	if c.BindSports {
 		bind = queue.BindSports
 	}
+	if c.BindPrematch {
+		bind = queue.BindPrematch
+	}
+	if c.BindLive {
+		bind = queue.BindLive
+	}
 	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, bind)
 	if err != nil {
 		return nil, nil, err
@@ -149,6 +157,20 @@ func BindVirtuals() Option {
 func BindSports() Option {
 	return func(c *Config) {
 		c.BindSports = true
+	}
+}
+
+// BindLive bind only to sports live messages
+func BindLive() Option {
+	return func(c *Config) {
+		c.BindLive = true
+	}
+}
+
+// BindPrematch bind only to sports live messages
+func BindPrematch() Option {
+	return func(c *Config) {
+		c.BindPrematch = true
 	}
 }
 
