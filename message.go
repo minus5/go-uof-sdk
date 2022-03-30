@@ -210,7 +210,8 @@ func (m *Message) unpack() error {
 		return Notice("message.unpack", err)
 	}
 	if err != nil {
-		return Notice("message.unpack", err)
+		err1 := fmt.Errorf(err.Error() + ":" + string(m.Raw))
+		return Notice("message.unpack", err1)
 	}
 	return nil
 }

@@ -132,8 +132,8 @@ type Season struct {
 	ID        int       `json:"id"`
 	StartDate string    `xml:"start_date,attr" json:"startDate"`
 	EndDate   string    `xml:"end_date,attr" json:"endDate"`
-	StartTime time.Time `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
-	EndTime   time.Time `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
+	StartTime string    `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
+	EndTime   string    `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
 	Year      string    `xml:"year,attr,omitempty" json:"year,omitempty"`
 	Name      string    `xml:"name,attr" json:"name"`
 	//TournamentID string    `xml:"tournament_id,attr,omitempty" json:"tournamentID,omitempty"`
