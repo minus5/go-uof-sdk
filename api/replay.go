@@ -22,6 +22,7 @@ func Replay(exitSig context.Context, token string) (*ReplayAPI, error) {
 			server:  productionServer,
 			token:   token,
 			exitSig: exitSig,
+			client:  client(),
 		},
 	}
 	return r, r.Reset()

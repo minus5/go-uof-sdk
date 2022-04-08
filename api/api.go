@@ -25,6 +25,7 @@ type API struct {
 	server  string
 	token   string
 	exitSig context.Context
+	client  *retryablehttp.Client
 }
 
 // Dial connect to the staging or production api environment
@@ -47,6 +48,7 @@ func Staging(exitSig context.Context, token string) (*API, error) {
 		server:  stagingServer,
 		token:   token,
 		exitSig: exitSig,
+		client:  client(),
 	}
 	return a, a.Ping()
 }
@@ -57,8 +59,18 @@ func Production(exitSig context.Context, token string) (*API, error) {
 		server:  productionServer,
 		token:   token,
 		exitSig: exitSig,
+		client:  client(),
 	}
 	return a, a.Ping()
+}
+
+func client() *retryablehttp.Client {
+	c := retryablehttp.NewClient()
+	c.Logger = nil
+	c.RetryWaitMin = 1 * time.Second
+	c.RetryWaitMax = 16 * time.Second
+	c.RetryMax = 4
+	return c
 }
 
 const (
@@ -146,14 +158,8 @@ func (a *API) httpRequest(tpl string, p *params, method string) ([]byte, error) 
 		req = req.WithContext(ctx)
 	}
 
-	client := retryablehttp.NewClient()
-	client.Logger = nil
-	client.RetryWaitMin = 1 * time.Second
-	client.RetryWaitMax = 16 * time.Second
-	client.RetryMax = 4
-
 	req.Header.Set("x-access-token", a.token)
-	resp, err := client.Do(req)
+	resp, err := a.client.Do(req)
 	if err != nil {
 		return nil, uof.E("client.Do", uof.APIError{URL: url, Inner: err})
 	}
