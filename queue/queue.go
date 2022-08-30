@@ -63,6 +63,13 @@ type Connection struct {
 	msgs   <-chan amqp.Delivery
 	errs   <-chan *amqp.Error
 	reDial func() (*Connection, error)
+	info   ConnectionInfo
+}
+
+type ConnectionInfo struct {
+	networkName string
+	localAddr   string
+	tlsVersion  uint16
 }
 
 func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
@@ -161,6 +168,11 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		errs: errs,
 		reDial: func() (*Connection, error) {
 			return dial(ctx, server, bookmakerID, token)
+		},
+		info: ConnectionInfo{
+			networkName: conn.LocalAddr().Network(),
+			localAddr:   conn.LocalAddr().String(),
+			tlsVersion:  conn.ConnectionState().Version,
 		},
 	}
 

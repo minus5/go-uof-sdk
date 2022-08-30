@@ -125,7 +125,7 @@ func TestRecoveryRequests(t *testing.T) {
 	go r.loop(in, out, errc)
 
 	// 1. connection status triggers recovery requests
-	in <- uof.NewConnnectionMessage(uof.ConnectionStatusUp)
+	in <- uof.NewSimpleConnnectionMessage(uof.ConnectionStatusUp)
 	recoveryRequestPrematch := <-m.calls
 	recoveryRequestLive := <-m.calls
 	if recoveryRequestPrematch.producer == uof.ProducerLiveOdds {

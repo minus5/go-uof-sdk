@@ -1,8 +1,11 @@
 package uof
 
 type Connection struct {
-	Status    ConnectionStatus `json:"status"`
-	Timestamp int              `json:"timestamp,omitempty"`
+	Status      ConnectionStatus `json:"status"`
+	Timestamp   int              `json:"timestamp,omitempty"`
+	NetworkName string           `json:"networkname,omitempty"`
+	LocalAddr   string           `json:"localaddr,omitempty"`
+	TLSVersion  uint16           `json:"tlsversion,omitempty"`
 }
 
 type ConnectionStatus int8
