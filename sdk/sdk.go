@@ -24,7 +24,6 @@ type Config struct {
 	Stages        []pipe.InnerStage
 	Replay        func(*api.ReplayAPI) error
 	Env           uof.Environment
-	Staging       bool
 	Languages     []uof.Lang
 	ErrorListener ErrorListenerFunc
 }
@@ -132,7 +131,6 @@ func Languages(langs []uof.Lang) Option {
 func Staging() Option {
 	return func(c *Config) {
 		c.Env = uof.Staging
-		c.Staging = true
 	}
 }
 
