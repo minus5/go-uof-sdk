@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	replayServer     = "replaymq.betradar.com:5671"
-	stagingServer    = "stgmq.betradar.com:5671"
-	productionServer = "mq.betradar.com:5671"
-	queueExchange    = "unifiedfeed"
-	bindingKeyAll    = "#"
+	replayServer           = "replaymq.betradar.com:5671"
+	stagingServer          = "stgmq.betradar.com:5671"
+	productionServer       = "mq.betradar.com:5671"
+	productionServerGlobal = "global.mq.betradar.com:5671"
+	queueExchange          = "unifiedfeed"
+	bindingKeyAll          = "#"
 )
 
 // Dial connects to the queue chosen by environment
@@ -31,6 +32,8 @@ func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (
 		return DialStaging(ctx, bookmakerID, token)
 	case uof.Production:
 		return DialProduction(ctx, bookmakerID, token)
+	case uof.ProductionGlobal:
+		return DialProductionGlobal(ctx, bookmakerID, token)
 	default:
 		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
 	}
@@ -39,6 +42,11 @@ func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (
 // Dial connects to the production queue
 func DialProduction(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, productionServer, bookmakerID, token)
+}
+
+// Dial connects to the production queue
+func DialProductionGlobal(ctx context.Context, bookmakerID, token string) (*Connection, error) {
+	return dial(ctx, productionServerGlobal, bookmakerID, token)
 }
 
 // DialStaging connects to the staging queue

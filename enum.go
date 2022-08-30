@@ -489,4 +489,5 @@ const (
 	Production Environment = iota
 	Staging
 	Replay
+	ProductionGlobal
 )
