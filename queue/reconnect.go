@@ -44,12 +44,14 @@ func WithReconnect(ctx context.Context, conn *Connection) func() (<-chan *uof.Me
 			defer close(out)
 			defer close(errc)
 			for {
-				out <- uof.NewConnnectionMessage(uof.ConnectionStatusUp) // signal connect
+				// signal connect
+				out <- uof.NewDetailedConnnectionMessage(uof.ConnectionStatusUp, conn.info.networkName, conn.info.localAddr, conn.info.tlsVersion)
 				conn.drain(out, errc)
 				if done() {
 					return
 				}
-				out <- uof.NewConnnectionMessage(uof.ConnectionStatusDown) // signal connection lost
+				// signal connection lost
+				out <- uof.NewSimpleConnnectionMessage(uof.ConnectionStatusDown)
 				if err := withBackoff(ctx, reconnect, maxInterval, maxElapsedTime); err != nil {
 					return
 				}

@@ -276,7 +276,7 @@ func NewCompetitorMessage(lang Lang, competitor *CompetitorPlayer, requestedAt i
 	}
 }
 
-func NewConnnectionMessage(status ConnectionStatus) *Message {
+func NewSimpleConnnectionMessage(status ConnectionStatus) *Message {
 	ts := uniqTimestamp()
 	return &Message{
 		Header: Header{
@@ -288,6 +288,26 @@ func NewConnnectionMessage(status ConnectionStatus) *Message {
 			Connection: &Connection{
 				Status:    status,
 				Timestamp: ts,
+			},
+		},
+	}
+}
+
+func NewDetailedConnnectionMessage(status ConnectionStatus, networkName, localAddr string, tlsVersion uint16) *Message {
+	ts := uniqTimestamp()
+	return &Message{
+		Header: Header{
+			Type:       MessageTypeConnection,
+			Scope:      MessageScopeSystem,
+			ReceivedAt: ts,
+		},
+		Body: Body{
+			Connection: &Connection{
+				Status:      status,
+				Timestamp:   ts,
+				NetworkName: networkName,
+				LocalAddr:   localAddr,
+				TLSVersion:  tlsVersion,
 			},
 		},
 	}
