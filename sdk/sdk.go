@@ -20,7 +20,6 @@ type Config struct {
 	Stages       []pipe.InnerStage
 	Replay       func(*api.ReplayAPI) error
 	Env          uof.Environment
-	Staging      bool
 	BindVirtuals bool
 	BindSports   bool
 	BindPrematch bool
@@ -142,7 +141,6 @@ func Languages(langs []uof.Lang) Option {
 func Staging() Option {
 	return func(c *Config) {
 		c.Env = uof.Staging
-		c.Staging = true
 	}
 }
 
