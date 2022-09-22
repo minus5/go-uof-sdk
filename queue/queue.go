@@ -67,9 +67,10 @@ type Connection struct {
 }
 
 type ConnectionInfo struct {
-	networkName string
-	localAddr   string
-	tlsVersion  uint16
+	server     string
+	local      string
+	network    string
+	tlsVersion uint16
 }
 
 func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
@@ -170,9 +171,10 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 			return dial(ctx, server, bookmakerID, token)
 		},
 		info: ConnectionInfo{
-			networkName: conn.LocalAddr().Network(),
-			localAddr:   conn.LocalAddr().String(),
-			tlsVersion:  conn.ConnectionState().Version,
+			server:     server,
+			local:      conn.LocalAddr().String(),
+			network:    conn.LocalAddr().Network(),
+			tlsVersion: conn.ConnectionState().Version,
 		},
 	}
 

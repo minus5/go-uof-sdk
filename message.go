@@ -273,7 +273,7 @@ func NewSimpleConnnectionMessage(status ConnectionStatus) *Message {
 	}
 }
 
-func NewDetailedConnnectionMessage(status ConnectionStatus, networkName, localAddr string, tlsVersion uint16) *Message {
+func NewDetailedConnnectionMessage(status ConnectionStatus, serverName, localAddr, network string, tlsVersion uint16) *Message {
 	ts := uniqTimestamp()
 	return &Message{
 		Header: Header{
@@ -283,11 +283,12 @@ func NewDetailedConnnectionMessage(status ConnectionStatus, networkName, localAd
 		},
 		Body: Body{
 			Connection: &Connection{
-				Status:      status,
-				Timestamp:   ts,
-				NetworkName: networkName,
-				LocalAddr:   localAddr,
-				TLSVersion:  tlsVersion,
+				Status:     status,
+				Timestamp:  ts,
+				ServerName: serverName,
+				LocalAddr:  localAddr,
+				Network:    network,
+				TLSVersion: tlsVersion,
 			},
 		},
 	}
