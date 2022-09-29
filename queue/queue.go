@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	replayServer     = "replaymq.betradar.com:5671"
-	stagingServer    = "stgmq.betradar.com:5671"
-	productionServer = "mq.betradar.com:5671"
-	queueExchange    = "unifiedfeed"
-	bindingKeyAll    = "#"
+	replayServer           = "replaymq.betradar.com:5671"
+	stagingServer          = "stgmq.betradar.com:5671"
+	productionServer       = "mq.betradar.com:5671"
+	productionServerGlobal = "global.mq.betradar.com:5671"
+	queueExchange          = "unifiedfeed"
+	bindingKeyAll          = "#"
 )
 
 // Dial connects to the queue chosen by environment
@@ -31,6 +32,8 @@ func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (
 		return DialStaging(ctx, bookmakerID, token)
 	case uof.Production:
 		return DialProduction(ctx, bookmakerID, token)
+	case uof.ProductionGlobal:
+		return DialProductionGlobal(ctx, bookmakerID, token)
 	default:
 		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
 	}
@@ -39,6 +42,11 @@ func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (
 // Dial connects to the production queue
 func DialProduction(ctx context.Context, bookmakerID, token string) (*Connection, error) {
 	return dial(ctx, productionServer, bookmakerID, token)
+}
+
+// Dial connects to the production queue
+func DialProductionGlobal(ctx context.Context, bookmakerID, token string) (*Connection, error) {
+	return dial(ctx, productionServerGlobal, bookmakerID, token)
 }
 
 // DialStaging connects to the staging queue
@@ -55,6 +63,14 @@ type Connection struct {
 	msgs   <-chan amqp.Delivery
 	errs   <-chan *amqp.Error
 	reDial func() (*Connection, error)
+	info   ConnectionInfo
+}
+
+type ConnectionInfo struct {
+	server     string
+	local      string
+	network    string
+	tlsVersion uint16
 }
 
 func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
@@ -153,6 +169,12 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 		errs: errs,
 		reDial: func() (*Connection, error) {
 			return dial(ctx, server, bookmakerID, token)
+		},
+		info: ConnectionInfo{
+			server:     server,
+			local:      conn.LocalAddr().String(),
+			network:    conn.LocalAddr().Network(),
+			tlsVersion: conn.ConnectionState().Version,
 		},
 	}
 

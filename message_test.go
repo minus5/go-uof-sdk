@@ -245,7 +245,7 @@ func TestUIDWithLang(t *testing.T) {
 }
 
 func TestNewMessage(t *testing.T) {
-	m := NewConnnectionMessage(ConnectionStatusUp)
+	m := NewSimpleConnnectionMessage(ConnectionStatusUp)
 	assert.True(t, m.Is(MessageTypeConnection))
 
 	m = NewPlayerMessage(LangEN, nil, 0)

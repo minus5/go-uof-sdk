@@ -256,7 +256,7 @@ func NewPlayerMessage(lang Lang, player *Player, requestedAt int) *Message {
 	}
 }
 
-func NewConnnectionMessage(status ConnectionStatus) *Message {
+func NewSimpleConnnectionMessage(status ConnectionStatus) *Message {
 	ts := uniqTimestamp()
 	return &Message{
 		Header: Header{
@@ -268,6 +268,27 @@ func NewConnnectionMessage(status ConnectionStatus) *Message {
 			Connection: &Connection{
 				Status:    status,
 				Timestamp: ts,
+			},
+		},
+	}
+}
+
+func NewDetailedConnnectionMessage(status ConnectionStatus, serverName, localAddr, network string, tlsVersion uint16) *Message {
+	ts := uniqTimestamp()
+	return &Message{
+		Header: Header{
+			Type:       MessageTypeConnection,
+			Scope:      MessageScopeSystem,
+			ReceivedAt: ts,
+		},
+		Body: Body{
+			Connection: &Connection{
+				Status:     status,
+				Timestamp:  ts,
+				ServerName: serverName,
+				LocalAddr:  localAddr,
+				Network:    network,
+				TLSVersion: tlsVersion,
 			},
 		},
 	}
