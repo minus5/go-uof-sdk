@@ -20,7 +20,6 @@ type Config struct {
 	Stages       []pipe.InnerStage
 	Replay       func(*api.ReplayAPI) error
 	Env          uof.Environment
-	Staging      bool
 	BindVirtuals bool
 	BindSports   bool
 	BindPrematch bool
@@ -138,11 +137,17 @@ func Languages(langs []uof.Lang) Option {
 	}
 }
 
+// Global forces use of global production environment.
+func Global() Option {
+	return func(c *Config) {
+		c.Env = uof.ProductionGlobal
+	}
+}
+
 // Staging forces use of staging environment instead of production.
 func Staging() Option {
 	return func(c *Config) {
 		c.Env = uof.Staging
-		c.Staging = true
 	}
 }
 

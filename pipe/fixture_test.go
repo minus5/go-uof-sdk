@@ -47,7 +47,7 @@ func TestFixturePipe(t *testing.T) {
 	out, _ := f(in)
 
 	// this type of message is passing through
-	m := uof.NewConnnectionMessage(uof.ConnectionStatusUp)
+	m := uof.NewSimpleConnnectionMessage(uof.ConnectionStatusUp)
 	in <- m
 	om := <-out
 	assert.Equal(t, m, om)

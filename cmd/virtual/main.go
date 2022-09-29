@@ -93,7 +93,7 @@ func logMessages(in <-chan *uof.Message) error {
 func logMessage(m *uof.Message) {
 	switch m.Type {
 	case uof.MessageTypeConnection:
-		fmt.Printf("%-25s status: %s\n", m.Type, m.Connection.Status)
+		fmt.Printf("%-25s status: %s, server: %s, local: %s, network: %s, tls: %s\n", m.Type, m.Connection.Status, m.Connection.ServerName, m.Connection.LocalAddr, m.Connection.Network, m.Connection.TLSVersionToString())
 	case uof.MessageTypeFixture:
 		fmt.Printf("%-25s lang: %s, urn: %s raw: %d\n", m.Type, m.Lang, m.Fixture.URN, len(m.Raw))
 	case uof.MessageTypeMarkets:
