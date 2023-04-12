@@ -196,6 +196,7 @@ func (m *Message) unpack() error {
 	case MessageTypeFixture:
 		fr := FixtureRsp{}
 		unmarshal(&fr)
+		m.Timestamp = int(fr.GeneratedAt.UnixNano() / 1e6)
 		m.Fixture = &fr.Fixture
 	case MessageTypeMarkets:
 		md := &MarketsRsp{}
