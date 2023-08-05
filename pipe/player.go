@@ -36,12 +36,12 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 	p.errc, p.out = errc, out
 
 	for m := range in {
-		out <- m
 		if m.Is(uof.MessageTypeOddsChange) {
 			m.OddsChange.EachPlayer(func(playerID int) {
 				p.get(playerID, m.ReceivedAt)
 			})
 		}
+		out <- m
 	}
 	return p.subProcs
 }

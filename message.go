@@ -23,6 +23,7 @@ type Header struct {
 	RequestedAt int             `json:"requestedAt,omitempty"`
 	Producer    Producer        `json:"producer,omitempty"`
 	Timestamp   int             `json:"timestamp,omitempty"`
+	NodeID      int             `json:"nodeID,omitempty"`
 }
 
 type Body struct {
@@ -108,7 +109,11 @@ func (m *Message) parseRoutingKey(routingKey string) error {
 	sportID := part(4)
 	eventURN := part(5)
 	eventID := part(6)
-	//nodeID := part(7)  // currently unused
+	nodeID := part(7) // currently unused
+
+	if nodeID != "" {
+		m.NodeID, _ = strconv.Atoi(nodeID)
+	}
 
 	m.Priority.Parse(priority)
 	m.Type.Parse(messageType)

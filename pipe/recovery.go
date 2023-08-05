@@ -57,19 +57,21 @@ func (p *recoveryProducer) recoveryTimestamp() int {
 type recovery struct {
 	api       recoveryAPI
 	requestID int
+	nodeID    int
 	producers []*recoveryProducer
 	errc      chan<- error
 	subProcs  *sync.WaitGroup
 }
 
 type recoveryAPI interface {
-	RequestRecovery(producer uof.Producer, timestamp int, requestID int) error
+	RequestRecovery(producer uof.Producer, timestamp, requestID, nodeID int) error
 }
 
-func newRecovery(api recoveryAPI, producers uof.ProducersChange) *recovery {
+func newRecovery(api recoveryAPI, producers uof.ProducersChange, nodeID int) *recovery {
 	r := &recovery{
 		api:      api,
 		subProcs: &sync.WaitGroup{},
+		nodeID:   nodeID,
 	}
 	ct := uof.CurrentTimestamp()
 	for _, p := range producers {
@@ -114,7 +116,7 @@ func (r *recovery) requestRecovery(p *recoveryProducer) {
 		for {
 			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", producer.Code(), timestamp, requestID)
 			r.log(fmt.Errorf("starting %s", op))
-			err := r.api.RequestRecovery(producer, timestamp, requestID)
+			err := r.api.RequestRecovery(producer, timestamp, requestID, r.nodeID)
 			if err == nil {
 				return
 			}
@@ -244,7 +246,7 @@ func (r *recovery) producersChangeMessage() *uof.Message {
 	return uof.NewProducersChangeMessage(psc)
 }
 
-func Recovery(api recoveryAPI, producers uof.ProducersChange) InnerStage {
-	r := newRecovery(api, producers)
+func Recovery(api recoveryAPI, producers uof.ProducersChange, nodeID int) InnerStage {
+	r := newRecovery(api, producers, nodeID)
 	return StageWithSubProcesses(r.loop)
 }

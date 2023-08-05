@@ -88,28 +88,28 @@ func client() *retryablehttp.Client {
 }
 
 const (
-	recovery     = "/v1/{{.Producer}}/recovery/initiate_request?after={{.Timestamp}}&request_id={{.RequestID}}"
-	fullRecovery = "/v1/{{.Producer}}/recovery/initiate_request?request_id={{.RequestID}}"
+	recovery     = "/v1/{{.Producer}}/recovery/initiate_request?after={{.Timestamp}}&request_id={{.RequestID}}&node_id={{.NodeID}}"
+	fullRecovery = "/v1/{{.Producer}}/recovery/initiate_request?request_id={{.RequestID}}&node_id={{.NodeID}}"
 	ping         = "/v1/users/whoami.xml"
 )
 
-func (a *API) RequestRecovery(producer uof.Producer, timestamp int, requestID int) error {
+func (a *API) RequestRecovery(producer uof.Producer, timestamp, requestID, nodeID int) error {
 	if timestamp <= 0 {
-		return a.RequestFullOddsRecovery(producer, requestID)
+		return a.RequestFullOddsRecovery(producer, requestID, nodeID)
 	}
-	return a.RequestRecoverySinceTimestamp(producer, timestamp, requestID)
+	return a.RequestRecoverySinceTimestamp(producer, timestamp, requestID, nodeID)
 }
 
 // RequestRecoverySinceTimestamp does recovery of odds and stateful messages
 // over the feed since after timestamp. Subscribes client to feed messages.
-func (a *API) RequestRecoverySinceTimestamp(producer uof.Producer, timestamp int, requestID int) error {
-	return a.post(recovery, &params{Producer: producer, Timestamp: timestamp, RequestID: requestID})
+func (a *API) RequestRecoverySinceTimestamp(producer uof.Producer, timestamp, requestID, nodeID int) error {
+	return a.post(recovery, &params{Producer: producer, Timestamp: timestamp, RequestID: requestID, NodeID: nodeID})
 }
 
 // RequestFullOddsRecovery does recovery of odds over the feed. Subscribes
 // client to feed messages.
-func (a *API) RequestFullOddsRecovery(producer uof.Producer, requestID int) error {
-	return a.post(fullRecovery, &params{Producer: producer, RequestID: requestID})
+func (a *API) RequestFullOddsRecovery(producer uof.Producer, requestID, nodeID int) error {
+	return a.post(fullRecovery, &params{Producer: producer, RequestID: requestID, NodeID: nodeID})
 }
 
 // // RecoverSportEvent requests to resend all odds for all markets for a sport
@@ -207,6 +207,7 @@ type params struct {
 	UseReplayTimestamp bool
 	Lang               uof.Lang
 	Producer           uof.Producer
+	NodeID             int
 }
 
 func runTemplate(def string, p *params) string {

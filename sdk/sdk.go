@@ -19,6 +19,7 @@ type ErrorListenerFunc func(err error)
 type Config struct {
 	BookmakerID   string
 	Token         string
+	NodeID        int
 	Fixtures      time.Time
 	Recovery      []uof.ProducerChange
 	Stages        []pipe.InnerStage
@@ -59,7 +60,7 @@ func Run(ctx context.Context, options ...Option) error {
 		pipe.BetStop(),
 	}
 	if len(c.Recovery) > 0 {
-		stages = append(stages, pipe.Recovery(apiConn, c.Recovery))
+		stages = append(stages, pipe.Recovery(apiConn, c.Recovery, c.NodeID))
 	}
 	stages = append(stages, c.Stages...)
 
@@ -97,7 +98,7 @@ func config(options ...Option) Config {
 
 // connect to the queue and api
 func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error) {
-	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token)
+	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -109,10 +110,11 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error)
 }
 
 // Credentials for establishing connection to the uof queue and api.
-func Credentials(bookmakerID, token string) Option {
+func Credentials(bookmakerID, token string, nodeID int) Option {
 	return func(c *Config) {
 		c.BookmakerID = bookmakerID
 		c.Token = token
+		c.NodeID = nodeID
 	}
 }
 
