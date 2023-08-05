@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/minus5/go-uof-sdk"
-	"github.com/minus5/go-uof-sdk/api"
-	"github.com/minus5/go-uof-sdk/pipe"
-	"github.com/minus5/go-uof-sdk/queue"
+	"github.com/pvotal-tech/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk/api"
+	"github.com/pvotal-tech/go-uof-sdk/pipe"
+	"github.com/pvotal-tech/go-uof-sdk/queue"
 )
 
 var defaultLanguages = uof.Languages("en,de")

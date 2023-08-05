@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v3"
-	"github.com/minus5/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk"
 	"github.com/pkg/errors"
 )
 

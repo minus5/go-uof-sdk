@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minus5/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk"
 )
 
 type fixtureAPI interface {

@@ -10,7 +10,7 @@ import (
 	"crypto/tls"
 	"fmt"
 
-	"github.com/minus5/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk"
 	"github.com/streadway/amqp"
 )
 
