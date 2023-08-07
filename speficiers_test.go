@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseNameWithSpecifier(t *testing.T) {
+func TestParseNameWithSpecifiers(t *testing.T) {
 	players := map[int]Player{
 		1234: Player{
 			FullName: "John Rodriquez",
@@ -124,7 +124,7 @@ func TestParseNameWithSpecifier(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.description, func(t *testing.T) {
-			actual, err := ParseSpecifier(tc.name, tc.specifiers, players, fixture)
+			actual, err := ParseSpecifiers(tc.name, tc.specifiers, players, fixture)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expected, actual)
 		})

@@ -8,7 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
-func ParseSpecifier(name string, specifiers map[string]string, players map[int]Player, fixture Fixture) (string, error) {
+func ParseSpecifiers(name string, specifiers map[string]string, players map[int]Player, fixture Fixture) (string, error) {
 	for key, val := range specifiers {
 		switch {
 		case strings.Contains(name, "{"+key+"}"):
