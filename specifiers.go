@@ -23,30 +23,30 @@ func ParseSpecifiers(name string, specifiers map[string]string, players map[int]
 			i := strings.Index(name, "{"+key+"-")
 			j := strings.Index(name[i:], "}") + i
 			nStr := name[i+len(key)+2 : j]
-			n, err := strconv.Atoi(nStr)
+			n, err := strconv.ParseFloat(nStr, 32)
 			if err != nil {
 				return "", fmt.Errorf("invalid number in name with sub(-) specifier: %s", name)
 			}
-			intVal, err := strconv.Atoi(val)
+			intVal, err := strconv.ParseFloat(val, 32)
 			if err != nil {
 				return "", fmt.Errorf("invalid number in specifier with sub(-) operator: %s", val)
 			}
 			result := intVal - n
-			name = name[:i] + strconv.Itoa(result) + name[j+1:]
+			name = name[:i] + fmt.Sprint(result) + name[j+1:]
 		case strings.Contains(name, "{"+key+"+"):
 			i := strings.Index(name, "{"+key+"+")
 			j := strings.Index(name[i:], "}") + i
 			nStr := name[i+len(key)+2 : j]
-			n, err := strconv.Atoi(nStr)
+			n, err := strconv.ParseFloat(nStr, 32)
 			if err != nil {
 				return "", fmt.Errorf("invalid number in name with sum(+) specifier: %s", name)
 			}
-			intVal, err := strconv.Atoi(val)
+			intVal, err := strconv.ParseFloat(val, 32)
 			if err != nil {
 				return "", fmt.Errorf("invalid number in specifier with sum(+) operator: %s", val)
 			}
 			result := intVal + n
-			name = name[:i] + strconv.Itoa(result) + name[j+1:]
+			name = name[:i] + fmt.Sprint(result) + name[j+1:]
 		case strings.Contains(name, "{!"+key+"-"):
 			i := strings.Index(name, "{!"+key+"-")
 			j := strings.Index(name[i:], "}") + i
@@ -78,19 +78,19 @@ func ParseSpecifiers(name string, specifiers map[string]string, players map[int]
 		case strings.Contains(name, "{+"+key+"}"):
 			i := strings.Index(name, "{")
 			j := strings.Index(name[i:], "}") + i
-			intVal, err := strconv.Atoi(val)
+			value, err := strconv.ParseFloat(val, 32)
 			if err != nil {
 				return "", fmt.Errorf("invalid number in specifier with signed operator: %s", val)
 			}
-			name = name[:i] + "+" + strconv.Itoa(intVal) + name[j+1:]
+			name = name[:i] + "+" + fmt.Sprint(value) + name[j+1:]
 		case strings.Contains(name, "{-"+key+"}"):
 			i := strings.Index(name, "{")
 			j := strings.Index(name[i:], "}") + i
-			intVal, err := strconv.Atoi(val)
+			value, err := strconv.ParseFloat(val, 32)
 			if err != nil {
 				return "", fmt.Errorf("invalid number in specifier with signed operator: %s", val)
 			}
-			name = name[:i] + "-" + strconv.Itoa(intVal) + name[j+1:]
+			name = name[:i] + "-" + fmt.Sprint(value) + name[j+1:]
 		case strings.Contains(name, "{%player}"):
 			playerID := URN(val).ID()
 			player, ok := players[playerID]
