@@ -81,7 +81,7 @@ func TestParseNameWithSpecifiers(t *testing.T) {
 		{
 			description: "Name with 2 normal specifiers",
 			name:        "Holes {from} to {to} - head2head (1x2) groups",
-			specifiers:  map[string]string{"from": "1", "to": "18"}, // {"from":"1", "to":"18"},
+			specifiers:  map[string]string{"from": "1", "to": "18"},
 			expected:    "Holes 1 to 18 - head2head (1x2) groups",
 		},
 		{
