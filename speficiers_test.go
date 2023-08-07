@@ -120,6 +120,12 @@ func TestParseNameWithSpecifiers(t *testing.T) {
 			specifiers:  map[string]string{"competitor1": "sr:competitor:2"},
 			expected:    "Winner is Germany",
 		},
+		{
+			description: "Replace {X} with value of specifier for decimals",
+			name:        "{!periodnr} period - total {pointnr} points",
+			specifiers:  map[string]string{"periodnr": "3", "pointnr": "3.5"},
+			expected:    "3rd period - total 3.5 points",
+		},
 	}
 
 	for _, tc := range testCases {
