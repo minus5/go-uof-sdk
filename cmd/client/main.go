@@ -14,9 +14,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minus5/go-uof-sdk"
-	"github.com/minus5/go-uof-sdk/pipe"
-	"github.com/minus5/go-uof-sdk/sdk"
+	"github.com/pvotal-tech/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk/pipe"
+	"github.com/pvotal-tech/go-uof-sdk/sdk"
 )
 
 const (
@@ -71,7 +71,7 @@ func main() {
 	pc.Add(uof.ProducerLiveOdds, timestamp)
 
 	err := sdk.Run(exitSignal(),
-		sdk.Credentials(bookmakerID, token),
+		sdk.Credentials(bookmakerID, token, 123),
 		sdk.Staging(),
 		sdk.Recovery(pc),
 		sdk.Fixtures(preloadTo),
