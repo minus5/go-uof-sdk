@@ -115,7 +115,7 @@ func ParseSpecifiers(name string, specifiers map[string]string, players map[int]
 				return "", fmt.Errorf("invalid number in specifier with signed operator: %s", val)
 			}
 			name = name[:i] + "-" + fmt.Sprint(value) + name[j+1:]
-		case strings.Contains(name, "{%player}"):
+		case strings.Contains(name, "{%player}") && key == "player":
 			playerID, err := strconv.ParseInt(val, 10, 0)
 			if err != nil {
 				return "", fmt.Errorf("error while parsing player id \"%s\"", val)

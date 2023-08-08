@@ -109,6 +109,12 @@ func TestParseNameWithSpecifiers(t *testing.T) {
 			expected:    "1st half - John Rodriquez 2 goals",
 		},
 		{
+			description: "Market ID 368",
+			name:        "{!inningnr} innings - {%player} total",
+			specifiers:  map[string]string{"inningnr": "1", "maxovers": "20", "player": "1234", "playernr": "2", "total": "27.5"},
+			expected:    "1st innings - John Rodriquez total",
+		},
+		{
 			description: "Replace {$event} with the name of the event",
 			name:        "Winner of {$event}",
 			specifiers:  nil,
