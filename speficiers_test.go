@@ -127,7 +127,7 @@ func TestParseNameWithSpecifiers(t *testing.T) {
 			expected:    "3rd period - total 3.5 points",
 		},
 		{
-			description: "2 Competitor with goals",
+			description: "2 Competitor with corners",
 			name:        "{$competitor1}, {$competitor2} exact corners {cornernr}",
 			specifiers:  map[string]string{"cornernr": "2"},
 			expected:    "France, Germany exact corners 2",
