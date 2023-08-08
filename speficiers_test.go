@@ -99,13 +99,13 @@ func TestParseNameWithSpecifiers(t *testing.T) {
 		{
 			description: "Replace {%player} with name of specifier",
 			name:        "{%player} total dismissals",
-			specifiers:  map[string]string{"player": "sr:player:1234"},
+			specifiers:  map[string]string{"player": "1234"},
 			expected:    "John Rodriquez total dismissals",
 		},
 		{
 			description: "Player with 1 normal, 1 ordinal specifier",
 			name:        "{!half} half - {%player} {goals} goals",
-			specifiers:  map[string]string{"half": "1", "player": "sr:player:1234", "goals": "2"},
+			specifiers:  map[string]string{"half": "1", "player": "1234", "goals": "2"},
 			expected:    "1st half - John Rodriquez 2 goals",
 		},
 		{

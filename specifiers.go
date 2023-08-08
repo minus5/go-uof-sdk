@@ -116,8 +116,11 @@ func ParseSpecifiers(name string, specifiers map[string]string, players map[int]
 			}
 			name = name[:i] + "-" + fmt.Sprint(value) + name[j+1:]
 		case strings.Contains(name, "{%player}"):
-			playerID := URN(val).ID()
-			player, ok := players[playerID]
+			playerID, err := strconv.ParseInt(val, 10, 0)
+			if err != nil {
+				return "", fmt.Errorf("error while parsing player id \"%s\"", val)
+			}
+			player, ok := players[int(playerID)]
 			if !ok {
 				return "", fmt.Errorf("player with id %d not found", playerID)
 			}
