@@ -8,7 +8,31 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
+func parseCompetitor(name string, fixture Fixture) (string, error) {
+	if !strings.Contains(name, "{$competitor") {
+		return name, nil
+	}
+	i := strings.Index(name, "{$competitor")
+	j := strings.Index(name[i:], "}") + i
+	index := name[i+len("{$competitor") : j]
+	indexInt, err := strconv.Atoi(index)
+	if err != nil {
+		return "", fmt.Errorf("invalid number in specifier with competitor operator: %s", index)
+	}
+	if indexInt > len(fixture.Competitors) {
+		return "", fmt.Errorf("invalid number in specifier with competitor operator: %s", index)
+	}
+	competitor := fixture.Competitors[indexInt-1]
+	name = name[:i] + competitor.Name + name[j+1:]
+	return parseCompetitor(name, fixture)
+}
+
 func ParseSpecifiers(name string, specifiers map[string]string, players map[int]Player, fixture Fixture) (string, error) {
+	name = strings.ReplaceAll(name, "{$event}", fixture.Name)
+	name, err := parseCompetitor(name, fixture)
+	if err != nil {
+		return "", err
+	}
 	for key, val := range specifiers {
 		switch {
 		case strings.Contains(name, "{"+key+"}"):
@@ -98,21 +122,6 @@ func ParseSpecifiers(name string, specifiers map[string]string, players map[int]
 				return "", fmt.Errorf("player with id %d not found", playerID)
 			}
 			name = strings.ReplaceAll(name, "{%player}", player.FullName)
-		case strings.Contains(name, "{$event}"):
-			name = strings.ReplaceAll(name, "{$event}", fixture.Name)
-		case strings.Contains(name, "{$competitor"):
-			i := strings.Index(name, "{$competitor")
-			j := strings.Index(name[i:], "}") + i
-			index := name[i+len("{$competitor") : j]
-			indexInt, err := strconv.Atoi(index)
-			if err != nil {
-				return "", fmt.Errorf("invalid number in specifier with competitor operator: %s", index)
-			}
-			if indexInt > len(fixture.Competitors) {
-				return "", fmt.Errorf("invalid number in specifier with competitor operator: %s", index)
-			}
-			competitor := fixture.Competitors[indexInt-1]
-			name = name[:i] + competitor.Name + name[j+1:]
 		}
 	}
 	return name, nil
