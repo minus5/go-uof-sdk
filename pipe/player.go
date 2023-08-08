@@ -49,7 +49,7 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 func (p *player) get(playerID, requestedAt int) {
 	p.subProcs.Add(len(p.languages))
 	for _, lang := range p.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer p.subProcs.Done()
 			p.rateLimit <- struct{}{}
 			defer func() { <-p.rateLimit }()

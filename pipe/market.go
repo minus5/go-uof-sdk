@@ -56,7 +56,7 @@ func (s *markets) getAll() {
 	requestedAt := uof.CurrentTimestamp()
 
 	for _, lang := range s.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer s.subProcs.Done()
 
 			ms, err := s.api.Markets(lang)
@@ -77,7 +77,7 @@ func (s *markets) variantMarket(marketID int, variant string, requestedAt int) {
 	s.subProcs.Add(len(s.languages))
 
 	for _, lang := range s.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer s.subProcs.Done()
 			s.rateLimit <- struct{}{}
 			defer func() { <-s.rateLimit }()
