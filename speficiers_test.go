@@ -111,13 +111,13 @@ func TestParseNameWithSpecifiers(t *testing.T) {
 		{
 			description: "Replace {$event} with the name of the event",
 			name:        "Winner of {$event}",
-			specifiers:  map[string]string{"event": "sr:tournament:1"},
+			specifiers:  nil,
 			expected:    "Winner of Euro2016",
 		},
 		{
-			description: "Replace {$competitorN} with the Nth competitor in the event",
+			description: "Replace {$competitorN} with the Nth competitor in the event (empty map)",
 			name:        "Winner is {$competitor2}",
-			specifiers:  map[string]string{"competitor1": "sr:competitor:2"},
+			specifiers:  nil,
 			expected:    "Winner is Germany",
 		},
 		{
@@ -125,6 +125,12 @@ func TestParseNameWithSpecifiers(t *testing.T) {
 			name:        "{!periodnr} period - total {pointnr} points",
 			specifiers:  map[string]string{"periodnr": "3", "pointnr": "3.5"},
 			expected:    "3rd period - total 3.5 points",
+		},
+		{
+			description: "2 Competitor with goals",
+			name:        "{$competitor1}, {$competitor2} exact corners {cornernr}",
+			specifiers:  map[string]string{"cornernr": "2"},
+			expected:    "France, Germany exact corners 2",
 		},
 	}
 
