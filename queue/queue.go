@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"strings"
 
 	"github.com/pvotal-tech/go-uof-sdk"
 	"github.com/streadway/amqp"
@@ -57,6 +58,11 @@ func DialStaging(ctx context.Context, bookmakerID, token string, nodeID int) (*C
 // DialReplay connects to the replay server
 func DialReplay(ctx context.Context, bookmakerID, token string, nodeID int) (*Connection, error) {
 	return dial(ctx, replayServer, bookmakerID, token, nodeID)
+}
+
+// DialCustom connects to a custom server
+func DialCustom(ctx context.Context, server, bookmakerID, token string, nodeID int) (*Connection, error) {
+	return dial(ctx, server, bookmakerID, token, nodeID)
 }
 
 type Connection struct {
@@ -120,7 +126,7 @@ func dial(ctx context.Context, server, bookmakerID, token string, nodeID int) (*
 	}
 	conn, err := amqp.DialTLS(addr, tls)
 	if err != nil {
-		fmt.Println(addr)
+		fmt.Println(strings.ReplaceAll(addr, token, "<token>"))
 		return nil, uof.Notice("conn.Dial", err)
 	}
 
