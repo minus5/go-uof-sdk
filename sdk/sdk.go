@@ -17,16 +17,18 @@ type ErrorListenerFunc func(err error)
 
 // Config is active SDK configuration
 type Config struct {
-	BookmakerID   string
-	Token         string
-	NodeID        int
-	Fixtures      time.Time
-	Recovery      []uof.ProducerChange
-	Stages        []pipe.InnerStage
-	Replay        func(*api.ReplayAPI) error
-	Env           uof.Environment
-	Languages     []uof.Lang
-	ErrorListener ErrorListenerFunc
+	CustomAMQPServer string
+	CustomAPIServer  string
+	BookmakerID      string
+	Token            string
+	NodeID           int
+	Fixtures         time.Time
+	Recovery         []uof.ProducerChange
+	Stages           []pipe.InnerStage
+	Replay           func(*api.ReplayAPI) error
+	Env              uof.Environment
+	Languages        []uof.Lang
+	ErrorListener    ErrorListenerFunc
 }
 
 // Option sets attributes on the Config.
@@ -98,15 +100,28 @@ func config(options ...Option) Config {
 
 // connect to the queue and api
 func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error) {
-	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID)
-	if err != nil {
-		return nil, nil, err
+	var conn *queue.Connection
+	var amqpErr error
+	if c.CustomAMQPServer != "" {
+		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID)
+	} else {
+		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID)
 	}
-	stg, err := api.Dial(ctx, c.Env, c.Token)
-	if err != nil {
-		return nil, nil, err
+	if amqpErr != nil {
+		return nil, nil, amqpErr
 	}
-	return conn, stg, nil
+
+	var apiConn *api.API
+	var apiErr error
+	if c.CustomAPIServer != "" {
+		apiConn, apiErr = api.DialCustom(ctx, c.CustomAPIServer, c.Token)
+	} else {
+		apiConn, apiErr = api.Dial(ctx, c.Env, c.Token)
+	}
+	if apiErr != nil {
+		return nil, nil, apiErr
+	}
+	return conn, apiConn, nil
 }
 
 // Credentials for establishing connection to the uof queue and api.
@@ -115,6 +130,14 @@ func Credentials(bookmakerID, token string, nodeID int) Option {
 		c.BookmakerID = bookmakerID
 		c.Token = token
 		c.NodeID = nodeID
+	}
+}
+
+// CustomServers for establishing custom servers
+func CustomServers(customAMQPServer, customAPIServer string) Option {
+	return func(c *Config) {
+		c.CustomAMQPServer = customAMQPServer
+		c.CustomAPIServer = customAPIServer
 	}
 }
 

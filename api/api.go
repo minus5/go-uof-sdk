@@ -78,6 +78,17 @@ func ProductionGlobal(exitSig context.Context, token string) (*API, error) {
 	return a, a.Ping()
 }
 
+// DialCustom connects to a custom system
+func DialCustom(exitSig context.Context, customServer, token string) (*API, error) {
+	a := &API{
+		server:  customServer,
+		token:   token,
+		exitSig: exitSig,
+		client:  client(),
+	}
+	return a, a.Ping()
+}
+
 func client() *retryablehttp.Client {
 	c := retryablehttp.NewClient()
 	c.Logger = nil
