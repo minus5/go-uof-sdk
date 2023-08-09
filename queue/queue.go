@@ -9,7 +9,9 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"net"
 	"strings"
+	"time"
 
 	"github.com/pvotal-tech/go-uof-sdk"
 	"github.com/streadway/amqp"
@@ -22,47 +24,49 @@ const (
 	productionServerGlobal = "global.mq.betradar.com:5671"
 	queueExchange          = "unifiedfeed"
 	bindingKeyAll          = "#"
+	amqpDefaultHeartbeat   = 10 * time.Second
+	amqpDefaultLocale      = "en_US"
 )
 
 // Dial connects to the queue chosen by environment
-func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string, nodeID int) (*Connection, error) {
+func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string, nodeID int, isTLS bool) (*Connection, error) {
 	switch env {
 	case uof.Replay:
-		return DialReplay(ctx, bookmakerID, token, nodeID)
+		return DialReplay(ctx, bookmakerID, token, nodeID, isTLS)
 	case uof.Staging:
-		return DialStaging(ctx, bookmakerID, token, nodeID)
+		return DialStaging(ctx, bookmakerID, token, nodeID, isTLS)
 	case uof.Production:
-		return DialProduction(ctx, bookmakerID, token, nodeID)
+		return DialProduction(ctx, bookmakerID, token, nodeID, isTLS)
 	case uof.ProductionGlobal:
-		return DialProductionGlobal(ctx, bookmakerID, token, nodeID)
+		return DialProductionGlobal(ctx, bookmakerID, token, nodeID, isTLS)
 	default:
 		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
 	}
 }
 
 // Dial connects to the production queue
-func DialProduction(ctx context.Context, bookmakerID, token string, nodeID int) (*Connection, error) {
-	return dial(ctx, productionServer, bookmakerID, token, nodeID)
+func DialProduction(ctx context.Context, bookmakerID, token string, nodeID int, isTLS bool) (*Connection, error) {
+	return dial(ctx, productionServer, bookmakerID, token, nodeID, isTLS)
 }
 
 // Dial connects to the production queue
-func DialProductionGlobal(ctx context.Context, bookmakerID, token string, nodeID int) (*Connection, error) {
-	return dial(ctx, productionServerGlobal, bookmakerID, token, nodeID)
+func DialProductionGlobal(ctx context.Context, bookmakerID, token string, nodeID int, isTLS bool) (*Connection, error) {
+	return dial(ctx, productionServerGlobal, bookmakerID, token, nodeID, isTLS)
 }
 
 // DialStaging connects to the staging queue
-func DialStaging(ctx context.Context, bookmakerID, token string, nodeID int) (*Connection, error) {
-	return dial(ctx, stagingServer, bookmakerID, token, nodeID)
+func DialStaging(ctx context.Context, bookmakerID, token string, nodeID int, isTLS bool) (*Connection, error) {
+	return dial(ctx, stagingServer, bookmakerID, token, nodeID, isTLS)
 }
 
 // DialReplay connects to the replay server
-func DialReplay(ctx context.Context, bookmakerID, token string, nodeID int) (*Connection, error) {
-	return dial(ctx, replayServer, bookmakerID, token, nodeID)
+func DialReplay(ctx context.Context, bookmakerID, token string, nodeID int, isTLS bool) (*Connection, error) {
+	return dial(ctx, replayServer, bookmakerID, token, nodeID, isTLS)
 }
 
 // DialCustom connects to a custom server
-func DialCustom(ctx context.Context, server, bookmakerID, token string, nodeID int) (*Connection, error) {
-	return dial(ctx, server, bookmakerID, token, nodeID)
+func DialCustom(ctx context.Context, server, bookmakerID, token string, nodeID int, isTLS bool) (*Connection, error) {
+	return dial(ctx, server, bookmakerID, token, nodeID, isTLS)
 }
 
 type Connection struct {
@@ -117,14 +121,26 @@ func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
 	<-errsDone
 }
 
-func dial(ctx context.Context, server, bookmakerID, token string, nodeID int) (*Connection, error) {
+func dial(ctx context.Context, server, bookmakerID, token string, nodeID int, isTLS bool) (*Connection, error) {
 	addr := fmt.Sprintf("amqps://%s:@%s//unifiedfeed/%s", token, server, bookmakerID)
 
-	tls := &tls.Config{
+	tlsConfig := &tls.Config{
 		ServerName:         server,
 		InsecureSkipVerify: true,
 	}
-	conn, err := amqp.DialTLS(addr, tls)
+	var dialer func(network string, addr string) (net.Conn, error)
+	if isTLS {
+		dialer = func(network string, addr string) (net.Conn, error) {
+			return tls.Dial(network, addr, tlsConfig)
+		}
+	}
+	config := amqp.Config{
+		Heartbeat:       amqpDefaultHeartbeat,
+		TLSClientConfig: tlsConfig,
+		Locale:          amqpDefaultLocale,
+		Dial:            dialer,
+	}
+	conn, err := amqp.DialConfig(addr, config)
 	if err != nil {
 		fmt.Println(strings.ReplaceAll(addr, token, "<token>"))
 		return nil, uof.Notice("conn.Dial", err)
@@ -179,7 +195,7 @@ func dial(ctx context.Context, server, bookmakerID, token string, nodeID int) (*
 		msgs: msgs,
 		errs: errs,
 		reDial: func() (*Connection, error) {
-			return dial(ctx, server, bookmakerID, token, nodeID)
+			return dial(ctx, server, bookmakerID, token, nodeID, isTLS)
 		},
 		info: ConnectionInfo{
 			server:     server,
