@@ -22,6 +22,7 @@ type Config struct {
 	BookmakerID      string
 	Token            string
 	NodeID           int
+	IsAMQPTLS        bool
 	Fixtures         time.Time
 	Recovery         []uof.ProducerChange
 	Stages           []pipe.InnerStage
@@ -103,9 +104,9 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error)
 	var conn *queue.Connection
 	var amqpErr error
 	if c.CustomAMQPServer != "" {
-		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID)
+		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS)
 	} else {
-		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID)
+		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS)
 	}
 	if amqpErr != nil {
 		return nil, nil, amqpErr
@@ -138,6 +139,13 @@ func CustomServers(customAMQPServer, customAPIServer string) Option {
 	return func(c *Config) {
 		c.CustomAMQPServer = customAMQPServer
 		c.CustomAPIServer = customAPIServer
+	}
+}
+
+// ConfigTLS for setting tls flag
+func ConfigTLS(isAMQPTLS bool) Option {
+	return func(c *Config) {
+		c.IsAMQPTLS = isAMQPTLS
 	}
 }
 
