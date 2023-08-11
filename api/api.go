@@ -4,9 +4,11 @@ package api
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"text/template"
 	"time"
 
@@ -90,7 +92,11 @@ func DialCustom(exitSig context.Context, customServer, token string) (*API, erro
 }
 
 func client() *retryablehttp.Client {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	c := retryablehttp.NewClient()
+	c.HTTPClient.Transport = tr
 	c.Logger = nil
 	c.RetryWaitMin = 1 * time.Second
 	c.RetryWaitMax = 16 * time.Second
