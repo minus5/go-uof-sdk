@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/pvotal-tech/go-uof-sdk"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 const (
