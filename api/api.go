@@ -107,8 +107,8 @@ func client() *retryablehttp.Client {
 const (
 	recovery                   = "/v1/{{.Producer}}/recovery/initiate_request?after={{.Timestamp}}&request_id={{.RequestID}}&node_id={{.NodeID}}"
 	fullRecovery               = "/v1/{{.Producer}}/recovery/initiate_request?request_id={{.RequestID}}&node_id={{.NodeID}}"
-	sportEventRecovery         = "/v1/{.Producer}/odds/events/{{.EventURN}}/initiate_request?request_id={{.RequestID}}&node_id={{.NodeID}}"
-	sportEventStatefulRecovery = "/v1//{.Producer}/stateful_messages/events/{{.EventURN}}/initiate_request?request_id={{.RequestID}}&node_id={{.NodeID}}"
+	sportEventRecovery         = "/v1/{{.Producer}}/odds/events/{{.EventURN}}/initiate_request?request_id={{.RequestID}}&node_id={{.NodeID}}"
+	sportEventStatefulRecovery = "/v1/{{.Producer}}/stateful_messages/events/{{.EventURN}}/initiate_request?request_id={{.RequestID}}&node_id={{.NodeID}}"
 	ping                       = "/v1/users/whoami.xml"
 )
 

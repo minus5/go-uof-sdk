@@ -51,10 +51,12 @@ func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 		f.getFixture(u, uof.CurrentTimestamp(), true)
 	}
 	for m := range in {
-		if u := f.eventURN(m); u != uof.NoURN {
-			f.getFixture(u, m.ReceivedAt, false)
-		}
-		out <- m
+		go func(m *uof.Message) {
+			if u := f.eventURN(m); u != uof.NoURN {
+				f.getFixture(u, m.ReceivedAt, false)
+			}
+			out <- m
+		}(m)
 	}
 
 	return f.subProcs

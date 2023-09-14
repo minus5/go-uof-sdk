@@ -41,12 +41,14 @@ func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 
 	s.getAll()
 	for m := range in {
-		if m.Is(uof.MessageTypeOddsChange) {
-			m.OddsChange.EachVariantMarket(func(marketID int, variant string) {
-				s.variantMarket(marketID, variant, m.ReceivedAt)
-			})
-		}
-		out <- m
+		go func(m *uof.Message) {
+			if m.Is(uof.MessageTypeOddsChange) {
+				m.OddsChange.EachVariantMarket(func(marketID int, variant string) {
+					s.variantMarket(marketID, variant, m.ReceivedAt)
+				})
+			}
+			out <- m
+		}(m)
 	}
 	return s.subProcs
 }
