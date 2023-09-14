@@ -105,8 +105,19 @@ func logMessage(m *uof.Message) {
 		if m.Alive.Subscribed != 0 {
 			fmt.Printf("%-25s producer: %s, timestamp: %d\n", m.Type, m.Alive.Producer, m.Alive.Timestamp)
 		}
+	case uof.MessageTypeBetSettlement:
+		for _, v := range m.BetSettlement.Markets {
+			fmt.Printf("BET SETTLEMENT producer=%v eventID=%d marketID=%v status=%v\n", m.Producer, m.BetSettlement.EventURN.ID(), v.ID, v.Result)
+		}
+	case uof.MessageTypeBetStop:
+		for _, v := range m.BetStop.MarketIDs {
+			fmt.Printf("BET STOP producer=%v eventID=%d marketID=%v status=%v\n", m.Producer, m.BetStop.EventURN.ID(), v, m.BetStop.Status)
+		}
 	case uof.MessageTypeOddsChange:
-		fmt.Printf("%-25s event: %s, markets: %d\n", m.Type, m.EventURN, len(m.OddsChange.Markets))
+		fmt.Printf("ODDS CHANGE producer=%v eventID=%d eventStatus=%v\n", m.Producer, m.OddsChange.EventURN.ID(), m.OddsChange.EventStatus)
+		for _, v := range m.OddsChange.Markets {
+			fmt.Printf("ODDS CHANGE producer=%v eventID=%d marketID=%v status=%v\n", m.Producer, m.OddsChange.EventURN.ID(), v.ID, v.Status)
+		}
 	default:
 		var b []byte
 		if false && m.Raw != nil {
