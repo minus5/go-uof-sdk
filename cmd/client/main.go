@@ -74,7 +74,7 @@ func main() {
 	pc.Add(uof.ProducerPremiumCricket, timestamp)
 
 	err := sdk.Run(exitSignal(),
-		sdk.Credentials("38616", "j8l0CpSoytxhp7xb7r", 123),
+		sdk.Credentials(bookmakerID, token, 123),
 		sdk.Staging(),
 		sdk.Recovery(pc),
 		sdk.ConfigThrottle(true),
