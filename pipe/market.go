@@ -42,15 +42,9 @@ func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 	s.getAll()
 	for m := range in {
 		if m.Is(uof.MessageTypeOddsChange) {
-			//var wg sync.WaitGroup
 			m.OddsChange.EachVariantMarket(func(marketID int, variant string) {
-				//	go func() {
-				//		wg.Add(1)
 				s.variantMarket(marketID, variant, m.ReceivedAt)
-				//		wg.Done()
-				//	}()
 			})
-			//wg.Wait()
 		}
 		out <- m
 	}

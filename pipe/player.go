@@ -37,15 +37,9 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 
 	for m := range in {
 		if m.Is(uof.MessageTypeOddsChange) {
-			//var wg sync.WaitGroup
 			m.OddsChange.EachPlayer(func(playerID int) {
-				//	go func() {
-				//		wg.Add(1)
 				p.get(playerID, m.ReceivedAt)
-				//		wg.Done()
-				//	}()
 			})
-			//wg.Wait()
 		}
 		out <- m
 	}
