@@ -108,12 +108,14 @@ func (t *BetSettlementOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartEleme
 	return nil
 }
 
-//The following list includes all possible combinations of outcome (result) and void_factor:
-//  result="0" and no void_factor: Lose entire bet
-//  result="1" and no void_factor: Win entire bet
-//  result="0" and void_factor="1": Refund entire bet
-//  result="1" and void_factor="0.5": Refund half bet and win other half
-//  result="0" and void_factor="0.5": Refund half bet and lose other half.
+// The following list includes all possible combinations of outcome (result) and void_factor:
+//
+//	result="0" and no void_factor: Lose entire bet
+//	result="1" and no void_factor: Win entire bet
+//	result="0" and void_factor="1": Refund entire bet
+//	result="1" and void_factor="0.5": Refund half bet and win other half
+//	result="0" and void_factor="0.5": Refund half bet and lose other half.
+//
 // If the bet on an outcome should be refunded completely void-factor is set to
 // 1.0. If half of the bet on an outcome should be refunded void_factor is set
 // to 0.5.

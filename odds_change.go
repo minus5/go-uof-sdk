@@ -101,11 +101,11 @@ func (o *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 }
 
 // Custom unmarshaling reasons:
-//  * To cover the case that: 'The default value is active if status is not present.'
-//  * To convert Specifiers and ExtendedSpecifiers fileds which are
-//    lists of key value attributes encoded in string to the map.
-//  * To calculate LineID; market line is uniquely identified by both
-//    market id and line id
+//   - To cover the case that: 'The default value is active if status is not present.'
+//   - To convert Specifiers and ExtendedSpecifiers fileds which are
+//     lists of key value attributes encoded in string to the map.
+//   - To calculate LineID; market line is uniquely identified by both
+//     market id and line id
 func (m *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Market
 	var overlay struct {

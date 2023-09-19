@@ -36,14 +36,18 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 	p.errc, p.out = errc, out
 
 	for m := range in {
-		go func(m *uof.Message) {
-			if m.Is(uof.MessageTypeOddsChange) {
-				m.OddsChange.EachPlayer(func(playerID int) {
-					p.get(playerID, m.ReceivedAt)
-				})
-			}
-			out <- m
-		}(m)
+		if m.Is(uof.MessageTypeOddsChange) {
+			//var wg sync.WaitGroup
+			m.OddsChange.EachPlayer(func(playerID int) {
+				//	go func() {
+				//		wg.Add(1)
+				p.get(playerID, m.ReceivedAt)
+				//		wg.Done()
+				//	}()
+			})
+			//wg.Wait()
+		}
+		out <- m
 	}
 	return p.subProcs
 }

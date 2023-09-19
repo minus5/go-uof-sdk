@@ -23,6 +23,7 @@ type Config struct {
 	Token            string
 	NodeID           int
 	IsAMQPTLS        bool
+	IsThrottled      bool
 	Fixtures         time.Time
 	Recovery         []uof.ProducerChange
 	Stages           []pipe.InnerStage
@@ -55,7 +56,6 @@ func Run(ctx context.Context, options ...Option) error {
 			return err
 		}
 	}
-
 	stages := []pipe.InnerStage{
 		pipe.Markets(apiConn, c.Languages),
 		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
@@ -104,9 +104,9 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error)
 	var conn *queue.Connection
 	var amqpErr error
 	if c.CustomAMQPServer != "" {
-		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS)
+		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled)
 	} else {
-		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS)
+		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled)
 	}
 	if amqpErr != nil {
 		return nil, nil, amqpErr
@@ -146,6 +146,13 @@ func CustomServers(customAMQPServer, customAPIServer string) Option {
 func ConfigTLS(isAMQPTLS bool) Option {
 	return func(c *Config) {
 		c.IsAMQPTLS = isAMQPTLS
+	}
+}
+
+// ConfigTLS for setting tls flag
+func ConfigThrottle(isThrottled bool) Option {
+	return func(c *Config) {
+		c.IsThrottled = isThrottled
 	}
 }
 
