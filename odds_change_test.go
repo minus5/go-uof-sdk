@@ -165,7 +165,7 @@ func TestSpecifiersParsing(t *testing.T) {
 		},
 	}
 	for i, d := range data {
-		s := toSpecifiers(d.specifiers, d.extendedSpecifers)
+		s := toSpecifiers(getAllSpecifiers(d.specifiers, d.extendedSpecifers))
 		assert.Equal(t, len(d.specifiersMap), len(s))
 		m := Market{Specifiers: d.specifiersMap}
 		assert.Equal(t, d.variantSpecifier, m.VariantSpecifier())

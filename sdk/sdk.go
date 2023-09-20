@@ -19,7 +19,7 @@ type ErrorListenerFunc func(err error)
 type Config struct {
 	CustomAMQPServer string
 	CustomAPIServer  string
-	BookmakerID      string
+	BookmakerID      int
 	Token            string
 	NodeID           int
 	IsAMQPTLS        bool
@@ -126,7 +126,7 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error)
 }
 
 // Credentials for establishing connection to the uof queue and api.
-func Credentials(bookmakerID, token string, nodeID int) Option {
+func Credentials(bookmakerID int, token string, nodeID int) Option {
 	return func(c *Config) {
 		c.BookmakerID = bookmakerID
 		c.Token = token
