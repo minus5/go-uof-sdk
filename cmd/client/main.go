@@ -30,16 +30,6 @@ func env(name string) string {
 	return e
 }
 
-var (
-	bookmakerID string
-	token       string
-)
-
-func init() {
-	token = env(EnvToken)
-	bookmakerID = env(EnvBookmakerID)
-}
-
 func debugHTTP() {
 	if err := http.ListenAndServe("localhost:8124", nil); err != nil {
 		log.Fatal(err)
@@ -74,7 +64,7 @@ func main() {
 	pc.Add(uof.ProducerPremiumCricket, timestamp)
 
 	err := sdk.Run(exitSignal(),
-		sdk.Credentials(bookmakerID, token, 123),
+		sdk.Credentials(123456, "token_goes_here", 123),
 		sdk.Staging(),
 		sdk.Recovery(pc),
 		sdk.ConfigThrottle(true),

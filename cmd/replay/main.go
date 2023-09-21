@@ -18,11 +18,6 @@ import (
 	"github.com/pvotal-tech/go-uof-sdk/sdk"
 )
 
-const (
-	EnvBookmakerID = "UOF_BOOKMAKER_ID"
-	EnvToken       = "UOF_TOKEN"
-)
-
 func env(name string) string {
 	val, ok := os.LookupEnv(name)
 	if !ok {
@@ -32,7 +27,7 @@ func env(name string) string {
 }
 
 var (
-	bookmakerID  string
+	bookmakerID  int
 	token        string
 	scenarioID   int
 	eventURN     uof.URN
@@ -56,9 +51,6 @@ func init() {
 		log.Printf("no event or scenario found, will replay sample event %s", event)
 	}
 	eventURN.Parse(event)
-
-	token = env(EnvToken)
-	bookmakerID = env(EnvBookmakerID)
 }
 
 func debugHTTP() {

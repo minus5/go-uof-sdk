@@ -29,7 +29,7 @@ const (
 )
 
 // Dial connects to the queue chosen by environment
-func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func Dial(ctx context.Context, env uof.Environment, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
 	switch env {
 	case uof.Replay:
 		return DialReplay(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
@@ -45,27 +45,27 @@ func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string, n
 }
 
 // Dial connects to the production queue
-func DialProduction(ctx context.Context, bookmakerID, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func DialProduction(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
 	return dial(ctx, productionServer, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 // Dial connects to the production queue
-func DialProductionGlobal(ctx context.Context, bookmakerID, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func DialProductionGlobal(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
 	return dial(ctx, productionServerGlobal, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 // DialStaging connects to the staging queue
-func DialStaging(ctx context.Context, bookmakerID, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func DialStaging(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
 	return dial(ctx, stagingServer, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 // DialReplay connects to the replay server
-func DialReplay(ctx context.Context, bookmakerID, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func DialReplay(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
 	return dial(ctx, replayServer, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 // DialCustom connects to a custom server
-func DialCustom(ctx context.Context, server, bookmakerID, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func DialCustom(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
 	return dial(ctx, server, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
@@ -168,8 +168,8 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 	<-errsDone
 }
 
-func dial(ctx context.Context, server, bookmakerID, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
-	addr := fmt.Sprintf("amqps://%s:@%s//unifiedfeed/%s", token, server, bookmakerID)
+func dial(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+	addr := fmt.Sprintf("amqps://%s:@%s//unifiedfeed/%d", token, server, bookmakerID)
 
 	tlsConfig := &tls.Config{
 		ServerName:         server,
