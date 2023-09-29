@@ -17,20 +17,21 @@ type ErrorListenerFunc func(err error)
 
 // Config is active SDK configuration
 type Config struct {
-	CustomAMQPServer string
-	CustomAPIServer  string
-	BookmakerID      int
-	Token            string
-	NodeID           int
-	IsAMQPTLS        bool
-	IsThrottled      bool
-	Fixtures         time.Time
-	Recovery         []uof.ProducerChange
-	Stages           []pipe.InnerStage
-	Replay           func(*api.ReplayAPI) error
-	Env              uof.Environment
-	Languages        []uof.Lang
-	ErrorListener    ErrorListenerFunc
+	CustomAMQPServer   string
+	CustomAPIServer    string
+	BookmakerID        int
+	Token              string
+	NodeID             int
+	IsAMQPTLS          bool
+	IsThrottled        bool
+	ConcurrentAPIFetch bool
+	Fixtures           time.Time
+	Recovery           []uof.ProducerChange
+	Stages             []pipe.InnerStage
+	Replay             func(*api.ReplayAPI) error
+	Env                uof.Environment
+	Languages          []uof.Lang
+	ErrorListener      ErrorListenerFunc
 }
 
 // Option sets attributes on the Config.
@@ -59,7 +60,7 @@ func Run(ctx context.Context, options ...Option) error {
 	stages := []pipe.InnerStage{
 		pipe.Markets(apiConn, c.Languages),
 		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
-		pipe.Player(apiConn, c.Languages),
+		pipe.Player(apiConn, c.Languages, c.ConcurrentAPIFetch),
 		pipe.BetStop(),
 	}
 	if len(c.Recovery) > 0 {
@@ -153,6 +154,13 @@ func ConfigTLS(isAMQPTLS bool) Option {
 func ConfigThrottle(isThrottled bool) Option {
 	return func(c *Config) {
 		c.IsThrottled = isThrottled
+	}
+}
+
+// ConfigTLS for setting tls flag
+func ConfigConcurrentAPIFetch(concurrentAPIFetch bool) Option {
+	return func(c *Config) {
+		c.ConcurrentAPIFetch = concurrentAPIFetch
 	}
 }
 
