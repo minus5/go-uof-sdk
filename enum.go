@@ -25,7 +25,7 @@ var producers = []struct {
 	scope          string
 	recoveryWindow int // in minutes
 }{
-	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 4320},
+	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 600},
 	{id: 3, name: "Ctrl", description: "Betradar Ctrl", code: "pre", scope: "prematch", recoveryWindow: 4320},
 	{id: 4, name: "BetPal", description: "BetPal", code: "betpal", scope: "live", recoveryWindow: 4320},
 	{id: 5, name: "PremiumCricket", description: "Premium Cricket", code: "premium_cricket", scope: "live|prematch", recoveryWindow: 4320},
