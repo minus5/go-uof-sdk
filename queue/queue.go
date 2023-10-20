@@ -10,7 +10,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
-	"strings"
 	"time"
 
 	"github.com/pvotal-tech/go-uof-sdk"
@@ -189,8 +188,7 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 	}
 	conn, err := amqp.DialConfig(addr, config)
 	if err != nil {
-		fmt.Println(strings.ReplaceAll(addr, token, "<token>"))
-		return nil, uof.Notice("conn.Dial", err)
+		return nil, uof.Notice("conn.Dial", fmt.Errorf("%w (%s)", err, addr))
 	}
 
 	chnl, err := conn.Channel()
