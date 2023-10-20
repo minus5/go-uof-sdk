@@ -9,9 +9,11 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"net"
+	"time"
 
-	"github.com/minus5/go-uof-sdk"
-	"github.com/streadway/amqp"
+	"github.com/pvotal-tech/go-uof-sdk"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 const (
@@ -21,49 +23,59 @@ const (
 	productionServerGlobal = "global.mq.betradar.com:5671"
 	queueExchange          = "unifiedfeed"
 	bindingKeyAll          = "#"
+	amqpDefaultHeartbeat   = 10 * time.Second
+	amqpDefaultLocale      = "en_US"
 )
 
 // Dial connects to the queue chosen by environment
-func Dial(ctx context.Context, env uof.Environment, bookmakerID, token string) (*Connection, error) {
+func Dial(ctx context.Context, env uof.Environment, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
 	switch env {
 	case uof.Replay:
-		return DialReplay(ctx, bookmakerID, token)
+		return DialReplay(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
 	case uof.Staging:
-		return DialStaging(ctx, bookmakerID, token)
+		return DialStaging(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
 	case uof.Production:
-		return DialProduction(ctx, bookmakerID, token)
+		return DialProduction(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
 	case uof.ProductionGlobal:
-		return DialProductionGlobal(ctx, bookmakerID, token)
+		return DialProductionGlobal(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
 	default:
 		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
 	}
 }
 
 // Dial connects to the production queue
-func DialProduction(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, productionServer, bookmakerID, token)
+func DialProduction(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+	return dial(ctx, productionServer, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 // Dial connects to the production queue
-func DialProductionGlobal(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, productionServerGlobal, bookmakerID, token)
+func DialProductionGlobal(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+	return dial(ctx, productionServerGlobal, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 // DialStaging connects to the staging queue
-func DialStaging(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, stagingServer, bookmakerID, token)
+func DialStaging(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+	return dial(ctx, stagingServer, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 // DialReplay connects to the replay server
-func DialReplay(ctx context.Context, bookmakerID, token string) (*Connection, error) {
-	return dial(ctx, replayServer, bookmakerID, token)
+func DialReplay(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+	return dial(ctx, replayServer, bookmakerID, token, nodeID, isTLS, isThrottled)
+}
+
+// DialCustom connects to a custom server
+func DialCustom(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+	return dial(ctx, server, bookmakerID, token, nodeID, isTLS, isThrottled)
 }
 
 type Connection struct {
-	msgs   <-chan amqp.Delivery
-	errs   <-chan *amqp.Error
-	reDial func() (*Connection, error)
-	info   ConnectionInfo
+	isThrottled bool
+	msgs        <-chan amqp.Delivery
+	errs        <-chan *amqp.Error
+	chnl        *amqp.Channel
+	queueName   string
+	reDial      func() (*Connection, error)
+	info        ConnectionInfo
 }
 
 type ConnectionInfo struct {
@@ -71,6 +83,7 @@ type ConnectionInfo struct {
 	local      string
 	network    string
 	tlsVersion uint16
+	nodeID     int
 }
 
 func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
@@ -85,8 +98,16 @@ func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
 
 }
 
-// drain consumes from connection until msgs chan is closed
 func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
+	if c.isThrottled {
+		c.drainThrottled(out, errc)
+	} else {
+		c.drainContinuous(out, errc)
+	}
+}
+
+// drain consumes from connection until msgs chan is closed. consumes as fast as it can from queue
+func (c *Connection) drainContinuous(out chan<- *uof.Message, errc chan<- error) {
 	errsDone := make(chan struct{})
 	go func() {
 		for err := range c.errs {
@@ -101,22 +122,73 @@ func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
 			errc <- uof.Notice("conn.DeliveryParse", err)
 			continue
 		}
+		// ignores messages that are of no interest to the current session
+		if m.NodeID != 0 && m.NodeID != c.info.nodeID {
+			return
+		}
 		out <- m
 	}
 	<-errsDone
 }
 
-func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, error) {
-	addr := fmt.Sprintf("amqps://%s:@%s//unifiedfeed/%s", token, server, bookmakerID)
+// drain gets a single message and blocks on next iteration if out has not been consumed
+func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) {
+	errsDone := make(chan struct{})
+	go func() {
+		for err := range c.errs {
+			errc <- uof.E("conn", err)
+		}
+		close(errsDone)
+	}()
 
-	tls := &tls.Config{
+	for {
+		delivery, hasMsg, err := c.chnl.Get(c.queueName, true)
+		if err != nil {
+			errc <- uof.Notice("conn.channelGet", err)
+			break
+		}
+		if !hasMsg {
+			continue
+		}
+		m, err := uof.NewQueueMessage(delivery.RoutingKey, delivery.Body)
+		if err != nil {
+			errc <- uof.Notice("conn.DeliveryParse", err)
+			continue
+		}
+		m.PendingMsgCount = int(delivery.MessageCount)
+
+		// ignores messages that are of no interest to the current session
+		if m.NodeID != 0 && m.NodeID != c.info.nodeID {
+			return
+		}
+
+		out <- m
+	}
+	<-errsDone
+}
+
+func dial(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+	addr := fmt.Sprintf("amqps://%s:@%s//unifiedfeed/%d", token, server, bookmakerID)
+
+	tlsConfig := &tls.Config{
 		ServerName:         server,
 		InsecureSkipVerify: true,
 	}
-	conn, err := amqp.DialTLS(addr, tls)
+	var dialer func(network string, addr string) (net.Conn, error)
+	if isTLS {
+		dialer = func(network string, addr string) (net.Conn, error) {
+			return tls.Dial(network, addr, tlsConfig)
+		}
+	}
+	config := amqp.Config{
+		Heartbeat:       amqpDefaultHeartbeat,
+		TLSClientConfig: tlsConfig,
+		Locale:          amqpDefaultLocale,
+		Dial:            dialer,
+	}
+	conn, err := amqp.DialConfig(addr, config)
 	if err != nil {
-		fmt.Println(addr)
-		return nil, uof.Notice("conn.Dial", err)
+		return nil, uof.Notice("conn.Dial", fmt.Errorf("%w (%s)", err, addr))
 	}
 
 	chnl, err := conn.Channel()
@@ -148,33 +220,40 @@ func dial(ctx context.Context, server, bookmakerID, token string) (*Connection, 
 	}
 
 	consumerTag := ""
-	msgs, err := chnl.Consume(
-		qee.Name,    // queue
-		consumerTag, // consumerTag
-		true,        // auto-ack
-		true,        // exclusive
-		false,       // no-local
-		false,       // no-wait
-		nil,         // args
-	)
-	if err != nil {
-		return nil, uof.Notice("conn.Consume", err)
+	var msgs <-chan amqp.Delivery
+	if !isThrottled {
+		msgs, err = chnl.Consume(
+			qee.Name,    // queue
+			consumerTag, // consumerTag
+			true,        // auto-ack
+			false,       // exclusive
+			false,       // no-local
+			false,       // no-wait
+			nil,         // args
+		)
+		if err != nil {
+			return nil, uof.Notice("conn.Consume", err)
+		}
 	}
 
 	errs := make(chan *amqp.Error)
 	chnl.NotifyClose(errs)
 
 	c := &Connection{
-		msgs: msgs,
-		errs: errs,
+		isThrottled: isThrottled,
+		msgs:        msgs,
+		errs:        errs,
+		chnl:        chnl,
+		queueName:   qee.Name,
 		reDial: func() (*Connection, error) {
-			return dial(ctx, server, bookmakerID, token)
+			return dial(ctx, server, bookmakerID, token, nodeID, isTLS, isThrottled)
 		},
 		info: ConnectionInfo{
 			server:     server,
 			local:      conn.LocalAddr().String(),
 			network:    conn.LocalAddr().Network(),
 			tlsVersion: conn.ConnectionState().Version,
+			nodeID:     nodeID,
 		},
 	}
 

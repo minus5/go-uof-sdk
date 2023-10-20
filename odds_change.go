@@ -51,7 +51,8 @@ type OddsGenerationProperties struct {
 type Market struct {
 	ID            int               `xml:"id,attr" json:"id"`
 	LineID        int               `json:"lineID"`
-	Specifiers    map[string]string `json:"sepcifiers,omitempty"`
+	Specifiers    map[string]string `json:"specifiers,omitempty"`
+	AllSpecifiers string            `json:"allSpecifiers,omitempty"`
 	Status        MarketStatus      `xml:"status,attr,omitempty" json:"status,omitempty"`
 	CashoutStatus *CashoutStatus    `xml:"cashout_status,attr,omitempty" json:"cashoutStatus,omitempty"`
 	// If present, this is set to 1, which states that this is the most balanced
@@ -101,11 +102,11 @@ func (o *OddsChange) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error 
 }
 
 // Custom unmarshaling reasons:
-//  * To cover the case that: 'The default value is active if status is not present.'
-//  * To convert Specifiers and ExtendedSpecifiers fileds which are
-//    lists of key value attributes encoded in string to the map.
-//  * To calculate LineID; market line is uniquely identified by both
-//    market id and line id
+//   - To cover the case that: 'The default value is active if status is not present.'
+//   - To convert Specifiers and ExtendedSpecifiers fileds which are
+//     lists of key value attributes encoded in string to the map.
+//   - To calculate LineID; market line is uniquely identified by both
+//     market id and line id
 func (m *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T Market
 	var overlay struct {
@@ -125,7 +126,8 @@ func (m *Market) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if overlay.Status != nil {
 		m.Status = MarketStatus(*overlay.Status)
 	}
-	m.Specifiers = toSpecifiers(overlay.Specifiers, overlay.ExtendedSpecifiers)
+	m.AllSpecifiers = getAllSpecifiers(overlay.Specifiers, overlay.ExtendedSpecifiers)
+	m.Specifiers = toSpecifiers(m.AllSpecifiers)
 	m.LineID = toLineID(overlay.Specifiers)
 	if overlay.MarketMetadata != nil {
 		m.NextBetstop = overlay.MarketMetadata.NextBetstop
@@ -157,11 +159,23 @@ func (m Market) VariantSpecifier() string {
 	return ""
 }
 
-func toSpecifiers(specifiers, extendedSpecifiers string) map[string]string {
-	allSpecifiers := specifiers
-	if extendedSpecifiers != "" {
-		allSpecifiers = allSpecifiers + "|" + extendedSpecifiers
+func getAllSpecifiers(specifiers, extendedSpecifiers string) string {
+	if specifiers == "" && extendedSpecifiers == "" {
+		return ""
 	}
+
+	if specifiers == "" {
+		return extendedSpecifiers
+	}
+
+	if extendedSpecifiers == "" {
+		return specifiers
+	}
+
+	return specifiers + "|" + extendedSpecifiers
+}
+
+func toSpecifiers(allSpecifiers string) map[string]string {
 	if len(allSpecifiers) < 2 {
 		return nil
 	}

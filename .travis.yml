@@ -1,5 +1,5 @@
 language: go
-go_import_path: github.com/minus5/go-uof-sdk
+go_import_path: github.com/pvotal-tech/go-uof-sdk
 os:
     - linux
     - osx

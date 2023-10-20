@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minus5/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk"
 )
 
 type fixtureAPI interface {
@@ -38,12 +38,12 @@ func Fixture(api fixtureAPI, languages []uof.Lang, preloadTo time.Time) InnerSta
 }
 
 // Na sto sve pazim ovdje:
-//  * na pocetku napravim preload
-//  * za vrijeme preload-a ne pokrecem pojedinacne
-//  * za vrijeme preload-a za zaustavljam lanaca, saljem dalje in -> out
-//  * nakon sto zavrsi preload napravim one koje preload nije ubacio
-//  * ne radim request cesce od svakih x (bitno za replay, da ne proizvedem puno requesta)
-//  * kada radim scenario replay htio bi da samo jednom opali, dok je neki in process da na pokrece isti
+//   - na pocetku napravim preload
+//   - za vrijeme preload-a ne pokrecem pojedinacne
+//   - za vrijeme preload-a za zaustavljam lanaca, saljem dalje in -> out
+//   - nakon sto zavrsi preload napravim one koje preload nije ubacio
+//   - ne radim request cesce od svakih x (bitno za replay, da ne proizvedem puno requesta)
+//   - kada radim scenario replay htio bi da samo jednom opali, dok je neki in process da na pokrece isti
 func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan<- error) *sync.WaitGroup {
 	f.errc, f.out = errc, out
 
@@ -51,16 +51,19 @@ func (f *fixture) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 		f.getFixture(u, uof.CurrentTimestamp(), true)
 	}
 	for m := range in {
-		out <- m
 		if u := f.eventURN(m); u != uof.NoURN {
 			f.getFixture(u, m.ReceivedAt, false)
 		}
+		out <- m
 	}
 
 	return f.subProcs
 }
 
 func (f *fixture) eventURN(m *uof.Message) uof.URN {
+	if m.Type == uof.MessageTypeOddsChange && m.OddsChange != nil {
+		return m.OddsChange.EventURN
+	}
 	if m.Type != uof.MessageTypeFixtureChange || m.FixtureChange == nil {
 		return uof.NoURN
 	}
@@ -72,7 +75,7 @@ func (f *fixture) preloadLoop(in <-chan *uof.Message) []uof.URN {
 	done := make(chan struct{})
 
 	f.subProcs.Add(1)
-	go func() {
+	func() {
 		defer f.subProcs.Done()
 		f.preload()
 		close(done)
@@ -102,7 +105,7 @@ func (f *fixture) preload() {
 	var wg sync.WaitGroup
 	wg.Add(len(f.languages))
 	for _, lang := range f.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer wg.Done()
 			in, errc := f.api.Fixtures(lang, f.preloadTo)
 			for x := range in {
@@ -120,7 +123,7 @@ func (f *fixture) preload() {
 func (f *fixture) getFixture(eventURN uof.URN, receivedAt int, isPreload bool) {
 	f.subProcs.Add(len(f.languages))
 	for _, lang := range f.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer f.subProcs.Done()
 			f.rateLimit <- struct{}{}
 			defer func() { <-f.rateLimit }()
@@ -134,6 +137,7 @@ func (f *fixture) getFixture(eventURN uof.URN, receivedAt int, isPreload bool) {
 				f.errc <- err
 				return
 			}
+
 			m, err := uof.NewFixtureMessageFromBuf(lang, buf, receivedAt)
 			if err != nil {
 				f.errc <- err

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minus5/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk"
 )
 
 type marketsAPI interface {
@@ -41,12 +41,12 @@ func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 
 	s.getAll()
 	for m := range in {
-		out <- m
 		if m.Is(uof.MessageTypeOddsChange) {
 			m.OddsChange.EachVariantMarket(func(marketID int, variant string) {
 				s.variantMarket(marketID, variant, m.ReceivedAt)
 			})
 		}
+		out <- m
 	}
 	return s.subProcs
 }
@@ -56,7 +56,7 @@ func (s *markets) getAll() {
 	requestedAt := uof.CurrentTimestamp()
 
 	for _, lang := range s.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer s.subProcs.Done()
 
 			ms, err := s.api.Markets(lang)
@@ -77,7 +77,7 @@ func (s *markets) variantMarket(marketID int, variant string, requestedAt int) {
 	s.subProcs.Add(len(s.languages))
 
 	for _, lang := range s.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer s.subProcs.Done()
 			s.rateLimit <- struct{}{}
 			defer func() { <-s.rateLimit }()

@@ -12,17 +12,20 @@ import (
 )
 
 type Header struct {
-	Type        MessageType     `json:"type,omitempty"`
-	Scope       MessageScope    `json:"scope,omitempty"`
-	Priority    MessagePriority `json:"priority,omitempty"`
-	Lang        Lang            `json:"lang,omitempty"`
-	SportID     int             `json:"sportID,omitempty"`
-	EventID     int             `json:"eventID,omitempty"`
-	EventURN    URN             `json:"eventURN,omitempty"`
-	ReceivedAt  int             `json:"receivedAt,omitempty"`
-	RequestedAt int             `json:"requestedAt,omitempty"`
-	Producer    Producer        `json:"producer,omitempty"`
-	Timestamp   int             `json:"timestamp,omitempty"`
+	Type            MessageType     `json:"type,omitempty"`
+	Scope           MessageScope    `json:"scope,omitempty"`
+	Priority        MessagePriority `json:"priority,omitempty"`
+	Lang            Lang            `json:"lang,omitempty"`
+	SportID         int             `json:"sportID,omitempty"`
+	EventID         int             `json:"eventID,omitempty"`
+	EventURN        URN             `json:"eventURN,omitempty"`
+	ReceivedAt      int             `json:"receivedAt,omitempty"`
+	RequestedAt     int             `json:"requestedAt,omitempty"`
+	Producer        Producer        `json:"producer,omitempty"`
+	Timestamp       int             `json:"timestamp,omitempty"`
+	NodeID          int             `json:"nodeID,omitempty"`
+	PendingMsgCount int             `json:"pendingMsgCount,omitempty"`
+	External        bool            `json:"external,omitempty"`
 }
 
 type Body struct {
@@ -108,8 +111,13 @@ func (m *Message) parseRoutingKey(routingKey string) error {
 	sportID := part(4)
 	eventURN := part(5)
 	eventID := part(6)
-	//nodeID := part(7)  // currently unused
+	nodeID := part(7) // currently unused
 
+	if nodeID != "" {
+		m.NodeID, _ = strconv.Atoi(nodeID)
+	}
+
+	m.External = true
 	m.Priority.Parse(priority)
 	m.Type.Parse(messageType)
 	m.Scope.Parse(prematchInterest, liveInterest)

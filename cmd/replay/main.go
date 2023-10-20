@@ -12,15 +12,10 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/minus5/go-uof-sdk"
-	"github.com/minus5/go-uof-sdk/api"
-	"github.com/minus5/go-uof-sdk/pipe"
-	"github.com/minus5/go-uof-sdk/sdk"
-)
-
-const (
-	EnvBookmakerID = "UOF_BOOKMAKER_ID"
-	EnvToken       = "UOF_TOKEN"
+	"github.com/pvotal-tech/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk/api"
+	"github.com/pvotal-tech/go-uof-sdk/pipe"
+	"github.com/pvotal-tech/go-uof-sdk/sdk"
 )
 
 func env(name string) string {
@@ -32,7 +27,7 @@ func env(name string) string {
 }
 
 var (
-	bookmakerID  string
+	bookmakerID  int
 	token        string
 	scenarioID   int
 	eventURN     uof.URN
@@ -56,9 +51,6 @@ func init() {
 		log.Printf("no event or scenario found, will replay sample event %s", event)
 	}
 	eventURN.Parse(event)
-
-	token = env(EnvToken)
-	bookmakerID = env(EnvBookmakerID)
 }
 
 func debugHTTP() {
@@ -84,7 +76,7 @@ func main() {
 	go debugHTTP()
 
 	err := sdk.Run(exitSignal(),
-		sdk.Credentials(bookmakerID, token),
+		sdk.Credentials(bookmakerID, token, 123),
 		sdk.Languages(uof.Languages("en,de,hr")),
 		sdk.BufferedConsumer(pipe.FileStore(outputFolder), 1024),
 		sdk.Callback(progress),

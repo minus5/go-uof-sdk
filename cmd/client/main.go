@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/pvotal-tech/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk/sdk"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -13,10 +15,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/minus5/go-uof-sdk"
-	"github.com/minus5/go-uof-sdk/pipe"
-	"github.com/minus5/go-uof-sdk/sdk"
 )
 
 const (
@@ -30,16 +28,6 @@ func env(name string) string {
 		log.Printf("env %s not found", name)
 	}
 	return e
-}
-
-var (
-	bookmakerID string
-	token       string
-)
-
-func init() {
-	token = env(EnvToken)
-	bookmakerID = env(EnvBookmakerID)
 }
 
 func debugHTTP() {
@@ -61,24 +49,30 @@ func exitSignal() context.Context {
 }
 
 func main() {
+	go func() {
+		_ = http.ListenAndServe(fmt.Sprintf(":%d", 6060), nil)
+	}()
 	go debugHTTP()
 
-	preloadTo := time.Now().Add(24 * time.Hour)
+	//preloadTo := time.Now().Add(24 * time.Hour)
 
-	timestamp := uof.CurrentTimestamp() - 5*60*1000 // -5 minutes
+	timestamp := uof.CurrentTimestamp() - 12*60*60*1000 // -5 minutes
 	var pc uof.ProducersChange
 	pc.Add(uof.ProducerPrematch, timestamp)
 	pc.Add(uof.ProducerLiveOdds, timestamp)
+	pc.Add(uof.ProducerBetPal, timestamp)
+	pc.Add(uof.ProducerPremiumCricket, timestamp)
 
 	err := sdk.Run(exitSignal(),
-		sdk.Credentials(bookmakerID, token),
+		sdk.Credentials(123456, "token_goes_here", 123),
 		sdk.Staging(),
 		sdk.Recovery(pc),
-		sdk.Fixtures(preloadTo),
-		sdk.Languages(uof.Languages("en,de,hr")),
-		sdk.BufferedConsumer(pipe.FileStore("./tmp"), 1024),
+		sdk.ConfigThrottle(true),
+		//sdk.Fixtures(preloadTo),
+		sdk.Languages(uof.Languages("en")),
+		//sdk.BufferedConsumer(pipe.FileStore("./tmp"), 1024),
 		sdk.Consumer(logMessages),
-		sdk.ListenErrors(listenSDKErrors),
+		//sdk.ListenErrors(listenSDKErrors),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -88,12 +82,32 @@ func main() {
 // consumer of incoming messages
 func logMessages(in <-chan *uof.Message) error {
 	for m := range in {
-		logMessage(m)
+		processMessage(m)
 	}
 	return nil
 }
 
-func logMessage(m *uof.Message) {
+func processMessage(m *uof.Message) {
+	var pendingCount, p, requestID, sport string
+	if m.External {
+		pendingCount = fmt.Sprintf("pending=%d", m.PendingMsgCount)
+		p = fmt.Sprintf("producer=%s", m.Producer.Code())
+		if m.Type == uof.MessageTypeBetSettlement {
+			if m.BetSettlement.RequestID != nil {
+				requestID = fmt.Sprintf("requestID=%d", *m.BetSettlement.RequestID)
+			}
+			sport = fmt.Sprintf("sportID=%d", m.SportID)
+		}
+		if m.Type == uof.MessageTypeOddsChange {
+			if m.OddsChange.RequestID != nil {
+				requestID = fmt.Sprintf("requestID=%d", *m.OddsChange.RequestID)
+			}
+			sport = fmt.Sprintf("sportID=%d", m.SportID)
+		}
+	}
+	fmt.Printf("%-60s %-20s %-20s %-20s %-20s %-20s\n", time.Now().String(), m.Type, pendingCount, p, requestID, sport)
+	time.Sleep(time.Millisecond * 200)
+	return
 	switch m.Type {
 	case uof.MessageTypeConnection:
 		fmt.Printf("%-25s status: %s, server: %s, local: %s, network: %s, tls: %s\n", m.Type, m.Connection.Status, m.Connection.ServerName, m.Connection.LocalAddr, m.Connection.Network, m.Connection.TLSVersionToString())
@@ -105,8 +119,19 @@ func logMessage(m *uof.Message) {
 		if m.Alive.Subscribed != 0 {
 			fmt.Printf("%-25s producer: %s, timestamp: %d\n", m.Type, m.Alive.Producer, m.Alive.Timestamp)
 		}
+	case uof.MessageTypeBetSettlement:
+		for _, v := range m.BetSettlement.Markets {
+			fmt.Printf("BET SETTLEMENT producer=%v eventID=%d marketID=%v status=%v\n", m.Producer, m.BetSettlement.EventURN.ID(), v.ID, v.Result)
+		}
+	case uof.MessageTypeBetStop:
+		for _, v := range m.BetStop.MarketIDs {
+			fmt.Printf("BET STOP producer=%v eventID=%d marketID=%v status=%v\n", m.Producer, m.BetStop.EventURN.ID(), v, m.BetStop.Status)
+		}
 	case uof.MessageTypeOddsChange:
-		fmt.Printf("%-25s event: %s, markets: %d\n", m.Type, m.EventURN, len(m.OddsChange.Markets))
+		fmt.Printf("ODDS CHANGE producer=%v eventID=%d eventStatus=%v\n", m.Producer, m.OddsChange.EventURN.ID(), m.OddsChange.EventStatus)
+		for _, v := range m.OddsChange.Markets {
+			fmt.Printf("ODDS CHANGE producer=%v eventID=%d marketID=%v status=%v\n", m.Producer, m.OddsChange.EventURN.ID(), v.ID, v.Status)
+		}
 	default:
 		var b []byte
 		if false && m.Raw != nil {

@@ -10,9 +10,11 @@ import (
 type Producer int8
 
 const (
-	ProducerUnknown  Producer = 0
-	ProducerLiveOdds Producer = 1
-	ProducerPrematch Producer = 3
+	ProducerUnknown        Producer = 0
+	ProducerLiveOdds       Producer = 1
+	ProducerPrematch       Producer = 3
+	ProducerBetPal         Producer = 4
+	ProducerPremiumCricket Producer = 5
 )
 
 var producers = []struct {
@@ -23,7 +25,7 @@ var producers = []struct {
 	scope          string
 	recoveryWindow int // in minutes
 }{
-	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 4320},
+	{id: 1, name: "LO", description: "Live Odds", code: "liveodds", scope: "live", recoveryWindow: 600},
 	{id: 3, name: "Ctrl", description: "Betradar Ctrl", code: "pre", scope: "prematch", recoveryWindow: 4320},
 	{id: 4, name: "BetPal", description: "BetPal", code: "betpal", scope: "live", recoveryWindow: 4320},
 	{id: 5, name: "PremiumCricket", description: "Premium Cricket", code: "premium_cricket", scope: "live|prematch", recoveryWindow: 4320},
@@ -172,9 +174,12 @@ const NoURN = URN("")
 // those with prefix sr:match for them we reserve positive id-s. All others got
 // range in negative ids.
 // Reference: https://docs.betradar.com/display/BD/MG+-+Entities
-//            http://sdk.sportradar.com/content/unifiedfeedsdk/net/doc/html/e1f73019-73cd-c9f8-0d58-7fe25800abf2.htm
+//
+//	http://sdk.sportradar.com/content/unifiedfeedsdk/net/doc/html/e1f73019-73cd-c9f8-0d58-7fe25800abf2.htm
+//
 // List of currently existing event types is taken from the combo box in the
 // integration control page. From method "Fixture for a specified sport event".
+//
 //nolint:gocyclo //accepting complexity of 23
 func (u URN) EventID() int {
 	id, prefix := u.split()

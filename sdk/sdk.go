@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/minus5/go-uof-sdk"
-	"github.com/minus5/go-uof-sdk/api"
-	"github.com/minus5/go-uof-sdk/pipe"
-	"github.com/minus5/go-uof-sdk/queue"
+	"github.com/pvotal-tech/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk/api"
+	"github.com/pvotal-tech/go-uof-sdk/pipe"
+	"github.com/pvotal-tech/go-uof-sdk/queue"
 )
 
 var defaultLanguages = uof.Languages("en,de")
@@ -17,15 +17,21 @@ type ErrorListenerFunc func(err error)
 
 // Config is active SDK configuration
 type Config struct {
-	BookmakerID   string
-	Token         string
-	Fixtures      time.Time
-	Recovery      []uof.ProducerChange
-	Stages        []pipe.InnerStage
-	Replay        func(*api.ReplayAPI) error
-	Env           uof.Environment
-	Languages     []uof.Lang
-	ErrorListener ErrorListenerFunc
+	CustomAMQPServer   string
+	CustomAPIServer    string
+	BookmakerID        int
+	Token              string
+	NodeID             int
+	IsAMQPTLS          bool
+	IsThrottled        bool
+	ConcurrentAPIFetch bool
+	Fixtures           time.Time
+	Recovery           []uof.ProducerChange
+	Stages             []pipe.InnerStage
+	Replay             func(*api.ReplayAPI) error
+	Env                uof.Environment
+	Languages          []uof.Lang
+	ErrorListener      ErrorListenerFunc
 }
 
 // Option sets attributes on the Config.
@@ -51,15 +57,14 @@ func Run(ctx context.Context, options ...Option) error {
 			return err
 		}
 	}
-
 	stages := []pipe.InnerStage{
 		pipe.Markets(apiConn, c.Languages),
 		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
-		pipe.Player(apiConn, c.Languages),
+		pipe.Player(apiConn, c.Languages, c.ConcurrentAPIFetch),
 		pipe.BetStop(),
 	}
 	if len(c.Recovery) > 0 {
-		stages = append(stages, pipe.Recovery(apiConn, c.Recovery))
+		stages = append(stages, pipe.Recovery(apiConn, c.Recovery, c.NodeID))
 	}
 	stages = append(stages, c.Stages...)
 
@@ -97,22 +102,65 @@ func config(options ...Option) Config {
 
 // connect to the queue and api
 func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error) {
-	conn, err := queue.Dial(ctx, c.Env, c.BookmakerID, c.Token)
-	if err != nil {
-		return nil, nil, err
+	var conn *queue.Connection
+	var amqpErr error
+	if c.CustomAMQPServer != "" {
+		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled)
+	} else {
+		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled)
 	}
-	stg, err := api.Dial(ctx, c.Env, c.Token)
-	if err != nil {
-		return nil, nil, err
+	if amqpErr != nil {
+		return nil, nil, amqpErr
 	}
-	return conn, stg, nil
+
+	var apiConn *api.API
+	var apiErr error
+	if c.CustomAPIServer != "" {
+		apiConn, apiErr = api.DialCustom(ctx, c.CustomAPIServer, c.Token)
+	} else {
+		apiConn, apiErr = api.Dial(ctx, c.Env, c.Token)
+	}
+	if apiErr != nil {
+		return nil, nil, apiErr
+	}
+	return conn, apiConn, nil
 }
 
 // Credentials for establishing connection to the uof queue and api.
-func Credentials(bookmakerID, token string) Option {
+func Credentials(bookmakerID int, token string, nodeID int) Option {
 	return func(c *Config) {
 		c.BookmakerID = bookmakerID
 		c.Token = token
+		c.NodeID = nodeID
+	}
+}
+
+// CustomServers for establishing custom servers
+func CustomServers(customAMQPServer, customAPIServer string) Option {
+	return func(c *Config) {
+		c.CustomAMQPServer = customAMQPServer
+		c.CustomAPIServer = customAPIServer
+	}
+}
+
+// ConfigTLS for setting tls flag
+func ConfigTLS(isAMQPTLS bool) Option {
+	return func(c *Config) {
+		c.IsAMQPTLS = isAMQPTLS
+	}
+}
+
+// ConfigTLS for setting tls flag
+func ConfigThrottle(isThrottled bool) Option {
+	return func(c *Config) {
+		c.IsThrottled = isThrottled
+	}
+}
+
+// ConfigTLS for setting tls flag
+func ConfigConcurrentAPIFetch(concurrentAPIFetch bool) Option {
+	return func(c *Config) {
+		c.ConcurrentAPIFetch = concurrentAPIFetch
 	}
 }
 

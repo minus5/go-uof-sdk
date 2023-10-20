@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minus5/go-uof-sdk"
+	"github.com/pvotal-tech/go-uof-sdk"
 )
 
 type playerAPI interface {
@@ -12,22 +12,24 @@ type playerAPI interface {
 }
 
 type player struct {
-	api       playerAPI
-	em        *expireMap
-	languages []uof.Lang // suported languages
-	errc      chan<- error
-	out       chan<- *uof.Message
-	rateLimit chan struct{}
-	subProcs  *sync.WaitGroup
+	api             playerAPI
+	em              *expireMap
+	languages       []uof.Lang // suported languages
+	errc            chan<- error
+	out             chan<- *uof.Message
+	rateLimit       chan struct{}
+	subProcs        *sync.WaitGroup
+	concurrentFetch bool
 }
 
-func Player(api playerAPI, languages []uof.Lang) InnerStage {
+func Player(api playerAPI, languages []uof.Lang, concurrentFetch bool) InnerStage {
 	p := &player{
-		api:       api,
-		languages: languages,
-		em:        newExpireMap(time.Hour),
-		subProcs:  &sync.WaitGroup{},
-		rateLimit: make(chan struct{}, ConcurentAPICallsLimit),
+		api:             api,
+		languages:       languages,
+		em:              newExpireMap(time.Hour),
+		subProcs:        &sync.WaitGroup{},
+		rateLimit:       make(chan struct{}, ConcurentAPICallsLimit),
+		concurrentFetch: concurrentFetch,
 	}
 	return StageWithSubProcessesSync(p.loop)
 }
@@ -36,12 +38,22 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 	p.errc, p.out = errc, out
 
 	for m := range in {
-		out <- m
 		if m.Is(uof.MessageTypeOddsChange) {
+			var wg sync.WaitGroup
 			m.OddsChange.EachPlayer(func(playerID int) {
-				p.get(playerID, m.ReceivedAt)
+				if p.concurrentFetch {
+					wg.Add(1)
+					go func() {
+						p.get(playerID, m.ReceivedAt)
+						wg.Done()
+					}()
+				} else {
+					p.get(playerID, m.ReceivedAt)
+				}
 			})
+			wg.Wait()
 		}
+		out <- m
 	}
 	return p.subProcs
 }
@@ -49,7 +61,7 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 func (p *player) get(playerID, requestedAt int) {
 	p.subProcs.Add(len(p.languages))
 	for _, lang := range p.languages {
-		go func(lang uof.Lang) {
+		func(lang uof.Lang) {
 			defer p.subProcs.Done()
 			p.rateLimit <- struct{}{}
 			defer func() { <-p.rateLimit }()
