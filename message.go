@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/rabbitmq/amqp091-go"
 	"strconv"
 	"strings"
 	"sync"
@@ -26,6 +27,7 @@ type Header struct {
 	NodeID          int             `json:"nodeID,omitempty"`
 	PendingMsgCount int             `json:"pendingMsgCount,omitempty"`
 	External        bool            `json:"external,omitempty"`
+	Delivery        *amqp091.Delivery
 }
 
 type Body struct {
@@ -409,4 +411,28 @@ func UIDWithLang(id int, lang Lang) int {
 
 func (m *Message) Is(mt MessageType) bool {
 	return m.Type == mt
+}
+
+// Ack if message come from AMQP. Acknowledges message processed successfully
+func (m *Message) Ack() error {
+	if m.Delivery != nil {
+		m.Delivery.Ack(false)
+	}
+	return nil
+}
+
+// NackRequeue if message come from AMQP. Notifies AMQP that message wasn't properly processed and requests a requeue
+func (m *Message) NackRequeue() error {
+	if m.Delivery != nil {
+		m.Delivery.Nack(false, true)
+	}
+	return nil
+}
+
+// NackDiscard if message come from AMQP. Notifies AMQP that message wasn't properly processed and discards message
+func (m *Message) NackDiscard() error {
+	if m.Delivery != nil {
+		m.Delivery.Nack(false, false)
+	}
+	return nil
 }

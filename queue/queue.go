@@ -28,44 +28,44 @@ const (
 )
 
 // Dial connects to the queue chosen by environment
-func Dial(ctx context.Context, env uof.Environment, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func Dial(ctx context.Context, env uof.Environment, bookmakerID int, token string, nodeID int, isTLS, isThrottled, autoAck bool) (*Connection, error) {
 	switch env {
 	case uof.Replay:
-		return DialReplay(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
+		return DialReplay(ctx, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 	case uof.Staging:
-		return DialStaging(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
+		return DialStaging(ctx, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 	case uof.Production:
-		return DialProduction(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
+		return DialProduction(ctx, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 	case uof.ProductionGlobal:
-		return DialProductionGlobal(ctx, bookmakerID, token, nodeID, isTLS, isThrottled)
+		return DialProductionGlobal(ctx, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 	default:
 		return nil, uof.Notice("queue dial", fmt.Errorf("unknown environment %d", env))
 	}
 }
 
-// Dial connects to the production queue
-func DialProduction(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
-	return dial(ctx, productionServer, bookmakerID, token, nodeID, isTLS, isThrottled)
+// DialProduction connects to the production queue
+func DialProduction(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled, autoAck bool) (*Connection, error) {
+	return dial(ctx, productionServer, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 }
 
-// Dial connects to the production queue
-func DialProductionGlobal(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
-	return dial(ctx, productionServerGlobal, bookmakerID, token, nodeID, isTLS, isThrottled)
+// DialProductionGlobal connects to the production queue
+func DialProductionGlobal(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled, autoAck bool) (*Connection, error) {
+	return dial(ctx, productionServerGlobal, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 }
 
 // DialStaging connects to the staging queue
-func DialStaging(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
-	return dial(ctx, stagingServer, bookmakerID, token, nodeID, isTLS, isThrottled)
+func DialStaging(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled, autoAck bool) (*Connection, error) {
+	return dial(ctx, stagingServer, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 }
 
 // DialReplay connects to the replay server
-func DialReplay(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
-	return dial(ctx, replayServer, bookmakerID, token, nodeID, isTLS, isThrottled)
+func DialReplay(ctx context.Context, bookmakerID int, token string, nodeID int, isTLS, isThrottled, autoAck bool) (*Connection, error) {
+	return dial(ctx, replayServer, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 }
 
 // DialCustom connects to a custom server
-func DialCustom(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
-	return dial(ctx, server, bookmakerID, token, nodeID, isTLS, isThrottled)
+func DialCustom(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled, autoAck bool) (*Connection, error) {
+	return dial(ctx, server, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 }
 
 type Connection struct {
@@ -155,6 +155,7 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 			errc <- uof.Notice("conn.DeliveryParse", err)
 			continue
 		}
+		m.Delivery = &delivery
 		m.PendingMsgCount = int(delivery.MessageCount)
 
 		// ignores messages that are of no interest to the current session
@@ -167,7 +168,7 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 	<-errsDone
 }
 
-func dial(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled bool) (*Connection, error) {
+func dial(ctx context.Context, server string, bookmakerID int, token string, nodeID int, isTLS, isThrottled, autoAck bool) (*Connection, error) {
 	addr := fmt.Sprintf("amqps://%s:@%s//unifiedfeed/%d", token, server, bookmakerID)
 
 	tlsConfig := &tls.Config{
@@ -225,7 +226,7 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 		msgs, err = chnl.Consume(
 			qee.Name,    // queue
 			consumerTag, // consumerTag
-			true,        // auto-ack
+			autoAck,     // auto-ack
 			false,       // exclusive
 			false,       // no-local
 			false,       // no-wait
@@ -246,7 +247,7 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 		chnl:        chnl,
 		queueName:   qee.Name,
 		reDial: func() (*Connection, error) {
-			return dial(ctx, server, bookmakerID, token, nodeID, isTLS, isThrottled)
+			return dial(ctx, server, bookmakerID, token, nodeID, isTLS, isThrottled, autoAck)
 		},
 		info: ConnectionInfo{
 			server:     server,
