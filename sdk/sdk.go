@@ -25,6 +25,7 @@ type Config struct {
 	IsAMQPTLS          bool
 	IsThrottled        bool
 	ConcurrentAPIFetch bool
+	AutoAckDisabled    bool
 	Fixtures           time.Time
 	Recovery           []uof.ProducerChange
 	Stages             []pipe.InnerStage
@@ -105,9 +106,9 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error)
 	var conn *queue.Connection
 	var amqpErr error
 	if c.CustomAMQPServer != "" {
-		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled)
+		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled, !c.AutoAckDisabled)
 	} else {
-		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled)
+		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled, !c.AutoAckDisabled)
 	}
 	if amqpErr != nil {
 		return nil, nil, amqpErr
@@ -157,10 +158,17 @@ func ConfigThrottle(isThrottled bool) Option {
 	}
 }
 
-// ConfigTLS for setting tls flag
+// ConfigConcurrentAPIFetch for auto-fetching rest api concurrently
 func ConfigConcurrentAPIFetch(concurrentAPIFetch bool) Option {
 	return func(c *Config) {
 		c.ConcurrentAPIFetch = concurrentAPIFetch
+	}
+}
+
+// DisableAutoAck requires usage of exposed message functions Ack/NackRequeue/NackDiscard
+func DisableAutoAck() Option {
+	return func(c *Config) {
+		c.AutoAckDisabled = true
 	}
 }
 

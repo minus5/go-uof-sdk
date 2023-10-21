@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/rabbitmq/amqp091-go"
 	"strconv"
 	"strings"
 	"sync"
@@ -25,7 +26,8 @@ type Header struct {
 	Timestamp       int             `json:"timestamp,omitempty"`
 	NodeID          int             `json:"nodeID,omitempty"`
 	PendingMsgCount int             `json:"pendingMsgCount,omitempty"`
-	External        bool            `json:"external,omitempty"`
+	Delivery        *amqp091.Delivery
+	EnabledAutoAck  bool
 }
 
 type Body struct {
@@ -117,7 +119,6 @@ func (m *Message) parseRoutingKey(routingKey string) error {
 		m.NodeID, _ = strconv.Atoi(nodeID)
 	}
 
-	m.External = true
 	m.Priority.Parse(priority)
 	m.Type.Parse(messageType)
 	m.Scope.Parse(prematchInterest, liveInterest)
@@ -409,4 +410,33 @@ func UIDWithLang(id int, lang Lang) int {
 
 func (m *Message) Is(mt MessageType) bool {
 	return m.Type == mt
+}
+
+// IsFromAMQP return true if message comes originally from AMQP. Returns false if it was generated internally
+func (m *Message) IsFromAMQP() bool {
+	return m.Delivery != nil
+}
+
+// Ack if message come from AMQP. Acknowledges message processed successfully
+func (m *Message) Ack() error {
+	if m.IsFromAMQP() {
+		return m.Delivery.Ack(false)
+	}
+	return nil
+}
+
+// NackRequeue if message come from AMQP. Notifies AMQP that message wasn't properly processed and requests a requeue
+func (m *Message) NackRequeue() error {
+	if m.IsFromAMQP() {
+		return m.Delivery.Nack(false, true)
+	}
+	return nil
+}
+
+// NackDiscard if message come from AMQP. Notifies AMQP that message wasn't properly processed and discards message
+func (m *Message) NackDiscard() error {
+	if m.IsFromAMQP() {
+		return m.Delivery.Nack(false, false)
+	}
+	return nil
 }
