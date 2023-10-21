@@ -28,6 +28,7 @@ type Header struct {
 	PendingMsgCount int             `json:"pendingMsgCount,omitempty"`
 	External        bool            `json:"external,omitempty"`
 	Delivery        *amqp091.Delivery
+	EnabledAutoAck  bool
 }
 
 type Body struct {
@@ -415,7 +416,7 @@ func (m *Message) Is(mt MessageType) bool {
 
 // Ack if message come from AMQP. Acknowledges message processed successfully
 func (m *Message) Ack() error {
-	if m.Delivery != nil {
+	if m.External && m.Delivery != nil {
 		m.Delivery.Ack(false)
 	}
 	return nil
@@ -423,7 +424,7 @@ func (m *Message) Ack() error {
 
 // NackRequeue if message come from AMQP. Notifies AMQP that message wasn't properly processed and requests a requeue
 func (m *Message) NackRequeue() error {
-	if m.Delivery != nil {
+	if m.External && m.Delivery != nil {
 		m.Delivery.Nack(false, true)
 	}
 	return nil
@@ -431,7 +432,7 @@ func (m *Message) NackRequeue() error {
 
 // NackDiscard if message come from AMQP. Notifies AMQP that message wasn't properly processed and discards message
 func (m *Message) NackDiscard() error {
-	if m.Delivery != nil {
+	if m.External && m.Delivery != nil {
 		m.Delivery.Nack(false, false)
 	}
 	return nil

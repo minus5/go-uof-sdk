@@ -70,6 +70,7 @@ func DialCustom(ctx context.Context, server string, bookmakerID int, token strin
 
 type Connection struct {
 	isThrottled bool
+	autoAck     bool
 	msgs        <-chan amqp.Delivery
 	errs        <-chan *amqp.Error
 	chnl        *amqp.Channel
@@ -116,8 +117,8 @@ func (c *Connection) drainContinuous(out chan<- *uof.Message, errc chan<- error)
 		close(errsDone)
 	}()
 
-	for m := range c.msgs {
-		m, err := uof.NewQueueMessage(m.RoutingKey, m.Body)
+	for delivery := range c.msgs {
+		m, err := uof.NewQueueMessage(delivery.RoutingKey, delivery.Body)
 		if err != nil {
 			errc <- uof.Notice("conn.DeliveryParse", err)
 			continue
@@ -126,6 +127,9 @@ func (c *Connection) drainContinuous(out chan<- *uof.Message, errc chan<- error)
 		if m.NodeID != 0 && m.NodeID != c.info.nodeID {
 			return
 		}
+
+		m.EnabledAutoAck = c.autoAck
+		m.Delivery = &delivery
 		out <- m
 	}
 	<-errsDone
@@ -142,7 +146,7 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 	}()
 
 	for {
-		delivery, hasMsg, err := c.chnl.Get(c.queueName, true)
+		delivery, hasMsg, err := c.chnl.Get(c.queueName, c.autoAck)
 		if err != nil {
 			errc <- uof.Notice("conn.channelGet", err)
 			break
@@ -155,6 +159,7 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 			errc <- uof.Notice("conn.DeliveryParse", err)
 			continue
 		}
+		m.EnabledAutoAck = c.autoAck
 		m.Delivery = &delivery
 		m.PendingMsgCount = int(delivery.MessageCount)
 
@@ -242,6 +247,7 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 
 	c := &Connection{
 		isThrottled: isThrottled,
+		autoAck:     autoAck,
 		msgs:        msgs,
 		errs:        errs,
 		chnl:        chnl,
