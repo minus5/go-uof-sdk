@@ -417,7 +417,7 @@ func (m *Message) Is(mt MessageType) bool {
 // Ack if message come from AMQP. Acknowledges message processed successfully
 func (m *Message) Ack() error {
 	if m.External && m.Delivery != nil {
-		m.Delivery.Ack(false)
+		return m.Delivery.Ack(false)
 	}
 	return nil
 }
@@ -425,7 +425,7 @@ func (m *Message) Ack() error {
 // NackRequeue if message come from AMQP. Notifies AMQP that message wasn't properly processed and requests a requeue
 func (m *Message) NackRequeue() error {
 	if m.External && m.Delivery != nil {
-		m.Delivery.Nack(false, true)
+		return m.Delivery.Nack(false, true)
 	}
 	return nil
 }
@@ -433,7 +433,7 @@ func (m *Message) NackRequeue() error {
 // NackDiscard if message come from AMQP. Notifies AMQP that message wasn't properly processed and discards message
 func (m *Message) NackDiscard() error {
 	if m.External && m.Delivery != nil {
-		m.Delivery.Nack(false, false)
+		return m.Delivery.Nack(false, false)
 	}
 	return nil
 }
