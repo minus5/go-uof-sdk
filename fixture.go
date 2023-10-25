@@ -53,6 +53,7 @@ type Fixture struct {
 	//ScheduledStartTimeChanges []ScheduledStartTimeChange `xml:"scheduled_start_time_changes>scheduled_start_time_change,omitempty" json:"scheduledStartTimeChanges,omitempty"`
 	//Parent *ParentStage `xml:"parent,omitempty" json:"parent,omitempty"`
 
+	GeneratedAt time.Time `json:"generatedAt,omitempty"`
 }
 
 type Tournament struct {
@@ -129,13 +130,13 @@ type Round struct {
 }
 
 type Season struct {
-	ID        int       `json:"id"`
-	StartDate string    `xml:"start_date,attr" json:"startDate"`
-	EndDate   string    `xml:"end_date,attr" json:"endDate"`
-	StartTime string    `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
-	EndTime   string    `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
-	Year      string    `xml:"year,attr,omitempty" json:"year,omitempty"`
-	Name      string    `xml:"name,attr" json:"name"`
+	ID        int    `json:"id"`
+	StartDate string `xml:"start_date,attr" json:"startDate"`
+	EndDate   string `xml:"end_date,attr" json:"endDate"`
+	StartTime string `xml:"start_time,attr,omitempty" json:"startTime,omitempty"`
+	EndTime   string `xml:"end_time,attr,omitempty" json:"endTime,omitempty"`
+	Year      string `xml:"year,attr,omitempty" json:"year,omitempty"`
+	Name      string `xml:"name,attr" json:"name"`
 	//TournamentID string    `xml:"tournament_id,attr,omitempty" json:"tournamentID,omitempty"`
 }
 

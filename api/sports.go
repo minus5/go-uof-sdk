@@ -78,6 +78,7 @@ func (a *API) Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan 
 				return uof.Notice("unmarshal", err)
 			}
 			for _, f := range sr.Fixtures {
+				f.GeneratedAt = sr.GeneratedAt
 				out <- f
 				if f.Scheduled.After(to) {
 					done = true
