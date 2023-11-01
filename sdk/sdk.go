@@ -43,7 +43,9 @@ type Option func(*Config)
 // Call to Run blocks until stopped by context, or error occurred.
 // Order in which options are set is not important.
 // Credentials and one of Callback or Pipe are functional minimum.
-func Run(ctx context.Context, options ...Option) error {
+func Run(parentCtx context.Context, options ...Option) error {
+	ctx, cancel := context.WithCancel(parentCtx)
+	defer cancel()
 	c := config(options...)
 	qc, apiConn, err := connect(ctx, c)
 	if err != nil {
