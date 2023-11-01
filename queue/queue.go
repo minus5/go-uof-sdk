@@ -270,12 +270,14 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 		// cleanup on exit
 		if err := chnl.Cancel(consumerTag, true); err != nil {
 			log.WithError(err).Error("error while closing channel")
+		} else {
+			log.Info("channel closed OK")
 		}
-		log.Info("channel closed OK")
 		if err := conn.Close(); err != nil {
 			log.WithError(err).Error("error while closing connection")
+		} else {
+			log.Info("connection closed OK")
 		}
-		log.Info("connection closed OK")
 	}()
 
 	return c, nil
