@@ -14,6 +14,7 @@ import (
 
 	"github.com/pvotal-tech/go-uof-sdk"
 	amqp "github.com/rabbitmq/amqp091-go"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -267,8 +268,14 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 	go func() {
 		<-ctx.Done()
 		// cleanup on exit
-		_ = chnl.Cancel(consumerTag, true)
-		conn.Close()
+		if err := chnl.Cancel(consumerTag, true); err != nil {
+			log.WithError(err).Error("error while closing channel")
+		}
+		log.Info("channel closed OK")
+		if err := conn.Close(); err != nil {
+			log.WithError(err).Error("error while closing connection")
+		}
+		log.Info("connection closed OK")
 	}()
 
 	return c, nil
