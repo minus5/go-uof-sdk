@@ -64,6 +64,9 @@ func (f *fixture) eventURN(m *uof.Message) uof.URN {
 	if m.Type == uof.MessageTypeOddsChange && m.OddsChange != nil {
 		return m.OddsChange.EventURN
 	}
+	if m.Type == uof.MessageTypeBetSettlement && m.BetSettlement != nil {
+		return m.BetSettlement.EventURN
+	}
 	if m.Type != uof.MessageTypeFixtureChange || m.FixtureChange == nil {
 		return uof.NoURN
 	}

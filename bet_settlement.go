@@ -1,6 +1,9 @@
 package uof
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"strconv"
+)
 
 type BetSettlement struct {
 	EventID   int      `json:"eventID"`
@@ -88,6 +91,26 @@ func (t *BetSettlementMarket) UnmarshalXML(d *xml.Decoder, start xml.StartElemen
 	return nil
 }
 
+func (t *BetSettlement) EachVariantMarket(handler func(int, string)) {
+	if t == nil {
+		return
+	}
+	for _, m := range t.Markets {
+		if s := m.VariantSpecifier(); s != "" {
+			handler(m.ID, s)
+		}
+	}
+}
+
+func (t *BetSettlementMarket) VariantSpecifier() string {
+	for k, v := range t.Specifiers {
+		if k == "variant" {
+			return v
+		}
+	}
+	return ""
+}
+
 func (t *BetSettlementOutcome) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	type T BetSettlementOutcome
 	var overlay struct {
@@ -154,4 +177,26 @@ func toResult(resultN *int, voidFactorN *float64, deadHeatFactor *float64) Outco
 		return OutcomeResultHalfWin
 	}
 	return OutcomeResultUnknown
+}
+
+func (t *BetSettlement) EachPlayer(handler func(int)) {
+	if t == nil {
+		return
+	}
+	for _, m := range t.Markets {
+		for _, o := range m.Outcomes {
+			if id := o.PlayerID; id != 0 {
+				handler(id)
+			}
+		}
+		// fetch player if provided as market specifier
+		// <market id="888" specifiers="player=sr:player:575270">
+		// <market id="891" specifiers="goalnr=1|player=sr:player:833167">
+		if playerID, ok := m.Specifiers["player"]; ok {
+			id, err := strconv.Atoi(playerID)
+			if err == nil {
+				handler(id)
+			}
+		}
+	}
 }

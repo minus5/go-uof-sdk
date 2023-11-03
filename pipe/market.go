@@ -46,6 +46,11 @@ func (s *markets) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc cha
 				s.variantMarket(marketID, variant, m.ReceivedAt)
 			})
 		}
+		if m.Is(uof.MessageTypeBetSettlement) {
+			m.BetSettlement.EachVariantMarket(func(marketID int, variant string) {
+				s.variantMarket(marketID, variant, m.ReceivedAt)
+			})
+		}
 		out <- m
 	}
 	return s.subProcs
