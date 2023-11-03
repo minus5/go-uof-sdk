@@ -53,6 +53,21 @@ func (p *player) loop(in <-chan *uof.Message, out chan<- *uof.Message, errc chan
 			})
 			wg.Wait()
 		}
+		if m.Is(uof.MessageTypeBetSettlement) {
+			var wg sync.WaitGroup
+			m.BetSettlement.EachPlayer(func(playerID int) {
+				if p.concurrentFetch {
+					wg.Add(1)
+					go func() {
+						p.get(playerID, m.ReceivedAt)
+						wg.Done()
+					}()
+				} else {
+					p.get(playerID, m.ReceivedAt)
+				}
+			})
+			wg.Wait()
+		}
 		out <- m
 	}
 	return p.subProcs
