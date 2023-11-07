@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v3"
-	"github.com/pvotal-tech/go-uof-sdk"
 	"github.com/pkg/errors"
+	"github.com/pvotal-tech/go-uof-sdk"
 )
 
 var (
-	maxInterval    = 16 * time.Second // max interval for exponential backoff
-	maxElapsedTime = 1 * time.Hour    // will give up if not connected longer than this
+	maxInterval    = 1800 * time.Second // max interval for exponential backoff
+	maxElapsedTime = 1 * time.Hour      // will give up if not connected longer than this
 )
 
 // WithReconnect ensuers reconnects with exponential backoff interval
