@@ -200,6 +200,9 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 
 	chnl, err := conn.Channel()
 	if err != nil {
+		if err := conn.Close(); err != nil {
+			return nil, uof.Notice("conn.Close", err)
+		}
 		return nil, uof.Notice("conn.Channel", err)
 	}
 
@@ -212,6 +215,9 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 		nil,   // arguments
 	)
 	if err != nil {
+		if err := conn.Close(); err != nil {
+			return nil, uof.Notice("conn.Close", err)
+		}
 		return nil, uof.Notice("conn.QueueDeclare", err)
 	}
 
@@ -223,6 +229,9 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 		nil,           // arguments
 	)
 	if err != nil {
+		if err := conn.Close(); err != nil {
+			return nil, uof.Notice("conn.Close", err)
+		}
 		return nil, uof.Notice("conn.QueueBind", err)
 	}
 
@@ -239,6 +248,9 @@ func dial(ctx context.Context, server string, bookmakerID int, token string, nod
 			nil,         // args
 		)
 		if err != nil {
+			if err := conn.Close(); err != nil {
+				return nil, uof.Notice("conn.Close", err)
+			}
 			return nil, uof.Notice("conn.Consume", err)
 		}
 	}
