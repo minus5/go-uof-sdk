@@ -72,7 +72,7 @@ func Run(parentCtx context.Context, options ...Option) error {
 	stages = append(stages, c.Stages...)
 
 	errc := pipe.Build(
-		queue.WithReconnect(ctx, qc),
+		qc.Listen,
 		stages...,
 	)
 	return firstErr(errc, c.ErrorListener)
