@@ -92,6 +92,13 @@ func (r *recovery) log(err error) {
 	}
 }
 
+func (r *recovery) logNotice(err error) {
+	select {
+	case r.errc <- uof.Notice("recovery", err):
+	default:
+	}
+}
+
 func (r *recovery) cancelSubProcs() {
 	for _, p := range r.producers {
 		if c := p.recoveryRequestCancel; c != nil {
@@ -115,7 +122,7 @@ func (r *recovery) requestRecovery(p *recoveryProducer) {
 		defer r.subProcs.Done()
 		for {
 			op := fmt.Sprintf("recovery for %s, timestamp: %d, requestID: %d", producer.Code(), timestamp, requestID)
-			r.log(fmt.Errorf("starting %s", op))
+			r.logNotice(fmt.Errorf("starting %s", op))
 			err := r.api.RequestRecovery(producer, timestamp, requestID, r.nodeID)
 			if err == nil {
 				return
