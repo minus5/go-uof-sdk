@@ -126,7 +126,7 @@ func (c *Connection) drainContinuous(out chan<- *uof.Message, errc chan<- error)
 		}
 		// ignores messages that are of no interest to the current session
 		if m.NodeID != 0 && m.NodeID != c.info.nodeID {
-			errc <- uof.Notice("conn.drainContinuous", fmt.Errorf("unkown node ID. ignoring message: %d", m.NodeID))
+			errc <- uof.Notice("conn.drainContinuous", fmt.Errorf("unknown node ID. ignoring message: %d", m.NodeID))
 			continue
 		}
 
@@ -167,7 +167,7 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 
 		// ignores messages that are of no interest to the current session
 		if m.NodeID != 0 && m.NodeID != c.info.nodeID {
-			errc <- uof.Notice("conn.drainThrottled", fmt.Errorf("unkown node ID. ignoring message: %d", m.NodeID))
+			errc <- uof.Notice("conn.drainThrottled", fmt.Errorf("unknown node ID. ignoring message: %d", m.NodeID))
 			continue
 		}
 
