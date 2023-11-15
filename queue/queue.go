@@ -24,8 +24,9 @@ const (
 	productionServerGlobal = "global.mq.betradar.com:5671"
 	queueExchange          = "unifiedfeed"
 	bindingKeyAll          = "#"
-	amqpDefaultHeartbeat   = 10 * time.Second
-	amqpDefaultLocale      = "en_US"
+	//bindingKeyAll        = "*.*.*.*.*.*.*.123456"
+	amqpDefaultHeartbeat = 10 * time.Second
+	amqpDefaultLocale    = "en_US"
 )
 
 // Dial connects to the queue chosen by environment
@@ -94,10 +95,10 @@ func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
 	go func() {
 		defer close(out)
 		defer close(errc)
+		out <- uof.NewDetailedConnnectionMessage(uof.ConnectionStatusUp, c.info.server, c.info.local, c.info.network, c.info.tlsVersion)
 		c.drain(out, errc)
 	}()
 	return out, errc
-
 }
 
 func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
