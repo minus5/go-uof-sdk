@@ -24,9 +24,8 @@ const (
 	productionServerGlobal = "global.mq.betradar.com:5671"
 	queueExchange          = "unifiedfeed"
 	bindingKeyAll          = "#"
-	//bindingKeyAll        = "*.*.*.*.*.*.*.123456"
-	amqpDefaultHeartbeat = 10 * time.Second
-	amqpDefaultLocale    = "en_US"
+	amqpDefaultHeartbeat   = 10 * time.Second
+	amqpDefaultLocale      = "en_US"
 )
 
 // Dial connects to the queue chosen by environment
