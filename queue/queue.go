@@ -94,10 +94,10 @@ func (c *Connection) Listen() (<-chan *uof.Message, <-chan error) {
 	go func() {
 		defer close(out)
 		defer close(errc)
+		out <- uof.NewDetailedConnnectionMessage(uof.ConnectionStatusUp, c.info.server, c.info.local, c.info.network, c.info.tlsVersion)
 		c.drain(out, errc)
 	}()
 	return out, errc
-
 }
 
 func (c *Connection) drain(out chan<- *uof.Message, errc chan<- error) {
