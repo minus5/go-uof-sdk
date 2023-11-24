@@ -27,7 +27,7 @@ func parseCompetitor(name string, fixture Fixture) (string, error) {
 	return parseCompetitor(name, fixture)
 }
 
-func ParseSpecifiers(name string, specifiers map[string]string, players *MapCache[int, Player], fixture Fixture) (string, error) {
+func ParseSpecifiers(name string, specifiers map[string]string, players map[int]Player, fixture Fixture) (string, error) {
 	name = strings.ReplaceAll(name, "{$event}", fixture.Name)
 	name, err := parseCompetitor(name, fixture)
 	if err != nil {
@@ -120,7 +120,7 @@ func ParseSpecifiers(name string, specifiers map[string]string, players *MapCach
 			if err != nil {
 				return "", fmt.Errorf("error while parsing player id \"%s\"", val)
 			}
-			player, ok := players.Get(int(playerID))
+			player, ok := players[int(playerID)]
 			if !ok {
 				return "", fmt.Errorf("player with id %d not found", playerID)
 			}

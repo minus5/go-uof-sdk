@@ -26,6 +26,7 @@ type Config struct {
 	IsThrottled        bool
 	ConcurrentAPIFetch bool
 	AutoAckDisabled    bool
+	PipelineDisabled   bool
 	Fixtures           time.Time
 	Recovery           []uof.ProducerChange
 	Stages             []pipe.InnerStage
@@ -60,11 +61,14 @@ func Run(parentCtx context.Context, options ...Option) error {
 			return err
 		}
 	}
-	stages := []pipe.InnerStage{
-		pipe.Markets(apiConn, c.Languages),
-		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
-		pipe.Player(apiConn, c.Languages, c.ConcurrentAPIFetch),
-		pipe.BetStop(),
+	stages := make([]pipe.InnerStage, 0)
+	if !c.PipelineDisabled {
+		stages = append(stages,
+			pipe.Markets(apiConn, c.Languages),
+			pipe.Fixture(apiConn, c.Languages, c.Fixtures),
+			pipe.Player(apiConn, c.Languages, c.ConcurrentAPIFetch),
+			pipe.BetStop(),
+		)
 	}
 	if len(c.Recovery) > 0 {
 		stages = append(stages, pipe.Recovery(apiConn, c.Recovery, c.NodeID))
@@ -157,6 +161,13 @@ func ConfigTLS(isAMQPTLS bool) Option {
 func ConfigThrottle(isThrottled bool) Option {
 	return func(c *Config) {
 		c.IsThrottled = isThrottled
+	}
+}
+
+// DisablePipeline disables internal stages for processing markets, fixtures, players
+func DisablePipeline() Option {
+	return func(c *Config) {
+		c.PipelineDisabled = true
 	}
 }
 

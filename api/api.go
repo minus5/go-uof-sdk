@@ -224,6 +224,7 @@ type params struct {
 	Lang               uof.Lang
 	Producer           uof.Producer
 	NodeID             int
+	Date               string
 }
 
 func runTemplate(def string, p *params) string {

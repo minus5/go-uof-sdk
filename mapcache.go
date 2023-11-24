@@ -29,18 +29,30 @@ func NewMapCache[K string | int, V any](ctx context.Context, timeToLive time.Dur
 	return cache
 }
 
-func (m *MapCache[K, V]) Set(key K, value V) {
-	m.Lock()
-	defer m.Unlock()
+// SetUnsafe is meant to be used along with mutex locking
+func (m *MapCache[K, V]) SetUnsafe(key K, value V) {
 	m.data[key] = &value
 	m.expiration[key] = time.Now().Add(m.timeToLive)
 }
 
+// Set values with write lock
+func (m *MapCache[K, V]) Set(key K, value V) {
+	m.Lock()
+	defer m.Unlock()
+	m.SetUnsafe(key, value)
+}
+
+// GetUnsafe is meant to be used along with mutex write locking
+func (m *MapCache[K, V]) GetUnsafe(key K) (*V, bool) {
+	val, ok := m.data[key]
+	return val, ok
+}
+
+// Get values with read lock
 func (m *MapCache[K, V]) Get(key K) (*V, bool) {
 	m.RLock()
 	defer m.RUnlock()
-	val, ok := m.data[key]
-	return val, ok
+	return m.GetUnsafe(key)
 }
 
 func (m *MapCache[K, V]) Size() int {

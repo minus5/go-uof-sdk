@@ -14,6 +14,7 @@ const (
 	pathPlayer        = "/v1/sports/{{.Lang}}/players/sr:player:{{.PlayerID}}/profile.xml"
 	events            = "/v1/sports/{{.Lang}}/schedules/pre/schedule.xml?start={{.Start}}&limit={{.Limit}}"
 	liveEvents        = "/v1/sports/{{.Lang}}/schedules/live/schedule.xml"
+	dayEvents         = "/v1/sports/{{.Lang}}/schedules/{{.Date}}/schedule.xml"
 )
 
 // Markets all currently available markets for a language
@@ -27,13 +28,25 @@ func (a *API) MarketVariant(lang uof.Lang, marketID int, variant string) (uof.Ma
 	return mr.Markets, a.getAs(&mr, pathMarketVariant, &params{Lang: lang, MarketID: marketID, Variant: variant})
 }
 
-// Fixture lists the fixture for a specified sport event
-func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) ([]byte, error) {
+// FixtureBytes lists the fixture for a specified sport event (returns buf)
+func (a *API) FixtureBytes(lang uof.Lang, eventURN uof.URN) ([]byte, error) {
 	buf, err := a.get(pathFixture, &params{Lang: lang, EventURN: eventURN})
 	if err != nil {
 		return nil, err
 	}
 	return buf, err
+}
+
+// Fixture fetches the fixture for a specified sport event
+func (a *API) Fixture(lang uof.Lang, eventURN uof.URN) (uof.Fixture, error) {
+	var fr fixtureRsp
+	return fr.Fixture, a.getAs(&fr, pathFixture, &params{Lang: lang, EventURN: eventURN})
+}
+
+// DailySchedule lists fixtures from all sports for a specific day
+func (a *API) DailySchedule(lang uof.Lang, date string) ([]uof.Fixture, error) {
+	var fr scheduleRsp
+	return fr.Fixtures, a.getAs(&fr, dayEvents, &params{Lang: lang, Date: date})
 }
 
 func (a *API) Player(lang uof.Lang, playerID int) (*uof.Player, error) {

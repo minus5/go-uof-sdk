@@ -118,7 +118,9 @@ func (c *Connection) drainContinuous(out chan<- *uof.Message, errc chan<- error)
 		close(errsDone)
 	}()
 
-	for delivery := range c.msgs {
+	for d := range c.msgs {
+		delivery := d
+		readAt := time.Now().UTC()
 		m, err := uof.NewQueueMessage(delivery.RoutingKey, delivery.Body)
 		if err != nil {
 			errc <- uof.Notice("conn.DeliveryParse", err)
@@ -132,6 +134,7 @@ func (c *Connection) drainContinuous(out chan<- *uof.Message, errc chan<- error)
 
 		m.EnabledAutoAck = c.autoAck
 		m.Delivery = &delivery
+		m.ReadAt = readAt
 		out <- m
 	}
 	<-errsDone
