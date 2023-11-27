@@ -24,8 +24,10 @@ type Config struct {
 	NodeID             int
 	IsAMQPTLS          bool
 	IsThrottled        bool
+	PrefetchCount      int
 	ConcurrentAPIFetch bool
 	AutoAckDisabled    bool
+	PipelineDisabled   bool
 	Fixtures           time.Time
 	Recovery           []uof.ProducerChange
 	Stages             []pipe.InnerStage
@@ -60,11 +62,14 @@ func Run(parentCtx context.Context, options ...Option) error {
 			return err
 		}
 	}
-	stages := []pipe.InnerStage{
-		pipe.Markets(apiConn, c.Languages),
-		pipe.Fixture(apiConn, c.Languages, c.Fixtures),
-		pipe.Player(apiConn, c.Languages, c.ConcurrentAPIFetch),
-		pipe.BetStop(),
+	stages := make([]pipe.InnerStage, 0)
+	if !c.PipelineDisabled {
+		stages = append(stages,
+			pipe.Markets(apiConn, c.Languages),
+			pipe.Fixture(apiConn, c.Languages, c.Fixtures),
+			pipe.Player(apiConn, c.Languages, c.ConcurrentAPIFetch),
+			pipe.BetStop(),
+		)
 	}
 	if len(c.Recovery) > 0 {
 		stages = append(stages, pipe.Recovery(apiConn, c.Recovery, c.NodeID))
@@ -108,9 +113,9 @@ func connect(ctx context.Context, c Config) (*queue.Connection, *api.API, error)
 	var conn *queue.Connection
 	var amqpErr error
 	if c.CustomAMQPServer != "" {
-		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled, !c.AutoAckDisabled)
+		conn, amqpErr = queue.DialCustom(ctx, c.CustomAMQPServer, c.BookmakerID, c.Token, c.NodeID, c.PrefetchCount, c.IsAMQPTLS, c.IsThrottled, !c.AutoAckDisabled)
 	} else {
-		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.IsAMQPTLS, c.IsThrottled, !c.AutoAckDisabled)
+		conn, amqpErr = queue.Dial(ctx, c.Env, c.BookmakerID, c.Token, c.NodeID, c.PrefetchCount, c.IsAMQPTLS, c.IsThrottled, !c.AutoAckDisabled)
 	}
 	if amqpErr != nil {
 		return nil, nil, amqpErr
@@ -153,10 +158,18 @@ func ConfigTLS(isAMQPTLS bool) Option {
 	}
 }
 
-// ConfigTLS for setting tls flag
-func ConfigThrottle(isThrottled bool) Option {
+// ConfigThrottle is Throttled uses channel.Get internally. prefetchCount is to be used when isThrottled is false
+func ConfigThrottle(isThrottled bool, prefetchCount int) Option {
 	return func(c *Config) {
 		c.IsThrottled = isThrottled
+		c.PrefetchCount = prefetchCount
+	}
+}
+
+// DisablePipeline disables internal stages for processing markets, fixtures, players
+func DisablePipeline() Option {
+	return func(c *Config) {
+		c.PipelineDisabled = true
 	}
 }
 

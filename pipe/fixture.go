@@ -8,8 +8,10 @@ import (
 )
 
 type fixtureAPI interface {
-	Fixture(lang uof.Lang, eventURN uof.URN) ([]byte, error)
+	FixtureBytes(lang uof.Lang, eventURN uof.URN) ([]byte, error)
+	Fixture(lang uof.Lang, eventURN uof.URN) (uof.Fixture, error)
 	Fixtures(lang uof.Lang, to time.Time) (<-chan uof.Fixture, <-chan error)
+	DailySchedule(lang uof.Lang, date string) ([]uof.Fixture, error)
 }
 
 type fixture struct {
@@ -135,7 +137,7 @@ func (f *fixture) getFixture(eventURN uof.URN, receivedAt int, isPreload bool) {
 			if isPreload && f.em.fresh(key) {
 				return
 			}
-			buf, err := f.api.Fixture(lang, eventURN)
+			buf, err := f.api.FixtureBytes(lang, eventURN)
 			if err != nil {
 				f.errc <- err
 				return

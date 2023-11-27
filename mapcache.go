@@ -29,6 +29,7 @@ func NewMapCache[K string | int, V any](ctx context.Context, timeToLive time.Dur
 	return cache
 }
 
+// Set values with write lock
 func (m *MapCache[K, V]) Set(key K, value V) {
 	m.Lock()
 	defer m.Unlock()
@@ -36,6 +37,7 @@ func (m *MapCache[K, V]) Set(key K, value V) {
 	m.expiration[key] = time.Now().Add(m.timeToLive)
 }
 
+// Get values with read lock
 func (m *MapCache[K, V]) Get(key K) (*V, bool) {
 	m.RLock()
 	defer m.RUnlock()

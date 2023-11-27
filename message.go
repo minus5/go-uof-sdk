@@ -28,6 +28,7 @@ type Header struct {
 	PendingMsgCount int             `json:"pendingMsgCount,omitempty"`
 	Delivery        *amqp091.Delivery
 	EnabledAutoAck  bool
+	ReadAt          time.Time
 }
 
 type Body struct {
