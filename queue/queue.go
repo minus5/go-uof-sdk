@@ -159,6 +159,7 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 		if !hasMsg {
 			continue
 		}
+		readAt := time.Now().UTC()
 		m, err := uof.NewQueueMessage(delivery.RoutingKey, delivery.Body)
 		if err != nil {
 			errc <- uof.Notice("conn.DeliveryParse", err)
@@ -167,6 +168,7 @@ func (c *Connection) drainThrottled(out chan<- *uof.Message, errc chan<- error) 
 		m.EnabledAutoAck = c.autoAck
 		m.Delivery = &delivery
 		m.PendingMsgCount = int(delivery.MessageCount)
+		m.ReadAt = readAt
 
 		// ignores messages that are of no interest to the current session
 		if m.NodeID != 0 && m.NodeID != c.info.nodeID {
